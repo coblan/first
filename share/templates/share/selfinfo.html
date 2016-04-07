@@ -1,0 +1,272 @@
+{% extends 'share/base.html' %}
+{% block content %}
+
+<link rel="stylesheet" href="/static/kindeditor-4.1.10/themes/default/default.css" />
+		<script charset="utf-8" src="/static/kindeditor-4.1.10/kindeditor-min.js"></script>
+		<script charset="utf-8" src="/static/kindeditor-4.1.10/lang/zh_CN.js"></script>
+
+<script type="text/javascript">
+	var post_url='/share/jsonpost/';
+	app.controller('content',function ($scope,$http,$sce) {
+		$scope.dir=new Object();
+		$scope.dir.crt={{crt_dir | safe}};
+		$scope.dir.ps={{ps | safe}};
+		$scope.dir.ps.push($scope.dir.crt);
+		
+		$scope.dirs={{dirs | safe}};
+		$scope.files={{files | safe}};
+		$scope.crt_file={};
+		$scope.new_file={};
+
+		$scope.trustAsHtml = function(string) {
+		    return $sce.trustAsHtml(string);
+		};
+		$scope.submit=function (item,parent) {
+	
+			var postData = {
+				//order:['save_link','get_link'],
+				save_file:{item:item,p:parent},
+				//get_link:{}
+			}
+			$http.post(post_url,postData)
+				.success(function(data, status, headers, config) {  
+					// 留言提交成功
+					$scope.items=data.get_link.links;
+					$scope.is_editing=false;
+					$scope.add_new_ing=false;
+					//item.editing = false;
+				}).error(function(data, status, headers, config) {  
+				    //处理错误 
+				    $scope.std='有错误,返回码为:'+status;
+				});
+		}
+		$scope.show_content=function (item) {
+			$scope.crt_file = item;
+		};
+		$scope.cancel=function () {
+			$scope.edit_win='nothing';
+		}
+	//	$scope.edit= function () {
+	//		$scope.is_editing=true;
+	
+	//	}
+		$scope.add_new=function (v,file) {
+			if(!v)return
+			var postData = {
+				add_file:{name:file.name,content:file.content,pid:$scope.dir.crt.id},
+			}
+			$http.post(post_url,postData)
+				.success(function(data, status, headers, config) {  
+					$scope.files.push(data.add_file);
+					$scope.crt_file=data.add_file;
+					$scope.edit_win='nothing';
+					$scope.new_file={};
+				}).error(function(data, status, headers, config) {  
+				    $scope.std='有错误,返回码为:'+status;
+				});
+		};
+		
+		$scope.del=function () {
+			var deldirs=[];
+			for (x in $scope.dirs){
+				if($scope.dirs[x].checked==true){
+					deldirs.push($scope.dirs[x].id);
+				}
+			}
+			var delfiles=[];
+			for(y in $scope.files){
+				if($scope.files[y].checked==true){
+					delfiles.push($scope.files[y].id);
+				}
+			}
+			var postData = {
+				order:['del_dirs','del_files','get_files'],
+				del_dirs:{ids:deldirs},
+				del_files:{ids:delfiles},
+				get_files:{did:$scope.dir.crt.id}
+			}
+			$http.post(post_url,postData)
+				.success(function(data, status, headers, config) {  
+					$scope.dirs=data.get_files.dirs;
+					$scope.files=data.get_files.files;
+					$scope.crt_file={};
+				}).error(function(data, status, headers, config) {  
+				    //处理错误 
+				    $scope.std='有错误,返回码为:'+status;
+				});
+		};
+		$scope.save =function (b,item) {
+			if(b){
+				$scope.submit(item,$scope.crt_dir);
+			}
+		};
+		$scope.add_newDir=function (v,dir) {
+			if (!v)return
+			var postData = {
+				add_dir:{name:dir.name,pid:$scope.dir.crt.id},
+			}
+			$http.post(post_url,postData)
+				.success(function(data, status, headers, config) {  
+					$scope.dirs.push(data.add_dir);
+					$scope.edit_win='nothing';
+				}).error(function(data, status, headers, config) {  
+				    $scope.std='有错误,返回码为:'+status;
+				});
+		};
+		
+		$scope.rename_dir=function (v,dir) {
+			//$scope.is_showNameWin =true;
+			if(!v)return;
+			var postData = {
+				modify_dir:{name:dir.name,id:dir.id},
+			}
+			$http.post(post_url,postData)
+				.success(function(data, status, headers, config) {  
+					alert('修改成功');
+					$scope.edit_win='nothing';
+				}).error(function(data, status, headers, config) {  
+				    //处理错误 
+				    $scope.std='有错误,返回码为:'+status;
+				});
+		}
+		$scope.tmp_name={};
+		$scope.edit_win='nothing';
+		$scope.set_editWin=function (win) {
+			$scope.edit_win=win;
+		};
+		$scope.switch_dir = function (dir) {
+			var postData = {
+				get_dirParents:{id:dir.id},
+				get_files:{did:dir.id}
+			}
+			$http.post(post_url,postData)
+				.success(function(data, status, headers, config) {  
+					$scope.dir.ps=data.get_dirParents;
+					$scope.dir.ps.push(dir);
+					$scope.dir.crt=dir;
+					$scope.dirs=data.get_files.dirs;
+					$scope.files=data.get_files.files;
+					$scope.crt_file={};
+				}).error(function(data, status, headers, config) {  
+				    $scope.std='有错误,返回码为:'+status;
+				});
+		};
+		$scope.modify_file=function (v,file) {
+			if (!v)return;
+			var postData = {
+				modify_file:{id:file.id,name:file.name,content:file.content},
+			}
+			$http.post(post_url,postData)
+				.success(function(data, status, headers, config) {  
+				var it = data.modify_file;
+				$scope.crt_file.name=it.name;
+				$scope.crt_file.content=it.content;
+				$scope.edit_win='nothing';
+				}).error(function(data, status, headers, config) {  
+				    $scope.std='有错误,返回码为:'+status;
+				});
+		}
+		$scope.check_crtFile=function () {
+			if(typeof($scope.crt_file.name)=='undefined'){
+				return false;
+			}else{
+				return true;
+			}
+		}
+		//$scope.save_dir=function (b) {
+		//	if(b){
+		//		$scope.edit_dir($scope.new_dir);
+		//	}
+		//}
+	})
+	
+</script>
+<style type="text/css" media="screen" id="test">
+	.nodot-li li{
+		list-style-type:none;
+	}
+</style>
+<div class='container' ng-controller='content'>
+	<div class='row'>
+		yyyyyyyy
+		{% for q in sql_queries %}
+{{i.sql}}
+{% endfor %}
+		<div class='col-md-3'>
+		<div >
+			<select class='col-sm-8 col-sm-offset-2' name="ss"  ng-options='p.name for p in dir.ps' ng-model='dir.crt' ng-change='switch_dir(dir.crt)'></select>
+		</div>
+		<div class='col-sm-12'>
+			<ul class='nodot-li'>
+				<li ng-repeat='item in dirs'>
+					<input type="checkbox" name="test" value="" ng-model='item.checked'/>
+					<span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
+					<a href="" ng-click='switch_dir(item)'><span ng-bind='item.name'></span></a>
+				</li>
+				<li ng-repeat='item in files'>
+					<input type="checkbox" name="test" value="" ng-model='item.checked'/>
+					 <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+					<a href="" ng-click='show_content(item)'><span ng-bind='item.name'></span></a>
+				</li>
+		</ul>
+		</div>
+	
+		</div>
+		<div class='col-md-9'>
+			<button name="ssf" type="button" value="val" ng-click='set_editWin("new_dir")'>新增文件夹</button>
+			<button name="sg" type="button" value="val" ng-click='set_editWin("rename")'>重命名文件夹</button>
+			<button name="test" type="button" value="val" ng-click='set_editWin("new_file")'>新增文件</button>
+			<button name="test" type="button" value="val" ng-click='set_editWin("modify")'>修改文件</button>
+			<!--<edit-form item='link' submit='submit(link)' able='add_new_ing'></edit-form>-->
+			
+			<button name="test" type="button" value="val" ng-click='del()'>删除选中项</button>
+			<div style='padding-top:30px;'>
+				
+				<!--<div ng-show='is_editing'>
+					<textarea ng-model="crt_item.content" class="form-control" name='ri'  ></textarea>
+					<button name="test" type="button" value="val" ng-click='submit(crt_item)'>确定</button>
+					<button name="test" type="button" value="val" ng-click='cancel()'>取消</button>
+				</div>-->
+				<div ng-switch='edit_win'>
+					
+					<div ng-switch-when='nothing' >
+						<div ng-show='check_crtFile()'>
+							<h2 ng-bind='crt_file.name' style='border-bottom: 1px solid #999;'></h2>
+							<div ng-bind-html='trustAsHtml(crt_file.content)'></div>
+						</div>
+						
+					</div>
+					<div ng-switch-when='new_dir'>
+						<span>新增文件夹</span><name_form submit='add_newDir(valid,new_dir)' item='new_dir'></name_form>
+					</div>
+					
+					<div ng-switch-when='rename'>
+						<span>重命名文件夹</span><name_form submit='rename_dir(valid,dir.crt)' item='dir.crt'></name_form>
+					</div>
+					<div ng-switch-when='new_file'>
+						<span >新增文件</span>
+						<edit-form submit='add_new(valid,file)' item='new_file' cancel='cancel()'></edit-form>
+					</div>
+					<div ng-switch-when='modify'>
+						<span >修改文件</span>
+						<edit-form submit='modify_file(valid,file)' item='crt_file' cancel='cancel()'></edit-form>		<!--	<div>
+				<textarea id="editor_id" name="content" style="width:700px;height:300px;">
+&lt;strong&gt;HTML内容&lt;/strong&gt;
+</textarea>
+			</div>-->
+					</div>
+					
+					
+				</div>
+
+			</div>
+
+			
+			
+		</div>
+	</div>
+</div>
+
+
+
+{% endblock %}
