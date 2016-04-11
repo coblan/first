@@ -90,7 +90,7 @@ from functools import partial
 import re
 
 json_proc= partial(jsonpost,scope=globals())
-def login(request):
+def login_view(request):
     if request.method=='GET':
         next_url=request.GET.get('next')
         if not next_url:

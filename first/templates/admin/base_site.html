@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django 1 site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django 1 administration') }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block sidebar %}
+<style type="text/css" media="screen" id="test">
+	#content{
+		margin-left:100px;
+	}
+</style>
+<div style='position: fixed;width:200px;left:0'>
+	<ul>
+		<li><a href="/admin/share/dirmodel/">文件夹</a></li>
+		<li><a href="/admin/share/notemodel/">文件</a></li>
+	</ul>
+</div>
+{% endblock %}
+
+

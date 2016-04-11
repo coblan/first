@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+import index
 
 urlpatterns = [
+    url(r'^$',index.index),
+    url(r'^accounts/',include('authuser.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^share/',include('share.urls'))
+    url(r'^share/',include('share.urls')),
+    
 ]
