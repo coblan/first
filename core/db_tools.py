@@ -14,14 +14,14 @@ def get_or_none(model, **kw):
 
 
 
-def to_dict(instance,filt_attr=None):
+def to_dict(instance,filt_attr=None,fields=None):
     """
     filt_attr(instance)是可调用对象，返回一个字典，包含已经处理过的属性。这些属性不会再被to_jd操作。
     
     注意，返回的字典，是可以json化的才行。
     """
-    
-    fields=instance._meta.fields
+    if fields is None:
+        fields=instance._meta.fields
     if filt_attr:
         out=filt_attr(instance)
     else:

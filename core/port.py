@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 def jsonpost(request, scope):
     """
     该函数会路由ajax请求，ajax发送的json格式为{'order':['func3','func2'],func1:{name:'heyulin'},func2:{arg:..},func3:{arg:}}
-    jsonpost根据json的格式，中scope里面查询同名函数，优先调用order中的函数
+    jsonpost根据参数scope里面查询同名函数，按照循序，优先调用order中的函数
     
     example:
     
@@ -25,18 +25,25 @@ def ajax_view(request):
     """
     cmddc = json.loads(request.body)
     outdc = {}
+    msgs=[]
     orderls = cmddc.pop('order', None)
     if orderls:
         for k in orderls:
             func = scope[k]
             kw=cmddc.pop(k)
-            outdc[k]=_run_func(func, request,**kw)
+            try:
+                outdc[k]=_run_func(func, request,**kw)
+            except UserWarning as e:
+                msgs.append(str(e))
 
     for k, kw in cmddc.items():
         func = scope[k]
-        outdc[k]=_run_func(func, request,**kw)
+        try:
+            outdc[k]=_run_func(func, request,**kw)
+        except UserWarning as e:
+            msgs.append(str(e))
     
-    outdc['status']='success'
+    outdc['msg']=';'.join(msgs)
     return HttpResponse(json.dumps(outdc), content_type="application/json")
 
 
