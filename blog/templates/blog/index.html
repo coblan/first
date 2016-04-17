@@ -1,0 +1,95 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+{% for js in custom_js %}
+	<script src="{{js}}"></script>
+{% endfor %}
+
+<script type="text/javascript">
+	app.controller('head',function ($scope) {
+		$scope.menus=[
+			{name:'math',label:'数学',url:'/blog/index/math'},
+			{name:'science',label:'科技',url:'/blog/index/science'},
+			{name:'program',label:'编程',url:'/blog/index/program'},
+			{name:'common',label:'随笔',url:'/blog/index/common'}
+		]
+		$scope.crt={
+			name:'{{category | default:"common"}}',
+			overname:'',
+			is_active:function (menu) {
+				return menu.name==this.name || menu.name==this.overname
+			}
+		}
+	})
+</script>
+<style type="text/css" media="screen" id="test">
+	.menu{
+		padding: 20px;
+	}
+	.menu li{
+		display: inline;
+		padding: 10px;
+	}
+	.menu a.active{
+		border-bottom: 2px solid red;
+		font-size: 150%;
+	}
+	.menu a{
+		text-decoration: none;
+	}
+	#head ul{
+		background-color: #eee;
+	}
+	#robot_dog{
+		width:55px;
+		position: absolute;
+		left:10%;
+		top:25px;
+	}
+	.article{
+		padding: 20px;
+		min-height:200px;
+	}
+</style>
+<div >
+	<div id='head' ng-controller='head'>
+		
+		<ul class="menu col-xs-12" style='text-align: center;position: relative;' >
+			<!--<div >-->
+				<img id='robot_dog' src="/static/image/robot_dog.png" title="robot dog" >
+			<!--</div>-->
+			
+			<li ng-repeat='menu in menus' >
+				<a ng-href="[[menu.url]]"
+					ng-class='{"active":crt.is_active(menu)}'
+					ng-click='crt.name=menu.name'
+					ng-mouseover='crt.overname=menu.name'
+					ng-mouseleave='crt.overname=""'><span ng-bind='menu.label'></span></a>
+			</li>
+		</ul>
+	</div>
+</div>
+
+
+<div class='container'>
+	<div class='col-xs-9'>
+	{% block art_content %}
+		{% for art in articles %}
+			<div class='article'>
+				<h1>{{art.title}}</h1>
+				<hr>
+				<div>{{art.content | safe |truncatechars_html:200}}</div>
+				<div style='text-align: right;'><a href='/blog/art/{{art.name}}'>View Detail</a></div>
+			</div>
+		{% endfor %}
+	{% endblock %}
+	</div>
+	<div class='col-xs-3' style='background-color: #eee;min-height:200px'>
+		tag
+	</div>
+</div>
+
+
+<div id='footer' style='min-height:200px'>
+	
+</div>
+{% endblock %}

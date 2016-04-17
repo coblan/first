@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app="he">
+
+	<head>
+		<meta charset='utf-8' />
+		
+		<!--<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>-->
+		
+		<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.6/angular.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.6/angular-sanitize.min.js"></script>
+		<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<title>{{title | default:'无名'}}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<!--<script type="text/javascript">
+			var app = angular.module('he',['ngSanitize']);
+			app.config(function($interpolateProvider) {
+				  $interpolateProvider.startSymbol('[[');
+				  $interpolateProvider.endSymbol(']]');
+				});
+		</script>-->
+		</head>
+		<body >
+		{% block content %}
+			
+		模板文件
+
+		{% endblock %}
+
+		</body>
+		</html>

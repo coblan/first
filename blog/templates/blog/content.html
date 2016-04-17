@@ -1,0 +1,42 @@
+{% extends 'blog/index.html' %}
+
+{% block art_content %}
+<!--<script src="//cdn.ckeditor.com/4.5.8/standard/ckeditor.js"></script>-->
+<!--<script src="//cdn.ckeditor.com/4.5.8/standard/ckeditor.js"></script>-->
+<!--<script src="/static/ckeditor/ckeditor.js"></script>-->
+<script src="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/scripts/shCore.min.js"></script>
+<script src="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/scripts/shBrushPython.min.js"></script>
+
+<link rel="stylesheet" href="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/styles/shCore.min.css">
+<link rel="stylesheet" href="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/styles/shThemeDefault.min.css">
+
+{{art_content | safe }}
+
+<!--<textarea name="editor1" id="editor1" rows="10" cols="80">
+    This is my textarea to be replaced with CKEditor.
+ </textarea>-->
+<script type="text/javascript">
+	$(function () {
+
+		$('.language-python').each(function () {
+			$(this).parent().addClass('brush:python')
+			$(this).parent().html($(this).html())
+		})
+     	SyntaxHighlighter.all()
+	})
+	
+</script>
+<script>
+    // Replace the <textarea id="editor1"> with a CKEditor
+    // instance, using default configuration.
+    //CKEDITOR.replace( 'editor1')//,{
+	    //	colorButton_backStyle:true,
+	    //	//uiColor: '#9AB8F3',
+	    //	filebrowserImageUploadUrl: '/blog/upload/image/'
+	    //} );
+    
+    //CKEDITOR.instances.editor.insertHtml('<b>fuck</b>')
+    //$('#editor1').val('<b>fuck</b>')
+</script>
+
+{% endblock %}
