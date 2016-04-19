@@ -10,8 +10,13 @@
 <link rel="stylesheet" href="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/styles/shCore.min.css">
 <link rel="stylesheet" href="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/styles/shThemeDefault.min.css">
 
-{{art_content | safe }}
-
+<div class='article'>
+	<div>
+		<h1>{{article.title}}</h1>
+	</div>
+	<hr>
+	{{article.html | safe }}
+</div>
 <!--<textarea name="editor1" id="editor1" rows="10" cols="80">
     This is my textarea to be replaced with CKEditor.
  </textarea>-->

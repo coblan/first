@@ -63,7 +63,11 @@
 		$scope.src_type=$('#id_type').val();
 		$scope.src=$('#id_src').val();
 		//$scope.$watch('src_type',function (nv,ov) {
-			
+		//	if(nv=='ck'){
+		//		$('.field-html').hide()
+		//	}else{
+				
+		//	}
 		//})
 	})
 	compileAngularElement=agc.compileAngularElement

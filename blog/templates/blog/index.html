@@ -6,14 +6,16 @@
 
 <script type="text/javascript">
 	app.controller('head',function ($scope) {
-		$scope.menus=[
-			{name:'math',label:'数学',url:'/blog/index/math'},
-			{name:'science',label:'科技',url:'/blog/index/science'},
-			{name:'program',label:'编程',url:'/blog/index/program'},
-			{name:'common',label:'随笔',url:'/blog/index/common'}
-		]
+		$scope.menus={{categorys | safe}}
+		//$scope.content_url='{{content_url}}'
+		//[
+			//{name:'math',label:'数学',url:'/blog/index/math'},
+			//{name:'science',label:'科技',url:'/blog/index/science'},
+			//{name:'program',label:'编程',url:'/blog/index/program'},
+			//{name:'common',label:'随笔',url:'/blog/index/common'}
+		//]
 		$scope.crt={
-			name:'{{category | default:"common"}}',
+			name:'{{crt_cat.name}}',
 			overname:'',
 			is_active:function (menu) {
 				return menu.name==this.name || menu.name==this.overname
@@ -22,8 +24,14 @@
 	})
 </script>
 <style type="text/css" media="screen" id="test">
+	body{
+		background-color: #eee;
+	}
 	.menu{
 		padding: 20px;
+	}
+	#head_menu{
+		margin-left:300px;
 	}
 	.menu li{
 		display: inline;
@@ -36,9 +44,6 @@
 	.menu a{
 		text-decoration: none;
 	}
-	#head ul{
-		background-color: #eee;
-	}
 	#robot_dog{
 		width:55px;
 		position: absolute;
@@ -48,18 +53,21 @@
 	.article{
 		padding: 20px;
 		min-height:200px;
+		background-color: white;
+		margin-bottom: 20px;
+		border-radius:5px;
 	}
 </style>
 <div >
 	<div id='head' ng-controller='head'>
-		
-		<ul class="menu col-xs-12" style='text-align: center;position: relative;' >
+		<img id='robot_dog' src="/static/image/robot_dog.png" title="robot dog" >
+		<ul class="menu" id='head_menu' >
 			<!--<div >-->
-				<img id='robot_dog' src="/static/image/robot_dog.png" title="robot dog" >
+				
 			<!--</div>-->
 			
 			<li ng-repeat='menu in menus' >
-				<a ng-href="[[menu.url]]"
+				<a ng-href="/blog/content/[[menu.name]]"
 					ng-class='{"active":crt.is_active(menu)}'
 					ng-click='crt.name=menu.name'
 					ng-mouseover='crt.overname=menu.name'
@@ -71,20 +79,25 @@
 
 
 <div class='container'>
-	<div class='col-xs-9'>
+	<div class='col-xs-10'>
 	{% block art_content %}
 		{% for art in articles %}
-			<div class='article'>
-				<h1>{{art.title}}</h1>
-				<hr>
-				<div>{{art.content | safe |truncatechars_html:200}}</div>
-				<div style='text-align: right;'><a href='/blog/art/{{art.name}}'>View Detail</a></div>
+			<div >
+				<div class='article'>
+					<h1>{{art.title}}</h1>
+					<hr>
+					<div>{{art.content | safe |truncatechars_html:200}}</div>
+					<div style='text-align: right;'><a href='/blog/content/{{crt_cat.name}}/{{art.name}}'>View Detail</a></div>
+				</div>
+				
 			</div>
 		{% endfor %}
 	{% endblock %}
 	</div>
-	<div class='col-xs-3' style='background-color: #eee;min-height:200px'>
-		tag
+	<div class='col-xs-2' >
+		{% for tag in tags %}
+		{{tag.name}}
+		{% endfor %}
 	</div>
 </div>
 
