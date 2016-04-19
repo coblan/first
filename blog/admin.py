@@ -5,6 +5,7 @@ import handler_src_model
 # Register your models here.
 class ArticleAdmin(admin.ModelAdmin):
     exclude=('html',)
+    list_display=('title','category')
     class Media:
         js=("http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js",
             'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.6/angular.min.js',
