@@ -15,15 +15,9 @@ base_dir=path.dirname(__file__)
 
 
 def content(request,cat_name='',page_name=''):
-    #cats=[{'name':cat.name,'label':cat.label} for cat in CatModel.objects.all()]
-    #dc={'categorys': json.dumps(cats)}
-    #category=get_or_none(CatModel,name=cat_name)
-    #if not category:
-        #category=CatModel.objects.all()[0]
-    #dc['crt_cat']=category
-    #articles=[]
     category,dc=build_categrory(cat_name)
     dc['tags']=category.tag_set.all()
+    dc['title']=u'我的博客'
     if not page_name:
         return build_index(request,category,dc)
     else:

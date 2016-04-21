@@ -30,16 +30,24 @@
 	.menu{
 		padding: 20px;
 	}
+	#head{
+		background-color: white;
+		text-shadow: 2px 2px 2px #919187;
+		border-bottom:1px solid #BEBEBE;
+		margin-bottom: 20px;
+		padding-top:20px;
+		font-size: 200%;
+	}
 	#head_menu{
 		margin-left:300px;
 	}
 	.menu li{
 		display: inline;
-		padding: 10px;
+		padding: 20px;
 	}
 	.menu a.active{
 		border-bottom: 2px solid red;
-		font-size: 150%;
+		/*font-size: 150%;*/
 	}
 	.menu a{
 		text-decoration: none;
@@ -54,12 +62,24 @@
 		padding: 20px;
 		min-height:200px;
 		background-color: white;
-		margin-bottom: 20px;
+		margin-bottom: 10px;
+		border-bottom:1px solid #FFD306;
 		border-radius:5px;
 	}
+	.info_panel{
+		min-height:200px;
+		background-color: white;
+		border-radius:5px;
+		margin-bottom:10px;
+		border: 1px solid #BEBEBE;
+	}
+	.info_head{
+		border-bottom: 1px solid #999; 
+		text-align: center;
+	}
 </style>
-<div >
-	<div id='head' ng-controller='head'>
+<div id='head'>
+	<div  ng-controller='head' class='container'>
 		<img id='robot_dog' src="/static/image/robot_dog.png" title="robot dog" >
 		<ul class="menu" id='head_menu' >
 			<!--<div >-->
@@ -79,12 +99,12 @@
 
 
 <div class='container'>
-	<div class='col-xs-10'>
+	<div class='col-xs-9'>
 	{% block art_content %}
 		{% for art in articles %}
 			<div >
 				<div class='article'>
-					<h1>{{art.title}}</h1>
+					<h2 class='art_title'>{{art.title}}</h2>
 					<hr>
 					<div>{{art.content | safe |truncatechars_html:200}}</div>
 					<div style='text-align: right;'><a href='/blog/content/{{crt_cat.name}}/{{art.name}}'>View Detail</a></div>
@@ -94,10 +114,19 @@
 		{% endfor %}
 	{% endblock %}
 	</div>
-	<div class='col-xs-2' >
-		{% for tag in tags %}
-		{{tag.name}}
-		{% endfor %}
+	<div class='col-xs-3' >
+		<div class='info_panel'>
+			林哥的唠叨
+		</div>
+		<div class='info_panel'>
+			<div class='info_head'>
+				标签
+			</div>
+			{% for tag in tags %}
+			<a class="btn btn-default" href="#" role="button">{{tag.name}}</a>
+				
+			{% endfor %}
+		</div>
 	</div>
 </div>
 
