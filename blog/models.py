@@ -34,7 +34,7 @@ HTML_STATUS=(
 
 SRC_TYPE=(
     ('html','html'),
-    ('rst','rst'),
+    # ('rst','rst'),
     ('ck','ckEditor'),
 )
 

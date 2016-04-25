@@ -24,6 +24,43 @@
 	})
 </script>
 <style type="text/css" media="screen" id="test">
+	@media (min-width: 1400px){
+		.main-content{
+			width:1000px;
+			float: left;
+			margin-right: 15px;
+		}
+		.side-content{
+			width:300px;
+			float: left;
+		}
+	}
+	@media (min-width: 800px) and (max-width: 1400px){
+		.main-content{
+			width:75%;
+			float: left;
+			margin-right: 1%;
+		}
+		.side-content{
+			width:23%;
+			float: left;
+		}
+	}
+	@media (max-width: 800px){
+		.side-content{
+			display: none;
+		}
+	}
+	.mycontainer{
+		float: left;
+		position: relative;
+		left: 50%;
+	}
+	.inncontainer{
+		float: left;
+		position: relative;
+		left:-50%;
+	}
 	body{
 		background-color: #eee;
 	}
@@ -98,36 +135,40 @@
 </div>
 
 
-<div class='container'>
-	<div class='col-xs-9'>
-	{% block art_content %}
-		{% for art in articles %}
-			<div >
-				<div class='article'>
-					<h2 class='art_title'>{{art.title}}</h2>
-					<hr>
-					<div>{{art.content | safe |truncatechars_html:200}}</div>
-					<div style='text-align: right;'><a href='/blog/content/{{crt_cat.name}}/{{art.name}}'>View Detail</a></div>
+<div class='mycontainer'>
+	<div class='inncontainer'>
+		<div class='main-content'>
+		{% block art_content %}
+			{% for art in articles %}
+				<div >
+					<div class='article'>
+						<h2 class='art_title'>{{art.title}}</h2>
+						<hr>
+						<div>{{art.content | safe |truncatechars_html:200}}</div>
+						<div style='text-align: right;'><a href='/blog/content/{{crt_cat.name}}/{{art.name}}'>View Detail</a></div>
+					</div>
+					
 				</div>
-				
-			</div>
-		{% endfor %}
-	{% endblock %}
-	</div>
-	<div class='col-xs-3' >
-		<div class='info_panel'>
-			林哥的唠叨
-		</div>
-		<div class='info_panel'>
-			<div class='info_head'>
-				标签
-			</div>
-			{% for tag in tags %}
-			<a class="btn btn-default" href="#" role="button">{{tag.name}}</a>
-				
 			{% endfor %}
+		{% endblock %}
 		</div>
+		<div class='side-content' >
+			<div class='info_panel'>
+				林哥的唠叨
+			</div>
+			<div class='info_panel'>
+				<div class='info_head'>
+					标签
+				</div>
+				{% for tag in tags %}
+				<a class="btn btn-default" href="#" role="button">{{tag.name}}</a>
+					
+				{% endfor %}
+			</div>
+		</div>
+		
 	</div>
+
 </div>
 
 
