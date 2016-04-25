@@ -66,6 +66,11 @@ class ArticleModel(TagAble):
     #def __unicode__(self):
         #return self.title
 
+class ArtComment(models.Model):
+    nickname=models.CharField(u'称呼',max_length=200,blank=True)
+    art=models.ForeignKey(ArticleModel,verbose_name=u'文章',null=True,blank=True)
+    comment=models.TextField(u'评论内容',blank=True)
+    create_time=models.DateTimeField(u'创建时间',auto_now=True)
 
 
     

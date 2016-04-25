@@ -40,10 +40,12 @@
 			width:75%;
 			float: left;
 			margin-right: 1%;
+			margin-left:1%;
 		}
 		.side-content{
-			width:23%;
+			width:22%;
 			float: left;
+			margin-right:1%;
 		}
 	}
 	@media (max-width: 800px){
@@ -51,18 +53,26 @@
 			display: none;
 		}
 	}
+	.wrap{
+		overflow: hidden;
+	}
 	.mycontainer{
+		
+		width:100%;
 		float: left;
 		position: relative;
 		left: 50%;
 	}
 	.inncontainer{
+		
+		width:100%;
 		float: left;
 		position: relative;
 		left:-50%;
 	}
 	body{
-		background-color: #eee;
+		background-color: #FAFAFA;
+		position: relative;
 	}
 	.menu{
 		padding: 20px;
@@ -70,7 +80,7 @@
 	#head{
 		background-color: white;
 		text-shadow: 2px 2px 2px #919187;
-		border-bottom:1px solid #BEBEBE;
+		border-bottom:1px solid #EEEEE0;
 		margin-bottom: 20px;
 		padding-top:20px;
 		font-size: 200%;
@@ -134,8 +144,8 @@
 	</div>
 </div>
 
-
-<div class='mycontainer'>
+<div class='wrap'>
+	<div class='mycontainer'>
 	<div class='inncontainer'>
 		<div class='main-content'>
 		{% block art_content %}
@@ -170,6 +180,8 @@
 	</div>
 
 </div>
+</div>
+
 
 
 <div id='footer' style='min-height:200px'>

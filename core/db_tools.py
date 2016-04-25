@@ -36,6 +36,8 @@ def to_dict(instance,filt_attr=None,fields=None):
                     out[field.name]=foreign.pk
                 else:
                     out[field.name]=None
+            elif isinstance(field,models.DateTimeField):
+                out[field.name]=getattr(instance,field.name).strftime('%Y-%m-%d %H:%M:%S')
             else:
                 out[field.name]=field.get_prep_value( getattr(instance,field.name) )
     out['pk']=instance.pk

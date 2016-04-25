@@ -6,22 +6,26 @@ from models import ArticleModel,CatModel,Tag
 from django.conf import settings
 from django.core.urlresolvers import reverse
 import json
+from core.port import jsonpost
 
 from core.db_tools import get_or_none
 import os.path as path
-
+from ajax import get_globe
 base_dir=path.dirname(__file__)
 
 
 
 def content(request,cat_name='',page_name=''):
-    category,dc=build_categrory(cat_name)
-    dc['tags']=category.tag_set.all()
-    dc['title']=u'我的博客'
-    if not page_name:
-        return build_index(request,category,dc)
-    else:
-        return build_page(request,dc,page_name)
+    if request.method=='GET':
+        category,dc=build_categrory(cat_name)
+        dc['tags']=category.tag_set.all()
+        dc['title']=u'我的博客'
+        if not page_name:
+            return build_index(request,category,dc)
+        else:
+            return build_page(request,dc,page_name)
+    elif request.method=='POST':
+        return jsonpost(request, get_globe())
     
 
 def build_categrory(cat_name):
@@ -50,7 +54,8 @@ def build_page(request,dc,name):
     if page:
         dc['article']=page
         dc['custom_js']=['/static/js/blog.pack.js?%s'%int(path.getmtime(path.join(
-            base_dir,'static/js/blog.pack.js')))]        
+            base_dir,'static/js/blog.pack.js')))] 
+        dc['art_pk']=page.pk
         return render(request,'blog/content.html',context=dc)
     else:
         return Http404()

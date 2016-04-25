@@ -43,5 +43,78 @@
     //CKEDITOR.instances.editor.insertHtml('<b>fuck</b>')
     //$('#editor1').val('<b>fuck</b>')
 </script>
+<script type="text/javascript">
+	app.controller('comment',function ($scope,$http) {
+		var art_pk='{{art_pk}}'
+		$scope.save=function (valid) {
+			$scope.submitted=true;
+			if(!valid){return}
+			var post_data = {
+				order:['add_art_comment','get_art_comment'],
+				add_art_comment:{art_pk:art_pk,nickname:$scope.nickname,comment:$scope.content},
+				get_art_comment:{art_pk:art_pk}
+			};  
+			$http.post('',post_data)
+			.success(function(data, status, headers, config) { 
+				$scope.comments=data.get_art_comment.comments
+				if(data.msg){alert(data.msg)}
+			}).error(function(data, status, headers, config) {  
+			    alert('有错误,返回码为:'+status)
+			});
+		}
+		function init() {
+			var post_data = {
+				get_art_comment:{art_pk:art_pk}
+			};  
+			$http.post('',post_data)
+			.success(function(data, status, headers, config) { 
+				$scope.comments=data.get_art_comment.comments
+				if(data.msg){alert(data.msg)}
+			}).error(function(data, status, headers, config) {  
+			    alert('有错误,返回码为:'+status)
+			});
+		}
+		init();
+	})
+</script>
+<style type="text/css" media="screen" id="test">
+	.short-input{
+		max-width:300px;
+	}
+	.middl-input{
+		max-width:500px;
+	}
+	.warn{
+		color: red;
+	}
+</style>
+<div class='comment' ng-controller='comment' style='margin-top:50px'>
+	<h2>留言</h2>
+	<form name='comment' ng-submit="save(comment.$valid)" novalidate>
+		<div class="form-group short-input" >
+		    <label for="nickname">称呼</label>
+		    <input type="text" class="form-control" id="nickname" placeholder="nickname" ng-model='nickname' class='short-input' name='nickname' required>
+			<span class='warn' ng-show='submitted&&comment.nickname.$error.required'>
+				必须要有称呼
+			</span>
+	  	</div>
+	  	<div class='middl-input'>
+		  	<textarea class="form-control" rows="3" ng-model='content' name='content' required></textarea>
+		  	<span class='warn' ng-show='submitted&&comment.content.$error.required'>
+				必须要有内容
+			</span>
+	  	</div>
+	  	<div class='middl-input' style='margin-top:20px;'>
+		  	<button class="btn btn-success" type="submit" style='float: right;'>写完了</button>
+		  	<span style='clear: both;'>.</span>
+	  	</div>
+	  	
+  	</form>
+  	<div ng-repeat='comment in comments' style='margin-bottom:30px;'>
+	  	<h3><span ng-bind='comment.nickname'></span></h3>
+	  	<hr>
+	  	<div ng-bind='comment.comment' style='margin-left:30px;'></div>
+  	</div>
+</div>
 
 {% endblock %}

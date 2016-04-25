@@ -29,19 +29,23 @@ def ajax_view(request):
     orderls = cmddc.pop('order', None)
     if orderls:
         for k in orderls:
-            func = scope[k]
-            kw=cmddc.pop(k)
             try:
+                func = scope[k]
+                kw=cmddc.pop(k)                
                 outdc[k]=_run_func(func, request,**kw)
-            except UserWarning as e:
+            except (UserWarning,TypeError) as e:
                 msgs.append(str(e))
+            except KeyError as e:
+                msgs.append('no function %s'%k)            
 
     for k, kw in cmddc.items():
-        func = scope[k]
         try:
+            func = scope[k]
             outdc[k]=_run_func(func, request,**kw)
-        except UserWarning as e:
+        except (UserWarning,TypeError) as e:
             msgs.append(str(e))
+        except KeyError as e:
+            msgs.append('no function %s'%k)
     
     outdc['msg']=';'.join(msgs)
     return HttpResponse(json.dumps(outdc), content_type="application/json")
