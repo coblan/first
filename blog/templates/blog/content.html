@@ -49,6 +49,8 @@
 		$scope.save=function (valid) {
 			$scope.submitted=true;
 			if(!valid){return}
+			if(!confirm("确认要提交吗？？")){return}
+			$scope.submit_ing=true;
 			var post_data = {
 				order:['add_art_comment','get_art_comment'],
 				add_art_comment:{art_pk:art_pk,nickname:$scope.nickname,comment:$scope.content},
@@ -57,6 +59,10 @@
 			$http.post('',post_data)
 			.success(function(data, status, headers, config) { 
 				$scope.comments=data.get_art_comment.comments
+				$scope.nickname=''
+				$scope.content=''
+				$scope.submitted=false;
+				$scope.submit_ing=false;
 				if(data.msg){alert(data.msg)}
 			}).error(function(data, status, headers, config) {  
 			    alert('有错误,返回码为:'+status)
@@ -105,12 +111,12 @@
 			</span>
 	  	</div>
 	  	<div class='middl-input' style='margin-top:20px;'>
-		  	<button class="btn btn-success" type="submit" style='float: right;'>写完了</button>
+		  	<button class="btn btn-success" type="submit" style='float: right;' ng-disable='submit_ing'>写完了</button>
 		  	<span style='clear: both;'>.</span>
 	  	</div>
 	  	
   	</form>
-  	<div ng-repeat='comment in comments' style='margin-bottom:30px;'>
+  	<div ng-repeat='comment in comments | orderBy:"-pk"' style='margin-bottom:30px;'>
 	  	<h3><span ng-bind='comment.nickname'></span></h3>
 	  	<hr>
 	  	<div ng-bind='comment.comment' style='margin-left:30px;'></div>
