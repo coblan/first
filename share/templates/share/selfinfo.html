@@ -1,9 +1,9 @@
 {% extends 'share/base.html' %}
 {% block content %}
 
-<link rel="stylesheet" href="/static/kindeditor-4.1.10/themes/default/default.css" />
+<!--<link rel="stylesheet" href="/static/kindeditor-4.1.10/themes/default/default.css" />
 		<script charset="utf-8" src="/static/kindeditor-4.1.10/kindeditor-min.js"></script>
-		<script charset="utf-8" src="/static/kindeditor-4.1.10/lang/zh_CN.js"></script>
+		<script charset="utf-8" src="/static/kindeditor-4.1.10/lang/zh_CN.js"></script>-->
 
 <script type="text/javascript">
 	var post_url='/share/jsonpost/';
@@ -188,7 +188,6 @@
 </style>
 <div class='container' ng-controller='content'>
 	<div class='row'>
-		yyyyyyyy
 		{% for q in sql_queries %}
 {{i.sql}}
 {% endfor %}
