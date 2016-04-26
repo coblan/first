@@ -34,7 +34,13 @@
 			width:300px;
 			float: left;
 		}
-
+		.mycontainer{
+			width:1400px;
+			margin: 0 auto;
+			/*float: left;
+			position: relative;
+			left: 50%;*/
+		}
 
 	}
 	@media (min-width: 800px) and (max-width: 1400px){
@@ -56,23 +62,15 @@
 		}
 	}
 
-	.wrap{
+	/*.wrap{
 		overflow: hidden;
 		}
-	.mycontainer{
-		
-		/*width:100%;*/
-		float: left;
-		position: relative;
-		left: 50%;
-	}
+
 	.inncontainer{
-		
-		/*width:100%;*/
 		float: left;
 		position: relative;
 		left:-50%;
-	}
+	}*/
 	
 	body{
 		background-color: #FAFAFA;
@@ -119,7 +117,7 @@
 	}
 	.info_panel{
 		min-height:200px;
-		background-color: white;
+		background-color: #eee;
 		border-radius:5px;
 		margin-bottom:10px;
 		border: 1px solid #BEBEBE;
@@ -148,9 +146,8 @@
 	</div>
 </div>
 
-<div class='wrap'>
+
 	<div class='mycontainer'>
-	<div class='inncontainer'>
 		<div class='main-content'>
 		{% block art_content %}
 			{% for art in articles %}
@@ -183,8 +180,7 @@
 		
 	</div>
 
-</div>
-</div>
+
 
 
 
