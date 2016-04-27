@@ -4,8 +4,7 @@ var path = require( 'path' );
 module.exports = {
 	//context:__dirname,
     entry: {
-	    blog:'./blog.js',
-	    blog_ck:'./blog_ck.js'
+	    share:'./share.js',
 	    },
     output: {
 	    //path:pro_dir,

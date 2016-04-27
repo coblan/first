@@ -9,9 +9,9 @@ class ArticleAdmin(admin.ModelAdmin):
     class Media:
         js=("http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js",
             'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.6/angular.min.js',
-            'js/blog_ck.pack.js?t=20160419',
             'ckeditor/ckeditor.js',
-            'ckeditor/adapters/jquery.js')
+            'ckeditor/adapters/jquery.js',
+            'js/blog_ck.pack.js?t=20160427',)
 admin.site.register(models.ArticleModel,ArticleAdmin)
 #admin.site.register(models.HtmlArt)
 admin.site.register(models.Tag)

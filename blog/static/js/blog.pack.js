@@ -47,6 +47,13 @@
 	var test=__webpack_require__(1);
 	var test2=__webpack_require__(2)
 	window.app=__webpack_require__(3).app
+
+	//var img_tool=require('dosome/img')
+	//$(function () {
+	//	img_tool.ratio($('.ban-img'))
+		
+	//})
+
 	//test.say()
 	//test2.say()
 

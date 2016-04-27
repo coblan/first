@@ -38,5 +38,5 @@ CKEDITOR.editorConfig = function( config ) {
 	config.image_previewText='image preview';
 	config.filebrowserImageUploadUrl= '/blog/upload/image/';
 	config.extraPlugins = 'justify,codesnippet';
-	
+	config.extraAllowedContent ='img[class]';
 };

@@ -25,6 +25,7 @@ app.controller('hole',function ($scope) {
 })
 compileAngularElement=agc.compileAngularElement
 $(function () {
+	
 	$('<span id="pig"><span>ok</span><span ng-bind="wo"></span></span>').insertAfter($('#id_type'))
 	$('#id_type').attr('ng-model',"src_type")
 	$('#id_src').attr('ng-show',"src_type!='ck'")
