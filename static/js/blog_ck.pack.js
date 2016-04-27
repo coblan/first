@@ -51,12 +51,13 @@
 
 
 
+
 	var app = angular.module('he',[]);
 	app.config(function($interpolateProvider) {
 		  $interpolateProvider.startSymbol('[[');
 		  $interpolateProvider.endSymbol(']]');
 	});
-	var agc=__webpack_require__(5)
+	var agc=__webpack_require__(6)
 	agc.input_hole()
 	app.controller('hole',function ($scope) {
 		$scope.wo='wold';
@@ -71,6 +72,7 @@
 		//})
 	})
 	compileAngularElement=agc.compileAngularElement
+	CKEDITOR.timestamp='ABCDF';
 	$(function () {
 		
 		$('<span id="pig"><span>ok</span><span ng-bind="wo"></span></span>').insertAfter($('#id_type'))
@@ -93,6 +95,7 @@
 		compileAngularElement($('#id_type'),$('#hole'))
 		compileAngularElement($('#id_src'),$('#hole'))
 		compileAngularElement($('#ck_wrap'),$('#hole'))
+
 		
 	})
 
@@ -119,7 +122,7 @@
 
 /***/ },
 
-/***/ 5:
+/***/ 6:
 /***/ function(module, exports) {
 
 	

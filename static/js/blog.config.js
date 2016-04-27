@@ -14,7 +14,7 @@ module.exports = {
    
     resolve: {
 	  root: [
-	    path.resolve('D:/coblan/webpack/'),
+	    path.resolve('D:/coblan/webcode/js'),
 	  ],
 	  extensions: ['', '.js']
 	},

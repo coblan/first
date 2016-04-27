@@ -4,6 +4,7 @@
 
 
 
+
 var app = angular.module('he',[]);
 app.config(function($interpolateProvider) {
 	  $interpolateProvider.startSymbol('[[');
@@ -24,6 +25,7 @@ app.controller('hole',function ($scope) {
 	//})
 })
 compileAngularElement=agc.compileAngularElement
+CKEDITOR.timestamp='ABCDF';
 $(function () {
 	
 	$('<span id="pig"><span>ok</span><span ng-bind="wo"></span></span>').insertAfter($('#id_type'))
@@ -46,6 +48,7 @@ $(function () {
 	compileAngularElement($('#id_type'),$('#hole'))
 	compileAngularElement($('#id_src'),$('#hole'))
 	compileAngularElement($('#ck_wrap'),$('#hole'))
+
 	
 })
 

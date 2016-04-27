@@ -90,6 +90,11 @@ CKEDITOR.stylesSet.add( 'default', [
 		element: 'img',
 		attributes: { 'class': 'right' }
 	},
+	{
+		name: 'Ban image ',
+		element: 'img',
+		attributes: { 'class': 'ban-img' }
+	},
 
 	{
 		name: 'Compact table',
