@@ -42,7 +42,7 @@ def build_categrory(cat_name):
 
 def build_index(request,category,dc):
     articles=[]
-    for art in ArticleModel.objects.filter(category=category):
+    for art in ArticleModel.objects.filter(category=category,statue='publish'):
         articles.append({'title':art.title,'content':art.html,'name':art.name})
     dc['articles']=articles
     dc['custom_js']=['/static/js/blog.pack.js?%s'%int(path.getmtime(path.join(
