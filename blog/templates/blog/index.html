@@ -81,23 +81,29 @@
 		/*padding-bottom: 200px;*/
 		
 	}
-	.menu{
+	/*.menu{
 		padding: 20px;
-	}
+	}*/
 	#head{
-		background-color: white;
-		text-shadow: 2px 2px 2px #919187;
+		/*background-color: white;*/
+		
 		border-bottom:1px solid #EEEEE0;
-		margin-bottom: 20px;
-		padding-top:20px;
-		font-size: 200%;
+		min-height:100px;
+		/*margin-bottom: 40px;*/
+		/*padding-top:0px;*/
+		/*font-size: 100%;*/
 	}
-	#head_menu{
+	/*#head_menu{
 		margin-left:300px;
+	}*/
+	.menu{
+		float: right;
+		min-height:50px;
+		text-shadow: 2px 2px 2px #919187;
 	}
 	.menu li{
 		display: inline;
-		padding: 20px;
+		padding: 10px;
 	}
 	.menu a.active{
 		border-bottom: 2px solid red;
@@ -120,16 +126,28 @@
 		border-bottom:1px solid #FFD306;
 		border-radius:5px;
 	}
+	.side-content{
+		background-color: white;
+		border-radius:5px;
+	}
 	.info_panel{
 		min-height:200px;
-		background-color: #eee;
-		border-radius:5px;
+		/*background-color: #eee;*/
+		
 		margin-bottom:10px;
-		border: 1px solid #BEBEBE;
+		padding: 10px;
+		/*border: 1px solid #BEBEBE;*/
 	}
 	.info_head{
 		border-bottom: 1px solid #999; 
-		text-align: center;
+		/*text-align: center;*/
+		font-size:120%;
+		margin-bottom:10px;
+	}
+	.slogan{
+		text-align:center;
+		font-size:150%;
+		padding-top: 20px;
 	}
 </style>
 <div id='head'>
@@ -148,6 +166,7 @@
 					ng-mouseleave='crt.overname=""'><span ng-bind='menu.label'></span></a>
 			</li>
 		</ul>
+		<div class='slogan'>不断努力，不断前行，就是人生的意义。</div>
 	</div>
 </div>
 
@@ -184,6 +203,9 @@
 					
 				{% endfor %}
 			</div>
+			
+			{% block index %}
+			{% endblock %}
 		</div>
 		
 	</div>

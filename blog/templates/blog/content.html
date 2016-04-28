@@ -9,9 +9,10 @@
 
 <link rel="stylesheet" href="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/styles/shCore.min.css">
 <link rel="stylesheet" href="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/styles/shThemeDefault.min.css">
+<!--<script src="/static/blog/"></script>-->
 
 <div class='article'>
-	<div>
+	<div id='article'>
 		<h2>{{article.title}}</h2>
 	</div>
 	<hr>
@@ -27,7 +28,9 @@
 			$(this).parent().addClass('brush:python')
 			$(this).parent().html($(this).html())
 		})
-     	SyntaxHighlighter.all()
+     	SyntaxHighlighter.all();
+
+     	$('#index_container').html(hx.build_index($('#article')))
 	})
 	
 </script>
@@ -93,6 +96,18 @@
 	.warn{
 		color: red;
 	}
+	#index_container{
+		padding-left:10px;
+	}
+	#index_container ul{
+		padding: 0px;
+		
+	}
+	#index_container li{
+		list-style-type:none;
+		position: relative;
+		/*left:-30px;*/
+	}
 </style>
 <div class='comment' ng-controller='comment' style='margin-top:50px'>
 	<h2>留言</h2>
@@ -123,4 +138,15 @@
   	</div>
 </div>
 
+{% endblock %}
+
+{% block index %}
+<div class='info_panel'>
+	<div class='info_head'>
+		索引
+	</div>
+	<div id='index_container'>
+		
+	</div>
+</div>	
 {% endblock %}
