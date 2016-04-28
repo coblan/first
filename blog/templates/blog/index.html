@@ -22,6 +22,10 @@
 			}
 		}
 	})
+	$(function () {
+		
+		
+	})
 </script>
 <style type="text/css" media="screen" id="test">
 	@media (min-width: 1400px){
@@ -31,11 +35,11 @@
 			margin-right: 15px;
 		}
 		.side-content{
-			width:300px;
+			width:290px;
 			float: left;
 		}
 		.mycontainer{
-			width:1400px;
+			width:1300px;
 			margin: 0 auto;
 			/*float: left;
 			position: relative;
@@ -44,6 +48,10 @@
 
 	}
 	@media (min-width: 800px) and (max-width: 1400px){
+		.mycontainer{
+			width:90%;
+			margin: 0 auto;
+		}
 		.main-content{
 			width:75%;
 			float: left;
@@ -57,6 +65,10 @@
 		}
 	}
 	@media (max-width: 800px){
+		.mycontainer{
+			width:90%;
+			margin: 0 auto;
+		}
 		.side-content{
 			display: none;
 		}
@@ -65,16 +77,7 @@
 			max-width:90%;
 			height: auto;
 		}
-	/*.wrap{
-		overflow: hidden;
-		}
 
-	.inncontainer{
-		float: left;
-		position: relative;
-		left:-50%;
-	}*/
-	
 	body{
 		background-color: #FAFAFA;
 		/*position: relative;*/
@@ -87,21 +90,31 @@
 	#head{
 		/*background-color: white;*/
 		
-		border-bottom:1px solid #EEEEE0;
-		min-height:100px;
+		/*border-bottom:1px solid #EEEEE0;*/
+		/*min-height:50px;*/
 		/*margin-bottom: 40px;*/
 		/*padding-top:0px;*/
 		/*font-size: 100%;*/
+		/*float: left;
+		left:50%;*/
 	}
 	/*#head_menu{
 		margin-left:300px;
 	}*/
 	.menu{
-		float: right;
-		clear: both;
-		min-height:50px;
+		/*float: right;*/
+		/*clear: both;*/
+		margin-top:20px;
+		min-height:60px;
 		text-shadow: 2px 2px 2px #919187;
-		margin-right:10%;
+		/*margin-right:10%;*/
+		/*max-width:50%;*/
+		/*float: left;*/
+		/*left:-50%;*/
+		/*margin: 0 auto;*/
+		/*text-align:center;*/
+		float: right;
+		margin-right:20%;
 	}
 	.menu li{
 		display: inline;
@@ -115,8 +128,10 @@
 		text-decoration: none;
 	}
 	#robot_dog{
-		width:55px;
-		float: left;
+		width:70px;
+		margin: 0 auto;
+		display: block;
+		/*float: left;*/
 	}
 	.article{
 		padding: 20px;
@@ -144,17 +159,22 @@
 		font-size:120%;
 		margin-bottom:10px;
 	}
-	.slogan{
+	/*.slogan{
 		float: left;
 		text-align:center;
 		font-size:150%;
 		margin-left:20%;
 		margin-right:20%;
 		padding-top: 20px;
-	}
+	}*/
+	/*.log{
+		float:left;
+		margin-left:30%;
+		width:50px;
+	}*/
 </style>
-<div id='head'>
-	<div  ng-controller='head' class='container'>
+<div>
+	<div  ng-controller='head' id='head'>
 		
 		<ul class="menu" id='head_menu' >
 			<!--<div >-->
@@ -169,8 +189,10 @@
 					ng-mouseleave='crt.overname=""'><span ng-bind='menu.label'></span></a>
 			</li>
 		</ul>
-		<img id='robot_dog' src="/static/image/robot_dog.png" title="robot dog" >
-		<div class='slogan'>不断努力，不断前行，就是人生的意义。</div>
+		
+		<!--<div class='log'>
+			<img id='robot_dog' src="/static/image/robot_dog.png" title="robot dog" >
+		</div>-->
 	</div>
 </div>
 
@@ -193,10 +215,10 @@
 		</div>
 		<div class='side-content' >
 			<div class='info_panel'>
-				<div style='text-align: center;'>
-					Me:heyulin
-				</div>
 				
+				<img id='robot_dog' src="/static/image/robot_dog.png" title="robot dog" >
+					<p>Me:heyulin</p>
+				<p>不断努力，不断前行，就是人生的意义。</p>
 			</div>
 			<div class='info_panel'>
 				<div class='info_head'>
