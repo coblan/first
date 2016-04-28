@@ -98,8 +98,10 @@
 	}*/
 	.menu{
 		float: right;
+		clear: both;
 		min-height:50px;
 		text-shadow: 2px 2px 2px #919187;
+		margin-right:10%;
 	}
 	.menu li{
 		display: inline;
@@ -114,16 +116,14 @@
 	}
 	#robot_dog{
 		width:55px;
-		position: absolute;
-		left:10%;
-		top:25px;
+		float: left;
 	}
 	.article{
 		padding: 20px;
 		min-height:200px;
 		background-color: white;
-		margin-bottom: 10px;
-		border-bottom:1px solid #FFD306;
+		margin-bottom: 20px;
+		/*border-bottom:1px solid #FFD306;*/
 		border-radius:5px;
 	}
 	.side-content{
@@ -145,14 +145,17 @@
 		margin-bottom:10px;
 	}
 	.slogan{
+		float: left;
 		text-align:center;
 		font-size:150%;
+		margin-left:20%;
+		margin-right:20%;
 		padding-top: 20px;
 	}
 </style>
 <div id='head'>
 	<div  ng-controller='head' class='container'>
-		<img id='robot_dog' src="/static/image/robot_dog.png" title="robot dog" >
+		
 		<ul class="menu" id='head_menu' >
 			<!--<div >-->
 				
@@ -166,6 +169,7 @@
 					ng-mouseleave='crt.overname=""'><span ng-bind='menu.label'></span></a>
 			</li>
 		</ul>
+		<img id='robot_dog' src="/static/image/robot_dog.png" title="robot dog" >
 		<div class='slogan'>不断努力，不断前行，就是人生的意义。</div>
 	</div>
 </div>
@@ -177,7 +181,7 @@
 			{% for art in articles %}
 				<div >
 					<div class='article'>
-						<h2 class='art_title'>{{art.title}}</h2>
+						<h3 class='art_title'>{{art.title}}</h3>
 						<hr>
 						<div>{{art.content | safe |truncatechars_html:200}}</div>
 						<div style='text-align: right;'><a href='/blog/content/{{crt_cat.name}}/{{art.name}}'>View Detail</a></div>
@@ -190,7 +194,7 @@
 		<div class='side-content' >
 			<div class='info_panel'>
 				<div style='text-align: center;'>
-					放些什么呢
+					Me:heyulin
 				</div>
 				
 			</div>
