@@ -1,0 +1,19 @@
+{% extends 'blog/index.html' %}
+{% block art_content %}
+	{% if not articles %}
+		<div style='text-align: center;'>
+			there is not articles in this tag
+		</div>
+	{% endif %}
+	{% for art in articles %}
+		<div >
+			<div class='article'>
+				<h3 class='art_title'>{{art.title}}</h3>
+				<hr>
+				<div>{{art.content | safe |truncatechars_html:100}}</div>
+				<div style='text-align: right;'><a href='/blog/article/{{art.name}}'>View Detail</a></div>
+			</div>
+			
+		</div>
+	{% endfor %}
+{% endblock %}

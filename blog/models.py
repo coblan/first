@@ -11,6 +11,7 @@ class CatModel(models.Model):
 
 class Tag(models.Model):
     name=models.CharField(u'名称',max_length=100,blank=True,unique=True)
+    label=models.CharField(u'标签',max_length=100,blank=True)
     category=models.ManyToManyField(CatModel,blank=True)
     
     def __unicode__(self):

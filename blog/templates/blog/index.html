@@ -15,7 +15,7 @@
 			//{name:'common',label:'随笔',url:'/blog/index/common'}
 		//]
 		$scope.crt={
-			name:'{{crt_cat.name}}',
+			name:'{{crtCatName | default:""}}',
 			overname:'',
 			is_active:function (menu) {
 				return menu.name==this.name || menu.name==this.overname
@@ -30,9 +30,9 @@
 <style type="text/css" media="screen" id="test">
 	@media (min-width: 1400px){
 		.main-content{
-			width:1000px;
+			width:980px;
 			float: left;
-			margin-right: 15px;
+			margin-right: 30px;
 		}
 		.side-content{
 			width:280px;
@@ -55,11 +55,11 @@
 		.main-content{
 			width:75%;
 			float: left;
-			margin-right: 1%;
+			margin-right: 2%;
 			margin-left:1%;
 		}
 		.side-content{
-			width:22%;
+			width:20%;
 			float: left;
 			margin-right:1%;
 		}
@@ -88,32 +88,12 @@
 		padding: 20px;
 	}*/
 	#head{
-		min-height:70px;
-		/*background-color: white;*/
-		
-		/*border-bottom:1px solid #EEEEE0;*/
-		/*min-height:50px;*/
-		/*margin-bottom: 40px;*/
-		/*padding-top:0px;*/
-		/*font-size: 100%;*/
-		/*float: left;
-		left:50%;*/
+		min-height:150px;
 	}
-	/*#head_menu{
-		margin-left:300px;
-	}*/
+
 	.menu{
-		/*float: right;*/
-		/*clear: both;*/
-		margin-top:20px;
-		/*min-height:60px;*/
-		/*text-shadow: 2px 2px 2px #919187;*/
-		/*margin-right:10%;*/
-		/*max-width:50%;*/
-		/*float: left;*/
-		/*left:-50%;*/
-		/*margin: 0 auto;*/
-		/*text-align:center;*/
+
+		margin-top:60px;
 		float: right;
 		margin-right:20%;
 	}
@@ -139,11 +119,12 @@
 		min-height:200px;
 		background-color: white;
 		margin-bottom: 20px;
-		/*border-bottom:1px solid #FFD306;*/
+		border:1px solid #ECECEA;
 		border-radius:5px;
 	}
 	.side-content{
-		background-color: white;
+		background-color: #EEEEEE;
+		border:1px solid #ECECEA;
 		border-radius:5px;
 	}
 	.info_panel{
@@ -160,30 +141,14 @@
 		font-size:120%;
 		margin-bottom:10px;
 	}
-	/*.slogan{
-		float: left;
-		text-align:center;
-		font-size:150%;
-		margin-left:20%;
-		margin-right:20%;
-		padding-top: 20px;
-	}*/
-	/*.log{
-		float:left;
-		margin-left:30%;
-		width:50px;
-	}*/
+
 </style>
 <div>
 	<div  ng-controller='head' id='head'>
 		
 		<ul class="menu" id='head_menu' >
-			<!--<div >-->
-				
-			<!--</div>-->
-			
 			<li ng-repeat='menu in menus' >
-				<a ng-href="/blog/content/[[menu.name]]"
+				<a ng-href="/blog/index/[[menu.name]]"
 					ng-class='{"active":crt.is_active(menu)}'
 					ng-click='crt.name=menu.name'
 					ng-mouseover='crt.overname=menu.name'
@@ -191,12 +156,8 @@
 			</li>
 		</ul>
 		
-		<!--<div class='log'>
-			<img id='robot_dog' src="/static/image/robot_dog.png" title="robot dog" >
-		</div>-->
 	</div>
 </div>
-
 
 	<div class='mycontainer'>
 		<div class='main-content'>
@@ -207,7 +168,7 @@
 						<h3 class='art_title'>{{art.title}}</h3>
 						<hr>
 						<div>{{art.content | safe |truncatechars_html:200}}</div>
-						<div style='text-align: right;'><a href='/blog/content/{{crt_cat.name}}/{{art.name}}'>View Detail</a></div>
+						<div style='text-align: right;'><a href='/blog/article/{{art.name}}'>View Detail</a></div>
 					</div>
 					
 				</div>
@@ -226,7 +187,7 @@
 					标签
 				</div>
 				{% for tag in tags %}
-				<a class="btn btn-default" href="#" role="button">{{tag.name}}</a>
+				<a class="btn btn-default" href="/blog/tag/{{tag.name}}/?crtCatName={{crtCatName}}" role="button">{{tag.label}}</a>
 					
 				{% endfor %}
 			</div>
