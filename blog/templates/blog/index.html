@@ -21,6 +21,15 @@
 				return menu.name==this.name || menu.name==this.overname
 			}
 		}
+		$scope.click_search=function () {
+			$scope.search_win_show=true
+			$('#search-win').css('width','250px')
+			
+		}
+		$scope.search_win_blur=function () {
+			$scope.search_win_show=false
+			$('#search-win').css('width','0px')
+		}
 	})
 	$(function () {
 		
@@ -87,16 +96,23 @@
 	/*.menu{
 		padding: 20px;
 	}*/
+	#head-out{
+		min-height:100px;
+	}
 	#head{
-		min-height:150px;
-	}
-
-	.menu{
-
+		/*float: right;*/
+		/*padding:0 5%;*/
 		margin-top:60px;
-		float: right;
-		margin-right:20%;
+		text-align: right;
+		position: relative;
+		margin-right:15%;
 	}
+
+	/*#head-menu{
+		
+		display: inline-block;
+
+	}*/
 	.menu li{
 		display: inline;
 		padding: 10px;
@@ -141,12 +157,16 @@
 		font-size:120%;
 		margin-bottom:10px;
 	}
-
+	#search-wrap{
+	}
+	#search-win{
+		display: inline-block;
+		width:80%;
+	}
 </style>
-<div>
-	<div  ng-controller='head' id='head'>
-		
-		<ul class="menu" id='head_menu' >
+<div class='mycontainer' id='head-out'>
+	<div ng-controller='head' id='head'>
+		<ul class="menu" id='head-menu'>
 			<li ng-repeat='menu in menus' >
 				<a ng-href="/blog/index/[[menu.name]]"
 					ng-class='{"active":crt.is_active(menu)}'
@@ -155,8 +175,8 @@
 					ng-mouseleave='crt.overname=""'><span ng-bind='menu.label'></span></a>
 			</li>
 		</ul>
-		
-	</div>
+
+</div>
 </div>
 
 	<div class='mycontainer'>
@@ -177,10 +197,14 @@
 		</div>
 		<div class='side-content' >
 			<div class='info_panel'>
-				
 				<img id='robot_dog' src="/static/image/robot_dog.png" title="robot dog" >
 					<p>Me:heyulin</p>
 				<p>不断努力，不断前行，就是人生的意义。</p>
+			</div>
+			<div id='search-wrap' style='text-align: center;'>
+					<input type="text" id='search-win' placeholder="search" class="form-control" >
+				<span class="glyphicon glyphicon-search" aria-hidden="true" 
+					ng-click='click_search()'></span>
 			</div>
 			<div class='info_panel'>
 				<div class='info_head'>

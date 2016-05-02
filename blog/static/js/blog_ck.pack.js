@@ -57,7 +57,7 @@
 		  $interpolateProvider.startSymbol('[[');
 		  $interpolateProvider.endSymbol(']]');
 	});
-	var agc=__webpack_require__(5)
+	var agc=__webpack_require__(6)
 	agc.input_hole()
 	app.controller('hole',function ($scope) {
 		$scope.wo='wold';
@@ -122,7 +122,7 @@
 
 /***/ },
 
-/***/ 5:
+/***/ 6:
 /***/ function(module, exports) {
 
 	
