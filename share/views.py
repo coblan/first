@@ -83,47 +83,11 @@ def get_files(did):
     files = [f.todict() for f in NoteModel.objects.filter(p_dir__id=did)]
     return {'dirs':dirs,'files':files}
 
-#def save_file(item,p_id): #,content=None,id=None):
-    #content = item.get('content')
-    #id = item.get('id')
-    #p = DirModel.objects.get(id=p_id)
-    #if content is None:
-        #if id is None:
-            #d = DirModel(name=name,p_dir=p)
-            #d.save()
-        #else:
-            #d= DirModel.objects.get(id=id)
-            #d.name=name
-            #d.save()
-        #return {'item':{'name':d.name,'id':d.id}}
-    #else:
-        #if id is None:
-            #f= NoteModel(name=name,content=content,p_dir=p)
-            #f.save()
-        #else:
-            #f = NoteModel.objects.get(id=id)
-            #f.name=name
-            #f.content=content
-            #f.save()
-        #return {'item':{'name':d.name,'id':d.id,'content':d.content}}
-
-#def get_files(p):
-    #files = []
-    #for f in NoteModel.objects.all():
-        #files.append({'name':f.name,'content':f.content,'id':f.id})
-    #dirs = []
-    #for d in DirModel.objects.filter(p_dir=p):
-        #dirs.append({'name':d.name,'id':d.id})
-    #return {'files':files,'dirs':dirs}
-
-#def del_link(ids):
-    #NoteModel.objects.filter(id__in=ids).delete()
-    #return {'status':'success'}
-    ##for id in ids:
 
 def del_dirs(ids):
     DirModel.objects.filter(id__in=ids).delete()
     return {'status':'success'}
+
 def del_files(ids):
     NoteModel.objects.filter(id__in=ids).delete()
     return {'status':'success'}

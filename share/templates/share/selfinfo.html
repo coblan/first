@@ -1,10 +1,6 @@
 {% extends 'share/base.html' %}
 {% block content %}
 
-<!--<link rel="stylesheet" href="/static/kindeditor-4.1.10/themes/default/default.css" />
-		<script charset="utf-8" src="/static/kindeditor-4.1.10/kindeditor-min.js"></script>
-		<script charset="utf-8" src="/static/kindeditor-4.1.10/lang/zh_CN.js"></script>-->
-
 <script type="text/javascript">
 	var post_url='/share/jsonpost/';
 	app.controller('content',function ($scope,$http,$sce) {
@@ -34,10 +30,8 @@
 					$scope.items=data.get_link.links;
 					$scope.is_editing=false;
 					$scope.add_new_ing=false;
-					//item.editing = false;
 				}).error(function(data, status, headers, config) {  
-				    //处理错误 
-				    $scope.std='有错误,返回码为:'+status;
+				    alert('有错误,返回码为:'+status)
 				});
 		}
 		$scope.show_content=function (item) {
