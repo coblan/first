@@ -176,19 +176,72 @@
 	
 </script>
 <style type="text/css" media="screen" id="test">
+	.nodot-li{
+		padding-left:5px;
+	}
 	.nodot-li li{
 		list-style-type:none;
 	}
+	.ctn-list{
+		margin-top: 20px;
+		width:20%;
+		float: left;
+	}
+	.inn-wrap{
+		padding-left:10%;
+	}
+	#ctn-sel{
+		width:75%;
+		/*margin-left:20%;*/
+	}
+	.head-sel{
+		float: left;
+		width:40px;
+		font-size: 150%;
+		text-align: center;
+		background-color: #DDD;
+		padding-top: 10px;
+	}
+	.head-icon{
+		padding-top:10px;
+		padding-bottom:10px;
+	}
+	.head-icon.active{
+		background-color: white;
+	}
+	.ban-img{
+		max-width:90%;
+	}
 </style>
-<div class='container' ng-controller='content'>
-	<div class='row'>
-		{% for q in sql_queries %}
-{{i.sql}}
-{% endfor %}
-		<div class='col-md-3'>
-		<div >
-			<select class='col-sm-8 col-sm-offset-2' name="ss"  ng-options='p.name for p in dir.ps' ng-model='dir.crt' ng-change='switch_dir(dir.crt)'></select>
+<script type="text/javascript">
+	function fit_height() {
+		$('.head-sel').height($(window).height());
+	}
+	$(function () {
+		fit_height();
+		$(window).resize(function () {
+			fit_height()
+		})
+		
+	})
+</script>
+<div ng-controller='content'>
+	<div>
+		<div class='head-sel'>
+			<div class='head-icon' ng-class='{"active":name=="dog"}' ng-click='name="dog"'>
+				<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+			</div>
+			<div class='head-icon' ng-class='{"active":name=="pig"}' ng-click='name="pig"'>
+				<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+			</div>
 		</div>
+		<div class='ctn-list'>
+			<div class='inn-wrap'>
+		<select id='ctn-sel' name="ss"  
+			ng-options='p.name for p in dir.ps' 
+			ng-model='dir.crt' 
+			ng-change='switch_dir(dir.crt)'></select>
+		
 		<div class='col-sm-12'>
 			<ul class='nodot-li'>
 				<li ng-repeat='item in dirs'>
@@ -203,7 +256,7 @@
 				</li>
 		</ul>
 		</div>
-	
+		</div>
 		</div>
 		<div class='col-md-9'>
 			<button name="ssf" type="button" value="val" ng-click='set_editWin("new_dir")'>新增文件夹</button>

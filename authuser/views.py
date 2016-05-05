@@ -15,8 +15,7 @@ def login(request):
             'regist_url':reverse('regist')
         }
         return render(request,'authuser/login.html',context=dc)
-        #return render(request,'lintool/login.html',context=dc)
-        
+  
     elif request.method=='POST':
         return jsonpost(request,get_globe())
     

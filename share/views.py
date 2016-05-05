@@ -3,11 +3,12 @@ from django.http import HttpResponse
 from models import NoteModel,DirModel
 from django.conf import settings
 import json
-from lintool.struct import get_or_new,get_or_none
-# Create your views here.
+from django.contrib.auth.decorators import login_required
 
+
+@login_required
 def hello(request):
-    d = get_or_new(DirModel,name='/')
+    d,c = DirModel.objects.get_or_create(name='/',owner=request.user)
     dc = get_files(d.id)
     ps = get_dirParents(d.id)
     dc = {
@@ -76,8 +77,8 @@ def get_dirParents(id):
         else:
             ps.reverse()
             return ps
+        
 def get_files(did):
-    #d=DirModel.objects.get(id=did)
     dirs=[d.todict() for d in DirModel.objects.filter(p_dir__id=did)]
     
     files = [f.todict() for f in NoteModel.objects.filter(p_dir__id=did)]
