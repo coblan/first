@@ -45,6 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var ck=__webpack_require__(1)
+	var http = __webpack_require__(2)
 	ck.import()
 
 	app = angular.module('share',['ngSanitize']);
@@ -52,6 +53,8 @@
 	  $interpolateProvider.startSymbol('[[');
 	  $interpolateProvider.endSymbol(']]');
 	});
+	http.add_ajax(app)
+
 	app.directive('nameForm',function () {
 		return {
 			restrict:'EA',
@@ -115,46 +118,6 @@
 
 
 
-	//app.directive('editForm',function ($timeout) {
-	//		function get_value(item) {
-	//				item.content=editor.html();
-	//				return item;
-	//	};
-	//	return {
-	//		restrict: 'EA',
-	//		scope:{
-	//			item:'=',
-	//			submit:'&',
-	//			cancel:'&',
-				
-	//		},
-	//		template:'<form name="myForm" ng-submit="submit({valid:myForm.$valid,file:get_value(item)})" novalidate >\
-	//						<div class="form-group">\
-	//							<label>标题</label>\
-	//							<input class="form-control" type="text" name="name" value="" ng-model="item.name" required/>\
-	//							<span ng-show="myForm.name.$error.required">必填</span>\
-	//						</div>\
-	//						<div class="form-group">\
-	//							<label>内容</label>\
-	//						<textarea id="editor_id" class="form-control" class="form-control" name="ri"  ></textarea>\
-	//						</div>\
-	//						<input type="submit" name="test" value="提交" />\
-	//						<button name="test" type="button" value="val" ng-click="cancel()">取消</button>\
-	//						</form>',
-	//		link :function (scope,iElem, iAttrs) {
-	//			$timeout(function () {
-	//				 //KindEditor.ready(function(K) {
-	//                //window.editor = K.create('#editor_id');
-	                
-	//                editor = KindEditor.create(iElem.find('#editor_id'));
-	//                editor.html(scope.item.content);
-	//          		scope.get_value=get_value;
-	//			})
-				
-	//        },
-	//		}
-	//});
-
 
 /***/ },
 /* 1 */
@@ -169,6 +132,33 @@
 			import:import_ckeditor,
 		}
 	module.exports=ckEditor
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	
+	function add_ajax(app) {
+		app.factory('ajax',function ($http) {
+			return {
+				post:function (post_url,post_data,callback) {
+					$http.post(post_url,post_data)
+						.success(function(data, status, headers, config) {
+							if(data.msg){
+								alert(data.msg)
+							} 
+							callback(data)
+						}).error(function(data, status, headers, config) {  
+						    alert('有错误,返回码为:'+status)
+						});
+				}
+			}
+		})
+	}
+
+	module.exports={
+		add_ajax:add_ajax,
+	}
 
 /***/ }
 /******/ ]);

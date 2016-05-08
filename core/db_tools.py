@@ -1,5 +1,7 @@
 # -*- encoding:utf-8 -*-
 from django.db import models
+from django.apps import apps
+
 import json
 
 
@@ -14,14 +16,20 @@ def get_or_none(model, **kw):
 
 
 
-def to_dict(instance,filt_attr=None,fields=None):
+def to_dict(instance,filt_attr=None,include=None,exclude=None):
     """
+    fields=['name','age'] 虽然中函数中fields是django中的model.field对象，但是这里为了方便，接受外部
+                         输入是字段的名字
+                         
     filt_attr(instance)是可调用对象，返回一个字典，包含已经处理过的属性。这些属性不会再被to_jd操作。
     
     注意，返回的字典，是可以json化的才行。
     """
-    if fields is None:
-        fields=instance._meta.fields
+    fields=instance._meta.fields
+    if include:
+        fields=filter(lambda field:field.name in include,fields)
+    if exclude:
+        fields=filter(lambda field:field.name not in exclude,fields)
     if filt_attr:
         out=filt_attr(instance)
     else:
@@ -41,10 +49,11 @@ def to_dict(instance,filt_attr=None,fields=None):
             else:
                 out[field.name]=field.get_prep_value( getattr(instance,field.name) )
     out['pk']=instance.pk
+    out['_class']= instance.__module__.split('.')[0]+'.'+instance.__class__.__name__
     return out
 
 
-def from_dict(dc,model,pre_proc=None):
+def from_dict(dc,model=None,pre_proc=None):
     """
 
     1. 半自动：
@@ -52,6 +61,8 @@ def from_dict(dc,model,pre_proc=None):
     
     """
     processed={}
+    if model is None and '_class' in dc:
+        model=apps.get_model(dc['_class'])
     if pre_proc:
         processed=pre_proc(dc,model)
     for k in processed:
@@ -80,8 +91,15 @@ def _deserilize_foreignkey(field,pk):
         return model.objects.get(pk=pk)
     else:
         return None
-    
-    
+
+def _field_name_to_filed(fields,instance):
+    out = []
+    for name in fields:
+        for field in instance._meta.fields:
+            if field.name==name:
+                out.append(field)
+                break  
+    return out
                 
             
             

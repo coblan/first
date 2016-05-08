@@ -4,6 +4,7 @@ import json
 import inspect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django.conf import settings
 
 def jsonpost(request, scope):
     """
@@ -29,23 +30,32 @@ def ajax_view(request):
     orderls = cmddc.pop('order', None)
     if orderls:
         for k in orderls:
-            try:
+            if settings.DEBUG:
                 func = scope[k]
                 kw=cmddc.pop(k)                
+                outdc[k]=_run_func(func, request,**kw)  
+            else:
+                try:
+                    func = scope[k]
+                    kw=cmddc.pop(k)                
+                    outdc[k]=_run_func(func, request,**kw)
+                except (UserWarning,TypeError) as e:
+                    msgs.append(str(e))
+                except KeyError as e:
+                    msgs.append('no function %s'%k)            
+
+    for k, kw in cmddc.items():
+        if settings.DEBUG:
+            func = scope[k]
+            outdc[k]=_run_func(func, request,**kw)
+        else:
+            try:
+                func = scope[k]
                 outdc[k]=_run_func(func, request,**kw)
             except (UserWarning,TypeError) as e:
                 msgs.append(str(e))
             except KeyError as e:
-                msgs.append('no function %s'%k)            
-
-    for k, kw in cmddc.items():
-        try:
-            func = scope[k]
-            outdc[k]=_run_func(func, request,**kw)
-        except (UserWarning,TypeError) as e:
-            msgs.append(str(e))
-        except KeyError as e:
-            msgs.append('no function %s'%k)
+                msgs.append('no function %s'%k)
     
     outdc['msg']=';'.join(msgs)
     return HttpResponse(json.dumps(outdc), content_type="application/json")

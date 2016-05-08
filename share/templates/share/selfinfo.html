@@ -2,23 +2,29 @@
 {% block content %}
 
 <script type="text/javascript">
-	var post_url='/share/jsonpost/';
-	app.controller('content',function ($scope,$http,$sce) {
-		$scope.dir=new Object();
-		$scope.dir.crt={{crt_dir | safe}};
-		$scope.dir.ps={{ps | safe}};
-		$scope.dir.ps.push($scope.dir.crt);
-		
-		$scope.dirs={{dirs | safe}};
-		$scope.files={{files | safe}};
+	var post_url='';
+	app.controller('content',function ($scope,$http,$sce,$location,ajax) {
+		//$scope.index={
+		//	parents:[],
+		//	dir:{{crt_dir | safe}},
+		//}
+		//$scope.crt={
+		//	crt:{{crt_dir | safe}},
+		//	ps:{{ps | safe |default:"[]"}},
+		//}
+
+		//$scope.dir.ps.push($scope.dir.crt);
+		$scope.parents=[]
+		$scope.dir={{crt_dir | safe}}
+		$scope.child_dirs={{dirs | safe}};
+		$scope.child_files={{files | safe}};
 		$scope.crt_file={};
 		$scope.new_file={};
-
+		$scope.crt={};
 		$scope.trustAsHtml = function(string) {
 		    return $sce.trustAsHtml(string);
 		};
 		$scope.submit=function (item,parent) {
-	
 			var postData = {
 				//order:['save_link','get_link'],
 				save_file:{item:item,p:parent},
@@ -34,16 +40,32 @@
 				    alert('有错误,返回码为:'+status)
 				});
 		}
-		$scope.show_content=function (item) {
-			$scope.crt_file = item;
-		};
+		//$scope.show_content=function (item) {
+		//	//$scope.crt_file = item;
+		//	$location.path('file/'+item.pk)
+		//};
 		$scope.cancel=function () {
 			$scope.edit_win='nothing';
 		}
-	//	$scope.edit= function () {
-	//		$scope.is_editing=true;
-	
-	//	}
+		$scope.$watch(function(){ return $location.path() }, function(nv){
+			var rt = /file\/(\d+)/.exec(nv);
+			if (rt){
+				var pk = rt[1];
+				var postData={
+					file_data_all:{pk:pk},
+				}
+				ajax.post(post_url,postData,function (data) {
+					$scope.crt_file=data.file_data_all.file
+					$scope.parents=data.file_data_all.parents
+					$scope.dir = data.file_data_all.dir
+					$scope.child_dirs=data.file_data_all.sibling.dirs;
+					$scope.child_files=data.file_data_all.sibling.files;
+				})
+			}
+			
+		   
+		});
+
 		$scope.add_new=function (v,file) {
 			if(!v)return
 			var postData = {
@@ -89,6 +111,7 @@
 				    $scope.std='有错误,返回码为:'+status;
 				});
 		};
+
 		$scope.save =function (b,item) {
 			if(b){
 				$scope.submit(item,$scope.crt_dir);
@@ -128,22 +151,16 @@
 		$scope.set_editWin=function (win) {
 			$scope.edit_win=win;
 		};
-		$scope.switch_dir = function (dir) {
+		$scope.switch_dir = function (dir_pk) {
 			var postData = {
-				get_dirParents:{id:dir.id},
-				get_files:{did:dir.id}
+				dir_data_all:{pk:dir_pk},
 			}
-			$http.post(post_url,postData)
-				.success(function(data, status, headers, config) {  
-					$scope.dir.ps=data.get_dirParents;
-					$scope.dir.ps.push(dir);
-					$scope.dir.crt=dir;
-					$scope.dirs=data.get_files.dirs;
-					$scope.files=data.get_files.files;
-					$scope.crt_file={};
-				}).error(function(data, status, headers, config) {  
-				    $scope.std='有错误,返回码为:'+status;
-				});
+			ajax.post(post_url,postData,function (data) {
+				$scope.parents=data.dir_data_all.parents;
+				$scope.dir=data.dir_data_all.dir;
+				$scope.child_dirs=data.dir_data_all.child_dirs;
+				$scope.child_files=data.dir_data_all.child_files;
+			})
 		};
 		$scope.modify_file=function (v,file) {
 			if (!v)return;
@@ -186,6 +203,7 @@
 		margin-top: 20px;
 		width:20%;
 		float: left;
+		margin-left:30px;
 	}
 	.inn-wrap{
 		padding-left:10%;
@@ -195,7 +213,9 @@
 		/*margin-left:20%;*/
 	}
 	.head-sel{
-		float: left;
+		position: fixed;
+		left:0;
+		top:0;
 		width:40px;
 		font-size: 150%;
 		text-align: center;
@@ -237,53 +257,67 @@
 		</div>
 		<div class='ctn-list'>
 			<div class='inn-wrap'>
-		<select id='ctn-sel' name="ss"  
-			ng-options='p.name for p in dir.ps' 
-			ng-model='dir.crt' 
-			ng-change='switch_dir(dir.crt)'></select>
+		<!--<select id='ctn-sel' name="ss"  
+			ng-model='crt.select' 
+			ng-change='switch_dir(crt.select)'>
+			<option value="[[p.pk]]" ng-repeat='p in parents'>[[p.name]]</option>
+			<option value="[[dir.pk]]" >[[dir.name]]</option>
+			</select>-->
+		<div><span ng-repeat='d in parents'> 
+			<a href="" ng-click='switch_dir(d.pk)' style='min-width:10px'>[[d.name]]</a>
+			&gt;</span>
+			<span ng-bind='dir.name'></span>
+		</div>
 		
 		<div class='col-sm-12'>
 			<ul class='nodot-li'>
-				<li ng-repeat='item in dirs'>
+				<li ng-repeat='item in child_dirs'>
 					<input type="checkbox" name="test" value="" ng-model='item.checked'/>
-					<span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
-					<a href="" ng-click='switch_dir(item)'><span ng-bind='item.name'></span></a>
+					<span class="glyphicon glyphicon-folder-close" aria-hidden="true">
+						
+					</span>
+					<a href="" ng-click='switch_dir(item.pk)'>
+						<span ng-bind='item.name'></span>
+					</a>
 				</li>
-				<li ng-repeat='item in files'>
+				<li ng-repeat='item in child_files'>
 					<input type="checkbox" name="test" value="" ng-model='item.checked'/>
 					 <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-					<a href="" ng-click='show_content(item)'><span ng-bind='item.name'></span></a>
-				</li>
+					<a ng-href="#/file/[[item.pk]]"><span ng-bind='item.name'></span></a>
+				</li>  <!-- ng-click='show_content(item)'-->
 		</ul>
 		</div>
 		</div>
 		</div>
 		<div class='col-md-9'>
-			<button name="ssf" type="button" value="val" ng-click='set_editWin("new_dir")'>新增文件夹</button>
-			<button name="sg" type="button" value="val" ng-click='set_editWin("rename")'>重命名文件夹</button>
-			<button name="test" type="button" value="val" ng-click='set_editWin("new_file")'>新增文件</button>
-			<button name="test" type="button" value="val" ng-click='set_editWin("modify")'>修改文件</button>
+			<button name="ssf" type="button" value="val" 
+				ng-click='set_editWin("new_dir")'>新增文件夹</button>
+			<button name="sg" type="button" value="val" 
+				ng-click='set_editWin("rename")'>重命名文件夹</button>
+			<button name="test" type="button" value="val" 
+				ng-click='set_editWin("new_file")'>新增文件</button>
+			<button name="test" type="button" value="val" 
+				ng-click='set_editWin("modify")'>修改文件</button>
 			<!--<edit-form item='link' submit='submit(link)' able='add_new_ing'></edit-form>-->
 			
-			<button name="test" type="button" value="val" ng-click='del()'>删除选中项</button>
+			<button name="test" type="button" value="val" 
+				ng-click='del()'>删除选中项</button>
 			<div style='padding-top:30px;'>
 				
-				<!--<div ng-show='is_editing'>
-					<textarea ng-model="crt_item.content" class="form-control" name='ri'  ></textarea>
-					<button name="test" type="button" value="val" ng-click='submit(crt_item)'>确定</button>
-					<button name="test" type="button" value="val" ng-click='cancel()'>取消</button>
-				</div>-->
 				<div ng-switch='edit_win'>
 					
 					<div ng-switch-when='nothing' >
 						<div ng-show='check_crtFile()'>
-							<h2 ng-bind='crt_file.name' style='border-bottom: 1px solid #999;'></h2>
+							<h2 ng-bind='crt_file.name' 
+								style='border-bottom: 1px solid #999;'></h2>
 							<div ng-bind-html='trustAsHtml(crt_file.content)'></div>
 						</div>
 						
 					</div>
 					<div ng-switch-when='new_dir'>
-						<span>新增文件夹</span><name_form submit='add_newDir(valid,new_dir)' item='new_dir'></name_form>
+						<span>新增文件夹</span>
+						<name_form submit='add_newDir(valid,new_dir)' 
+							item='new_dir'></name_form>
 					</div>
 					
 					<div ng-switch-when='rename'>
@@ -295,11 +329,8 @@
 					</div>
 					<div ng-switch-when='modify'>
 						<span >修改文件</span>
-						<edit-form submit='modify_file(valid,file)' item='crt_file' cancel='cancel()'></edit-form>		<!--	<div>
-				<textarea id="editor_id" name="content" style="width:700px;height:300px;">
-&lt;strong&gt;HTML内容&lt;/strong&gt;
-</textarea>
-			</div>-->
+						<edit-form submit='modify_file(valid,file)' item='crt_file' cancel='cancel()'></edit-form>		
+						
 					</div>
 					
 					
