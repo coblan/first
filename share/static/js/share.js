@@ -1,5 +1,6 @@
 var ck=require('editor/ckeditor')
 var http = require('augular/http')
+var modewin=require('augular/modelwin')
 ck.import()
 
 app = angular.module('share',['ngSanitize']);
@@ -8,6 +9,7 @@ app.config(function($interpolateProvider) {
   $interpolateProvider.endSymbol(']]');
 });
 http.add_ajax(app)
+modewin.add_model(app)
 
 app.directive('nameForm',function () {
 	return {

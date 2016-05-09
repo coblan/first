@@ -184,6 +184,24 @@
 				return true;
 			}
 		}
+		$scope.can_rename=function () {
+			var child_dirs=$scope.child_dirs;
+			var child_files=$scope.child_files;
+			var count=0;
+			for ( var i =0 ; i<child_dirs.length; i++){
+				if(child_dirs[i].checked){
+					count+=1;
+				}
+			}
+			for ( var i =0 ;i<child_files.length; i++){
+				if(child_files[i].checked){
+					count+=1;
+				}
+			}
+			if(count==1){return true}
+			else{return false}
+			
+		}
 		//$scope.save_dir=function (b) {
 		//	if(b){
 		//		$scope.edit_dir($scope.new_dir);
@@ -246,12 +264,15 @@
 	})
 </script>
 <div ng-controller='content'>
+
 	<div>
 		<div class='head-sel'>
-			<div class='head-icon' ng-class='{"active":name=="dog"}' ng-click='name="dog"'>
+			<div class='head-icon' ng-class='{"active":name=="dog"}' 
+				ng-click='name="dog"'>
 				<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
 			</div>
-			<div class='head-icon' ng-class='{"active":name=="pig"}' ng-click='name="pig"'>
+			<div class='head-icon' ng-class='{"active":name=="pig"}' 
+				ng-click='name="pig"'>
 				<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
 			</div>
 		</div>
@@ -293,7 +314,8 @@
 			<button name="ssf" type="button" value="val" 
 				ng-click='set_editWin("new_dir")'>新增文件夹</button>
 			<button name="sg" type="button" value="val" 
-				ng-click='set_editWin("rename")'>重命名文件夹</button>
+				ng-click='set_editWin("rename")'
+				ng-disabled='!can_rename()'>重命名</button>
 			<button name="test" type="button" value="val" 
 				ng-click='set_editWin("new_file")'>新增文件</button>
 			<button name="test" type="button" value="val" 
@@ -302,11 +324,9 @@
 			
 			<button name="test" type="button" value="val" 
 				ng-click='del()'>删除选中项</button>
-			<div style='padding-top:30px;'>
-				
-				<div ng-switch='edit_win'>
-					
-					<div ng-switch-when='nothing' >
+				<div>
+					<!--<div ng-switch-when='nothing' >-->
+					<div>
 						<div ng-show='check_crtFile()'>
 							<h2 ng-bind='crt_file.name' 
 								style='border-bottom: 1px solid #999;'></h2>
@@ -314,28 +334,45 @@
 						</div>
 						
 					</div>
-					<div ng-switch-when='new_dir'>
+				</div>
+			<div model-form style='overflow: auto;' width='500px' height='80%' ng-show='edit_win!="nothing"'>
+				<div style='position: relative;'>
+					<button name="tessst" type="button" value="val" 
+						style='position: absolute;right:20px;top:10px;' 
+						ng-click='$parent.edit_win="nothing"'>关闭</button>
+				</div>
+				
+				<div ng-switch='edit_win' style='padding:60px; height:100%;overflow: auto;'>
+					
+			
+					<div ng-switch-when='new_dir' >
+						
 						<span>新增文件夹</span>
 						<name_form submit='add_newDir(valid,new_dir)' 
 							item='new_dir'></name_form>
+						
 					</div>
 					
 					<div ng-switch-when='rename'>
-						<span>重命名文件夹</span><name_form submit='rename_dir(valid,dir.crt)' item='dir.crt'></name_form>
+						<span>重命名</span>
+						<name_form submit='rename_dir(valid,dir.crt)' item='dir.crt'>
+							
+						</name_form>
 					</div>
 					<div ng-switch-when='new_file'>
 						<span >新增文件</span>
 						<edit-form submit='add_new(valid,file)' item='new_file' cancel='cancel()'></edit-form>
 					</div>
 					<div ng-switch-when='modify'>
+						
 						<span >修改文件</span>
 						<edit-form submit='modify_file(valid,file)' item='crt_file' cancel='cancel()'></edit-form>		
 						
 					</div>
-					
+
 					
 				</div>
-
+				
 			</div>
 
 			
