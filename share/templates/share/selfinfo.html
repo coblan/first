@@ -81,7 +81,9 @@
 				    $scope.std='有错误,返回码为:'+status;
 				});
 		};
-		
+		$scope.update=function (ele) {
+			
+		}
 		$scope.del=function () {
 			var deldirs=[];
 			for (x in $scope.dirs){
@@ -130,12 +132,28 @@
 				    $scope.std='有错误,返回码为:'+status;
 				});
 		};
-		
-		$scope.rename_dir=function (v,dir) {
-			//$scope.is_showNameWin =true;
+		$scope.current_selected=function () {
+			var child_dirs=$scope.child_dirs;
+			var child_files=$scope.child_files;
+			var out=[]
+			for ( var i =0 ; i<child_dirs.length; i++){
+				if(child_dirs[i].checked){
+					out.push(child_dirs[i])
+				}
+			}
+			for ( var i =0 ;i<child_files.length; i++){
+				if(child_files[i].checked){
+					out.push(child_files[i])
+				}
+			}
+			return out
+		}
+
+		$scope.rename=function (v,name) {
 			if(!v)return;
+			var sel=current_selected()
 			var postData = {
-				modify_dir:{name:dir.name,id:dir.id},
+				rename:{ele:sel[0],name:name},
 			}
 			$http.post(post_url,postData)
 				.success(function(data, status, headers, config) {  
@@ -185,28 +203,13 @@
 			}
 		}
 		$scope.can_rename=function () {
-			var child_dirs=$scope.child_dirs;
-			var child_files=$scope.child_files;
-			var count=0;
-			for ( var i =0 ; i<child_dirs.length; i++){
-				if(child_dirs[i].checked){
-					count+=1;
-				}
-			}
-			for ( var i =0 ;i<child_files.length; i++){
-				if(child_files[i].checked){
-					count+=1;
-				}
-			}
+			var selectd=current_selected()
+			var count=selectd.length
 			if(count==1){return true}
 			else{return false}
 			
 		}
-		//$scope.save_dir=function (b) {
-		//	if(b){
-		//		$scope.edit_dir($scope.new_dir);
-		//	}
-		//}
+	
 	})
 	
 </script>
@@ -306,7 +309,7 @@
 					 <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
 					<a ng-href="#/file/[[item.pk]]"><span ng-bind='item.name'></span></a>
 				</li>  <!-- ng-click='show_content(item)'-->
-		</ul>
+			</ul>
 		</div>
 		</div>
 		</div>
@@ -325,24 +328,24 @@
 			<button name="test" type="button" value="val" 
 				ng-click='del()'>删除选中项</button>
 				<div>
-					<!--<div ng-switch-when='nothing' >-->
-					<div>
-						<div ng-show='check_crtFile()'>
-							<h2 ng-bind='crt_file.name' 
-								style='border-bottom: 1px solid #999;'></h2>
-							<div ng-bind-html='trustAsHtml(crt_file.content)'></div>
-						</div>
-						
+					<div ng-show='check_crtFile()'>
+						<h2 ng-bind='crt_file.name' 
+							style='border-bottom: 1px solid #999;'></h2>
+						<div ng-bind-html='trustAsHtml(crt_file.content)'></div>
 					</div>
-				</div>
-			<div model-form style='overflow: auto;' width='500px' height='80%' ng-show='edit_win!="nothing"'>
-				<div style='position: relative;'>
-					<button name="tessst" type="button" value="val" 
-						style='position: absolute;right:20px;top:10px;' 
-						ng-click='$parent.edit_win="nothing"'>关闭</button>
+						
+			
 				</div>
 				
-				<div ng-switch='edit_win' style='padding:60px; height:100%;overflow: auto;'>
+			<div model-form ng-show='edit_win!="nothing"' style='width:60%;height:90%;'>
+				<div style='position: relative;'>
+				<button name="tessst" type="button" value="val" 
+					style='position: absolute;right:20px;top:10px;' 
+					ng-click='$parent.edit_win="nothing"'>关闭</button>
+				</div>
+				
+				<div ng-switch='edit_win' 
+					style='padding:60px; height:100%;overflow: auto;'>
 					
 			
 					<div ng-switch-when='new_dir' >
@@ -355,8 +358,8 @@
 					
 					<div ng-switch-when='rename'>
 						<span>重命名</span>
-						<name_form submit='rename_dir(valid,dir.crt)' item='dir.crt'>
-							
+						<name_form submit='update(valid,current_selected()[0])' 
+							item='current_selected()[0]'>
 						</name_form>
 					</div>
 					<div ng-switch-when='new_file'>
@@ -372,6 +375,7 @@
 
 					
 				</div>
+
 				
 			</div>
 
