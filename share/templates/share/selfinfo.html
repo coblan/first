@@ -18,9 +18,10 @@
 		$scope.dir={{crt_dir | safe}}
 		$scope.child_dirs={{dirs | safe}};
 		$scope.child_files={{files | safe}};
-		$scope.crt_file={};
-		$scope.new_file={};
+		$scope.crt_file=null;
+		//$scope.new_file={};
 		$scope.crt={};
+		$scope.file_win='reading';
 		$scope.trustAsHtml = function(string) {
 		    return $sce.trustAsHtml(string);
 		};
@@ -51,87 +52,90 @@
 			var rt = /file\/(\d+)/.exec(nv);
 			if (rt){
 				var pk = rt[1];
+				if(find_file(pk)){
+					$scope.crt_file=find_file(pk)
+					return
+				}
 				var postData={
 					file_data_all:{pk:pk},
 				}
 				ajax.post(post_url,postData,function (data) {
-					$scope.crt_file=data.file_data_all.file
 					$scope.parents=data.file_data_all.parents
 					$scope.dir = data.file_data_all.dir
 					$scope.child_dirs=data.file_data_all.sibling.dirs;
 					$scope.child_files=data.file_data_all.sibling.files;
+					$scope.crt_file=find_file(data.file_data_all.file.pk)
 				})
 			}
 			
 		   
 		});
-
+		function find_file(pk) {
+			for(var i=0;i<$scope.child_files.length;i++){
+				if($scope.child_files[i].pk==pk){
+					return $scope.child_files[i]
+				}
+			}
+		}
+		//function complet_file(file) {
+		//	for(var i=0;i<$scope.child_files.length;i++){
+		//		if($scope.child_files[i]==file.pk){
+		//			return $scope.child_files[i].content =file.content
+		//		}
+		//	}
+			
+		//}
 		$scope.add_new=function (v,file) {
 			if(!v)return
-			var postData = {
-				add_file:{name:file.name,content:file.content,pid:$scope.dir.crt.id},
-			}
-			$http.post(post_url,postData)
-				.success(function(data, status, headers, config) {  
-					$scope.files.push(data.add_file);
-					$scope.crt_file=data.add_file;
-					$scope.edit_win='nothing';
-					$scope.new_file={};
-				}).error(function(data, status, headers, config) {  
-				    $scope.std='有错误,返回码为:'+status;
-				});
-		};
-		$scope.update=function (ele) {
 			
-		}
-		$scope.del=function () {
-			var deldirs=[];
-			for (x in $scope.dirs){
-				if($scope.dirs[x].checked==true){
-					deldirs.push($scope.dirs[x].id);
-				}
-			}
-			var delfiles=[];
-			for(y in $scope.files){
-				if($scope.files[y].checked==true){
-					delfiles.push($scope.files[y].id);
-				}
-			}
 			var postData = {
-				order:['del_dirs','del_files','get_files'],
-				del_dirs:{ids:deldirs},
-				del_files:{ids:delfiles},
-				get_files:{did:$scope.dir.crt.id}
+				add_file:{name:file.name,content:file.content,p_dir:$scope.dir},
 			}
-			$http.post(post_url,postData)
-				.success(function(data, status, headers, config) {  
-					$scope.dirs=data.get_files.dirs;
-					$scope.files=data.get_files.files;
-					$scope.crt_file={};
-				}).error(function(data, status, headers, config) {  
-				    //处理错误 
-				    $scope.std='有错误,返回码为:'+status;
-				});
+			ajax.post(post_url,postData,function (data) {
+				$location.path('/file/'+data.add_file.file.pk)
+				$scope.file_win='reading'
+			})
+		};
+		$scope.update=function (v,ele) {
+			if(!v)return
+			var postData={
+				update:{ele:ele}
+			}
+			ajax.post(post_url,postData)
+			$scope.file_win='reading'
+		}
+		$scope.del_selected=function () {
+			rt=confirm('是否删除？')
+			if(!rt)return
+			var postData = {
+				order:['del_elements','dir_data_all'],
+				del_elements:{ele_array:current_selected()},
+				dir_data_all:{pk:$scope.dir.pk}
+			}
+			if($scope.crt_file.checked){
+				$scope.crt_file=null
+			}
+			ajax.post(post_url,postData,function (data) {
+				recv_dir(data)
+			})
 		};
 
-		$scope.save =function (b,item) {
-			if(b){
-				$scope.submit(item,$scope.crt_dir);
-			}
-		};
+		//$scope.save =function (b,item) {
+		//	if(b){
+		//		$scope.submit(item,$scope.crt_dir);
+		//	}
+		//};
 		$scope.add_newDir=function (v,name) {
 			if (!v)return
-			alert(name)
-			//var postData = {
-			//	add_dir:{name:dir.name,pid:$scope.dir.crt.id},
-			//}
-			//$http.post(post_url,postData)
-			//	.success(function(data, status, headers, config) {  
-			//		$scope.dirs.push(data.add_dir);
-			//		$scope.edit_win='nothing';
-			//	}).error(function(data, status, headers, config) {  
-			//	    $scope.std='有错误,返回码为:'+status;
-			//	});
+			$scope.edit_win='nothing'
+			var postData={
+				order:['add_dir','dir_data_all'],
+				add_dir:{name:name,p_dir:$scope.dir},
+				dir_data_all:{pk:$scope.dir.pk}
+			}
+			ajax.post(post_url,postData,function (data) {
+				recv_dir(data)
+			})
 		};
 		$scope.current_selected=function () {
 			var child_dirs=$scope.child_dirs;
@@ -150,20 +154,14 @@
 			return out
 		}
 		var current_selected=$scope.current_selected
-		$scope.rename=function (v,name) {
+		$scope.rename=function (v,ele,name) {
 			if(!v)return;
-			var sel=current_selected()
+			$scope.edit_win='nothing';
+			ele.name=name
 			var postData = {
-				rename:{ele:sel[0],name:name},
+				update:{ele:ele},
 			}
-			$http.post(post_url,postData)
-				.success(function(data, status, headers, config) {  
-					alert('修改成功');
-					$scope.edit_win='nothing';
-				}).error(function(data, status, headers, config) {  
-				    //处理错误 
-				    $scope.std='有错误,返回码为:'+status;
-				});
+			ajax.post(post_url,postData)
 		}
 		$scope.tmp_name={};
 		$scope.edit_win='nothing';
@@ -175,34 +173,31 @@
 				dir_data_all:{pk:dir_pk},
 			}
 			ajax.post(post_url,postData,function (data) {
-				$scope.parents=data.dir_data_all.parents;
-				$scope.dir=data.dir_data_all.dir;
-				$scope.child_dirs=data.dir_data_all.child_dirs;
-				$scope.child_files=data.dir_data_all.child_files;
+				recv_dir(data)
 			})
 		};
-		$scope.modify_file=function (v,file) {
-			if (!v)return;
-			var postData = {
-				modify_file:{id:file.id,name:file.name,content:file.content},
-			}
-			$http.post(post_url,postData)
-				.success(function(data, status, headers, config) {  
-				var it = data.modify_file;
-				$scope.crt_file.name=it.name;
-				$scope.crt_file.content=it.content;
-				$scope.edit_win='nothing';
-				}).error(function(data, status, headers, config) {  
-				    $scope.std='有错误,返回码为:'+status;
-				});
+		function recv_dir(data) {
+			$scope.parents=data.dir_data_all.parents;
+			$scope.dir=data.dir_data_all.dir;
+			$scope.child_dirs=data.dir_data_all.child_dirs;
+			$scope.child_files=data.dir_data_all.child_files;
 		}
-		$scope.check_crtFile=function () {
-			if(typeof($scope.crt_file.name)=='undefined'){
-				return false;
-			}else{
-				return true;
-			}
-		}
+		//$scope.modify_file=function (v,file) {
+		//	if (!v)return;
+		//	var postData = {
+		//		modify_file:{id:file.id,name:file.name,content:file.content},
+		//	}
+		//	$http.post(post_url,postData)
+		//		.success(function(data, status, headers, config) {  
+		//		var it = data.modify_file;
+		//		$scope.crt_file.name=it.name;
+		//		$scope.crt_file.content=it.content;
+		//		$scope.edit_win='nothing';
+		//		}).error(function(data, status, headers, config) {  
+		//		    $scope.std='有错误,返回码为:'+status;
+		//		});
+		//}
+
 		$scope.can_rename=function () {
 			var selectd=current_selected()
 			var count=selectd.length
@@ -315,28 +310,50 @@
 		</div>
 		</div>
 		<div class='col-md-9'>
+			<button name="test" type="button" value="val" 
+				ng-click='file_win="modify"' ng-disabled='!crt_file'>编辑当前文件</button>
+				
 			<button name="ssf" type="button" value="val" 
 				ng-click='set_editWin("new_dir")'>新增文件夹</button>
+			<button name="test" type="button" value="val" 
+				ng-click='file_win="new_file"'>新增文件</button>
 			<button name="sg" type="button" value="val" 
 				ng-click='set_editWin("rename")'
 				ng-disabled='!can_rename()'>重命名</button>
+
 			<button name="test" type="button" value="val" 
-				ng-click='set_editWin("new_file")'>新增文件</button>
+				ng-click='del_selected()'>删除选中项</button>
+				
 			<button name="test" type="button" value="val" 
-				ng-click='set_editWin("modify")'>修改文件</button>
-			<!--<edit-form item='link' submit='submit(link)' able='add_new_ing'></edit-form>-->
-			
+				ng-click='start_move()'>移动选中项</button>
 			<button name="test" type="button" value="val" 
-				ng-click='del()'>删除选中项</button>
-				<div>
-					<div ng-show='check_crtFile()'>
+				ng-click='move()'>粘贴</button>
+			<button name="test" type="button" value="val" 
+				ng-click='cancel()'>取消</button>
+				
+			<div ng-switch='file_win'>
+				<div ng-switch-when='reading'>
+					<div ng-show='crt_file'>
 						<h2 ng-bind='crt_file.name' 
 							style='border-bottom: 1px solid #999;'></h2>
 						<div ng-bind-html='trustAsHtml(crt_file.content)'></div>
 					</div>
-						
-			
 				</div>
+
+				<div ng-switch-when='new_file'>
+					<span >新增文件</span>
+					<edit-form submit='add_new(valid,file)' 
+						cancel='cancel()'></edit-form>
+				</div>
+
+				<div ng-switch-when='modify'>
+					<span >修改文件</span>
+					<edit-form submit='update(valid,file)' 
+						item='crt_file' cancel='cancel()'></edit-form>		
+				</div>
+				
+			</div>
+				
 				
 			<div model-form ng-show='edit_win!="nothing"' style='width:60%;height:90%;'>
 				<div style='position: relative;'>
@@ -347,8 +364,7 @@
 				
 				<div ng-switch='edit_win' 
 					style='padding:60px; height:100%;overflow: auto;'>
-					
-			
+				
 					<div ng-switch-when='new_dir' >
 						
 						<span>新增文件夹</span>
@@ -359,22 +375,11 @@
 					
 					<div ng-switch-when='rename'>
 						<span>重命名</span>
-						<name_form submit='update(valid,current_selected()[0])' 
-							item='current_selected()[0]'>
+						<name_form submit='rename(valid,current_selected()[0],name)' 
+							name='[[current_selected()[0].name]]'>
 						</name_form>
 					</div>
-					<div ng-switch-when='new_file'>
-						<span >新增文件</span>
-						<edit-form submit='add_new(valid,file)' item='new_file' cancel='cancel()'></edit-form>
-					</div>
-					<div ng-switch-when='modify'>
-						
-						<span >修改文件</span>
-						<edit-form submit='modify_file(valid,file)' item='crt_file' cancel='cancel()'></edit-form>		
-						
-					</div>
-
-					
+	
 				</div>
 
 				

@@ -6,15 +6,11 @@ import logic
 def get_globe():
     return globals()
 
-def add_dir(name,pid=None):
-    if pid is None:
-        p = DirModel(name='/')
-        p.save()
-    else:
-        p = DirModel.objects.get(id=pid)
-    d = DirModel(name=name,p_dir=p)
+def add_dir(name,p_dir):
+    p_dir=from_dict(p_dir)
+    d = DirModel(name=name,p_dir=p_dir)
     d.save()
-    return {'name':d.name,'id':d.id}
+
 
 def modify_dir(name,id):
     d = DirModel.objects.get(id=id)
@@ -22,15 +18,12 @@ def modify_dir(name,id):
     d.save()
     return {'name':d.name,'id':d.id}
 
-def add_file(name,content,pid):
-    if pid is None:
-        p = DirModel(name='/')
-        p.save()
-    else:
-        p = DirModel.objects.get(id=pid)   
-    f = NoteModel(name=name,content=content,p_dir=p)
+def add_file(name,content,p_dir):
+    p_dir=from_dict(p_dir) 
+    f = NoteModel(name=name,content=content,p_dir=p_dir)
     f.save()
-    return {'name':f.name,'content':f.content,'id':f.id}
+    return {'file':to_dict(f)}
+
 
 def modify_file(name,content,id):
     f = NoteModel.objects.get(id=id)
@@ -56,15 +49,22 @@ def dir_data_all(pk):
         'dir':to_dict(dir),
         'parents':[to_dict(p) for p in logic.parents(dir)],
         'child_dirs':[to_dict(child_dir) for child_dir in dir.dirmodel_set.all()],
-        'child_files':[to_dict(child_file,exclude=['content']) for child_file in dir.notemodel_set.all()]
+        'child_files':[to_dict(child_file) for child_file in dir.notemodel_set.all()]
     }
 
+def update(ele):
+    ele=from_dict(ele)
+    ele.save()
 
-def del_dirs(ids):
-    DirModel.objects.filter(id__in=ids).delete()
-    return {'status':'success'}
+def del_elements(ele_array):
+    for ele in ele_array:
+        ele_obj=from_dict(ele)
+        ele_obj.delete()
+#def del_dirs(ids):
+    #DirModel.objects.filter(id__in=ids).delete()
+    #return {'status':'success'}
 
-def del_files(ids):
-    NoteModel.objects.filter(id__in=ids).delete()
-    return {'status':'success'}
+#def del_files(ids):
+    #NoteModel.objects.filter(id__in=ids).delete()
+    #return {'status':'success'}
         

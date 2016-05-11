@@ -93,19 +93,22 @@
 				
 			},
 			template:'<form name="myForm" ng-submit="submit({valid:myForm.$valid,file:get_value(item)})" novalidate >\
-							<div class="form-group">\
-								<label>标题</label>\
-								<input class="form-control" type="text" name="name" value="" ng-model="item.name" required/>\
-								<span ng-show="myForm.name.$error.required">必填</span>\
-							</div>\
-							<div class="form-group">\
-								<label>内容</label>\
-							<textarea id="editor_id" class="form-control" class="form-control" name="ri"  ></textarea>\
-							</div>\
-							<input type="submit" name="test" value="提交" />\
-							<button name="test" type="button" value="val" ng-click="cancel()">取消</button>\
-							</form>',
+					<div class="form-group">\
+					<label>标题</label>\
+					<input class="form-control" type="text" name="name" value="" ng-model="item.name" required/>\
+					<span ng-show="myForm.name.$error.required">必填</span>\
+					</div>\
+					<div class="form-group">\
+					<label>内容</label>\
+					<textarea id="editor_id" class="form-control" class="form-control" name="ri"  ></textarea>\
+					</div>\
+					<input type="submit" name="test" value="提交" />\
+					<button name="test" type="button" value="val" ng-click="cancel()">取消</button>\
+					</form>',
 			link :function (scope,iElem, iAttrs) {
+				if(typeof(scope.item)=='undefined'){
+					scope.item={}
+				}
 				$timeout(function () {
 					 //KindEditor.ready(function(K) {
 	                //window.editor = K.create('#editor_id');
@@ -153,7 +156,9 @@
 							if(data.msg){
 								alert(data.msg)
 							} 
-							callback(data)
+							if (callback){
+								callback(data)
+							}
 						}).error(function(data, status, headers, config) {  
 						    alert('有错误,返回码为:'+status)
 						});
