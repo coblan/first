@@ -62,16 +62,20 @@
 			restrict:'EA',
 			scope:{
 				submit:'&',
-				item:'='
 			},
-			template:'<form name="nameForm" ng-submit="submit({valid:nameForm.$valid})" novalidate >\
+			template:'<form name="nameForm" ng-submit="submit({valid:nameForm.$valid,name:name})" novalidate >\
 							<div class="form-group">\
 								<label>名称</label>\
-								<input class="form-control" type="text" name="name" value="" ng-model="item.name" required/>\
+								<input class="form-control" type="text" name="name" value="" ng-model="name" required/>\
 								<span ng-show="nameForm.name.$error.required">必填</span>\
 								<input type="submit" name="test" value="提交" />\
 							</div>\
-						</form>'
+						</form>',
+			link:function (scope,ele,attr) {
+				if(attr.name){
+					scope.name=attr.name
+				}
+			}
 		}
 	});
 		

@@ -119,18 +119,19 @@
 				$scope.submit(item,$scope.crt_dir);
 			}
 		};
-		$scope.add_newDir=function (v,dir) {
+		$scope.add_newDir=function (v,name) {
 			if (!v)return
-			var postData = {
-				add_dir:{name:dir.name,pid:$scope.dir.crt.id},
-			}
-			$http.post(post_url,postData)
-				.success(function(data, status, headers, config) {  
-					$scope.dirs.push(data.add_dir);
-					$scope.edit_win='nothing';
-				}).error(function(data, status, headers, config) {  
-				    $scope.std='有错误,返回码为:'+status;
-				});
+			alert(name)
+			//var postData = {
+			//	add_dir:{name:dir.name,pid:$scope.dir.crt.id},
+			//}
+			//$http.post(post_url,postData)
+			//	.success(function(data, status, headers, config) {  
+			//		$scope.dirs.push(data.add_dir);
+			//		$scope.edit_win='nothing';
+			//	}).error(function(data, status, headers, config) {  
+			//	    $scope.std='有错误,返回码为:'+status;
+			//	});
 		};
 		$scope.current_selected=function () {
 			var child_dirs=$scope.child_dirs;
@@ -148,7 +149,7 @@
 			}
 			return out
 		}
-
+		var current_selected=$scope.current_selected
 		$scope.rename=function (v,name) {
 			if(!v)return;
 			var sel=current_selected()
@@ -351,8 +352,8 @@
 					<div ng-switch-when='new_dir' >
 						
 						<span>新增文件夹</span>
-						<name_form submit='add_newDir(valid,new_dir)' 
-							item='new_dir'></name_form>
+						<name_form submit='add_newDir(valid,name)' 
+							name='new dir'></name_form>
 						
 					</div>
 					
