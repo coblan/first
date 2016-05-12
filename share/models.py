@@ -23,6 +23,8 @@ class NoteModel(models.Model):
     
     def todict(self):
         return {'name':self.name,'content':self.content,'id':self.id}
+    
+
 
     def __unicode__(self):
         return self.name    

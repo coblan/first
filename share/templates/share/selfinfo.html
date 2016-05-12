@@ -4,16 +4,8 @@
 <script type="text/javascript">
 	var post_url='';
 	app.controller('content',function ($scope,$http,$sce,$location,ajax) {
-		//$scope.index={
-		//	parents:[],
-		//	dir:{{crt_dir | safe}},
-		//}
-		//$scope.crt={
-		//	crt:{{crt_dir | safe}},
-		//	ps:{{ps | safe |default:"[]"}},
-		//}
 
-		//$scope.dir.ps.push($scope.dir.crt);
+		$scope.sub_page='dir'
 		$scope.parents=[]
 		$scope.dir={{crt_dir | safe}}
 		$scope.child_dirs={{dirs | safe}};
@@ -22,6 +14,9 @@
 		//$scope.new_file={};
 		$scope.crt={};
 		$scope.file_win='reading';
+
+		
+		
 		$scope.trustAsHtml = function(string) {
 		    return $sce.trustAsHtml(string);
 		};
@@ -60,16 +55,13 @@
 					file_data_all:{pk:pk},
 				}
 				ajax.post(post_url,postData,function (data) {
-					$scope.parents=data.file_data_all.parents
-					$scope.dir = data.file_data_all.dir
-					$scope.child_dirs=data.file_data_all.sibling.dirs;
-					$scope.child_files=data.file_data_all.sibling.files;
+					recv_dir_from_file_data(data)
 					$scope.crt_file=find_file(data.file_data_all.file.pk)
+					recv_tmp_dir_from_file(data)
 				})
 			}
-			
-		   
 		});
+		
 		function find_file(pk) {
 			for(var i=0;i<$scope.child_files.length;i++){
 				if($scope.child_files[i].pk==pk){
@@ -77,14 +69,17 @@
 				}
 			}
 		}
-		//function complet_file(file) {
-		//	for(var i=0;i<$scope.child_files.length;i++){
-		//		if($scope.child_files[i]==file.pk){
-		//			return $scope.child_files[i].content =file.content
-		//		}
-		//	}
-			
-		//}
+		function recv_dir_from_file_data(data) {
+			$scope.parents=data.file_data_all.parents
+			$scope.dir = data.file_data_all.dir
+			$scope.child_dirs=data.file_data_all.sibling.dirs;
+			$scope.child_files=data.file_data_all.sibling.files;
+		}
+		function recv_tmp_dir_from_file(data) {
+			$scope.tmp_parents=data.file_data_all.parents
+			$scope.tmp_dir = data.file_data_all.dir
+			$scope.tmp_child_dirs=data.file_data_all.sibling.dirs;
+		}
 		$scope.add_new=function (v,file) {
 			if(!v)return
 			
@@ -120,11 +115,16 @@
 			})
 		};
 
-		//$scope.save =function (b,item) {
-		//	if(b){
-		//		$scope.submit(item,$scope.crt_dir);
-		//	}
-		//};
+		$scope.move=function (ele_array,p_dir) {
+			if(ele_array.length==0)return
+			postData={
+				move:{ele_array:ele_array,p_dir:p_dir}
+			}
+			ajax.post(post_url,postData,function () {
+				$scope.switch_dir($scope.dir.pk)
+				$scope.edit_win='nothing'
+			})
+		}
 		$scope.add_newDir=function (v,name) {
 			if (!v)return
 			$scope.edit_win='nothing'
@@ -174,6 +174,7 @@
 			}
 			ajax.post(post_url,postData,function (data) {
 				recv_dir(data)
+				recv_tmp_dir(data)
 			})
 		};
 		function recv_dir(data) {
@@ -182,28 +183,35 @@
 			$scope.child_dirs=data.dir_data_all.child_dirs;
 			$scope.child_files=data.dir_data_all.child_files;
 		}
-		//$scope.modify_file=function (v,file) {
-		//	if (!v)return;
-		//	var postData = {
-		//		modify_file:{id:file.id,name:file.name,content:file.content},
-		//	}
-		//	$http.post(post_url,postData)
-		//		.success(function(data, status, headers, config) {  
-		//		var it = data.modify_file;
-		//		$scope.crt_file.name=it.name;
-		//		$scope.crt_file.content=it.content;
-		//		$scope.edit_win='nothing';
-		//		}).error(function(data, status, headers, config) {  
-		//		    $scope.std='有错误,返回码为:'+status;
-		//		});
-		//}
-
+		function recv_tmp_dir(data) {
+			$scope.tmp_parents=data.dir_data_all.parents;
+			$scope.tmp_dir=data.dir_data_all.dir;
+			$scope.tmp_child_dirs=data.dir_data_all.child_dirs;
+		}
+		$scope.switch_tmp_dir=function (dir_pk) {
+			var postData = {
+				dir_data_all:{pk:dir_pk},
+			}
+			ajax.post(post_url,postData,function (data) {
+				recv_tmp_dir(data)
+			})
+			
+		}
 		$scope.can_rename=function () {
 			var selectd=current_selected()
 			var count=selectd.length
 			if(count==1){return true}
 			else{return false}
 			
+		}
+		$scope.search=function (keywords) {
+			if(!keywords)return
+			var postData={
+				search_file:{keywords:keywords}
+			}
+			ajax.post(post_url,postData,function (data) {
+				$scope.search_result=data.search_file.files
+			})
 		}
 	
 	})
@@ -266,16 +274,17 @@
 
 	<div>
 		<div class='head-sel'>
-			<div class='head-icon' ng-class='{"active":name=="dog"}' 
-				ng-click='name="dog"'>
+			<div class='head-icon' ng-class='{"active":sub_page=="dir"}' 
+				ng-click='sub_page="dir"'>
 				<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
 			</div>
-			<div class='head-icon' ng-class='{"active":name=="pig"}' 
-				ng-click='name="pig"'>
+			<div class='head-icon' ng-class='{"active":sub_page=="search"}' 
+				ng-click='sub_page="search"'>
 				<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
 			</div>
 		</div>
-		<div class='ctn-list'>
+		<!---------------dir----page---------------------->
+		<div class='ctn-list' ng-show='sub_page=="dir"'>
 			<div class='inn-wrap'>
 		<!--<select id='ctn-sel' name="ss"  
 			ng-model='crt.select' 
@@ -309,6 +318,22 @@
 		</div>
 		</div>
 		</div>
+		<!------------------------search page-------------------->
+		<div class='ctn-list' ng-show='sub_page=="search"'>
+		<div class='inn-wrap' >
+			<input type="text" name="test" value="" ng-model='keywords'/>
+			<span class="glyphicon glyphicon-search" aria-hidden="true" ng-click='search(keywords)' style="cursor:pointer"></span>
+			<div>
+				<ul>
+					<li ng-repeat='file in search_result'>
+						<a href="#/file/[[file.pk]]"><span ng-bind='file.name'></span></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		</div>
+
+		<!------------------编辑逻辑页面----------------------->
 		<div class='col-md-9'>
 			<button name="test" type="button" value="val" 
 				ng-click='file_win="modify"' ng-disabled='!crt_file'>编辑当前文件</button>
@@ -325,12 +350,8 @@
 				ng-click='del_selected()'>删除选中项</button>
 				
 			<button name="test" type="button" value="val" 
-				ng-click='start_move()'>移动选中项</button>
-			<button name="test" type="button" value="val" 
-				ng-click='move()'>粘贴</button>
-			<button name="test" type="button" value="val" 
-				ng-click='cancel()'>取消</button>
-				
+				ng-click='edit_win="move"'>移动选中项</button>
+
 			<div ng-switch='file_win'>
 				<div ng-switch-when='reading'>
 					<div ng-show='crt_file'>
@@ -379,8 +400,33 @@
 							name='[[current_selected()[0].name]]'>
 						</name_form>
 					</div>
+
+					<div ng-switch-when='move'>
+						<span>移动选中文件/文件夹</span>
+						
+						<div><span ng-repeat='d in tmp_parents'> 
+							<a href="" ng-click='switch_tmp_dir(d.pk)' style='min-width:10px'>[[d.name]]</a>
+							&gt;</span>
+							<span ng-bind='tmp_dir.name'></span>
+						</div>
+						
+						<ul class='nodot-li'>
+							<li ng-repeat='item in tmp_child_dirs'>
+								<input type="checkbox" name="test" value="" ng-model='item.checked'/>
+								<span class="glyphicon glyphicon-folder-close" aria-hidden="true">
+								</span>
+								<a href="" ng-click='switch_tmp_dir(item.pk)'>
+									<span ng-bind='item.name'></span>
+								</a>
+							</li>
+						</ul>
+						<button name="test" type="button" value="val" 
+							ng-click='move(current_selected(),tmp_dir)'>粘贴</button>
+					</div>
 	
 				</div>
+
+			
 
 				
 			</div>
