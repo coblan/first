@@ -1,6 +1,7 @@
 var ck=require('editor/ckeditor')
 var http = require('augular/http')
 var modewin=require('augular/modelwin')
+var hx=require('dosome/hx')
 ck.import()
 
 app = angular.module('share',['ngSanitize']);
@@ -10,6 +11,10 @@ app.config(function($interpolateProvider) {
 });
 http.add_ajax(app)
 modewin.add_model(app)
+function update_file_index(ele) {
+	return hx.build_index(ele)
+}
+window.update_file_index=update_file_index;
 
 app.directive('nameForm',function () {
 	return {
