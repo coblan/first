@@ -3,7 +3,7 @@
 
 <script type="text/javascript">
 	var post_url='';
-	app.controller('content',function ($scope,$http,$sce,$location,ajax) {
+	app.controller('content',function ($scope,$http,$sce,$location,ajax,$timeout) {
 
 		$scope.sub_page='dir'
 		$scope.parents=[]
@@ -49,6 +49,9 @@
 				var pk = rt[1];
 				if(find_file(pk)){
 					$scope.crt_file=find_file(pk)
+					//$timeout(function () {
+					//	$('#file-index').html(update_file_index($('#file-content')))
+					//})
 					return
 				}
 				var postData={
@@ -58,6 +61,9 @@
 					recv_dir_from_file_data(data)
 					$scope.crt_file=find_file(data.file_data_all.file.pk)
 					recv_tmp_dir_from_file(data)
+					//$timeout(function () {
+					//	$('#file-index').html(update_file_index($('#file-content')))
+					//})
 				})
 			}
 		});
@@ -80,6 +86,12 @@
 			$scope.tmp_dir = data.file_data_all.dir
 			$scope.tmp_child_dirs=data.file_data_all.sibling.dirs;
 		}
+		$scope.$watch(function () {return $scope.crt_file.content},function () {
+			$timeout(function () {
+				$('#file-index').html(update_file_index($('#file-content')))
+			})
+			
+		})
 		$scope.add_new=function (v,file) {
 			if(!v)return
 			
@@ -218,6 +230,10 @@
 	
 </script>
 <style type="text/css" media="screen" id="test">
+	#file-index ul{
+		padding-left:6px;
+		list-style-type:none;
+	}
 	.nodot-li{
 		padding-left:5px;
 	}
@@ -357,7 +373,11 @@
 					<div ng-show='crt_file'>
 						<h2 ng-bind='crt_file.name' 
 							style='border-bottom: 1px solid #999;'></h2>
-						<div ng-bind-html='trustAsHtml(crt_file.content)'></div>
+		<!--------------------显示内容--------------------->
+			<div id='file-index' style='width:100px;float: right;'></div>
+			<div id='file-content' ng-bind-html='trustAsHtml(crt_file.content)'
+				style='margin-right:100px;'></div>
+			
 					</div>
 				</div>
 
