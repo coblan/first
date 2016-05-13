@@ -48,8 +48,8 @@ def dir_data_all(pk):
     return {
         'dir':to_dict(dir),
         'parents':[to_dict(p) for p in logic.parents(dir)],
-        'child_dirs':[to_dict(child_dir) for child_dir in dir.dirmodel_set.all()],
-        'child_files':[to_dict(child_file) for child_file in dir.notemodel_set.all()]
+        'child_dirs':[to_dict(child_dir) for child_dir in dir.dirmodel_set.all().order_by('name')],
+        'child_files':[to_dict(child_file) for child_file in dir.notemodel_set.all().order_by('name')]
     }
 
 def update(ele):

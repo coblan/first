@@ -8,8 +8,8 @@ def get_sibling(entry):
         return [],[]
 
 def get_dir_child(dir):
-    dir_child = dir.dirmodel_set.all()
-    file_child= dir.notemodel_set.all()
+    dir_child = dir.dirmodel_set.all().order_by('name')
+    file_child= dir.notemodel_set.all().order_by('name')
     return dir_child,file_child
 
 def parents(entry):
