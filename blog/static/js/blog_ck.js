@@ -7,8 +7,8 @@
 
 var app = angular.module('he',[]);
 app.config(function($interpolateProvider) {
-	  $interpolateProvider.startSymbol('[[');
-	  $interpolateProvider.endSymbol(']]');
+	  $interpolateProvider.startSymbol('$[[');
+	  $interpolateProvider.endSymbol(']]^');
 });
 var agc=require('agcompile')
 agc.input_hole()

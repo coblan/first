@@ -47,7 +47,7 @@
 	var test=__webpack_require__(1);
 	var test2=__webpack_require__(2)
 	//window.app=require('ag').app
-	window.hx=__webpack_require__(5)
+	window.hx=__webpack_require__(3)
 
 	//var img_tool=require('dosome/img')
 	//$(function () {
@@ -80,9 +80,7 @@
 	}
 
 /***/ },
-/* 3 */,
-/* 4 */,
-/* 5 */
+/* 3 */
 /***/ function(module, exports) {
 
 	//构造h1-h6的索引
@@ -102,7 +100,7 @@
 	              count+=1;
 	            }
 	  
-	          var new_node=$('<li><a href="#'+$(this).attr('id')+'">'+$(this).text()+'</a></li>');
+	          var new_node=$('<li><a href="#'+$(this).attr('id')+'" target="_self">'+$(this).text()+'</a></li>');
 	          x=parseInt(el.tagName.charAt(1))-1;
 	          if (x==0){
 	            out.append(new_node);

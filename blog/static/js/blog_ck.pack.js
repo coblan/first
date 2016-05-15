@@ -40,9 +40,8 @@
 /******/ 	return __webpack_require__(0);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ 0:
+/******/ ([
+/* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -54,10 +53,10 @@
 
 	var app = angular.module('he',[]);
 	app.config(function($interpolateProvider) {
-		  $interpolateProvider.startSymbol('[[');
-		  $interpolateProvider.endSymbol(']]');
+		  $interpolateProvider.startSymbol('$[[');
+		  $interpolateProvider.endSymbol(']]^');
 	});
-	var agc=__webpack_require__(6)
+	var agc=__webpack_require__(4)
 	agc.input_hole()
 	app.controller('hole',function ($scope) {
 		$scope.wo='wold';
@@ -121,8 +120,10 @@
 	//        }
 
 /***/ },
-
-/***/ 6:
+/* 1 */,
+/* 2 */,
+/* 3 */,
+/* 4 */
 /***/ function(module, exports) {
 
 	
@@ -160,5 +161,4 @@
 	}
 
 /***/ }
-
-/******/ });
+/******/ ]);
