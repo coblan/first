@@ -13,7 +13,7 @@
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
-/******/ 			loaded: false 
+/******/ 			loaded: false
 /******/ 		};
 
 /******/ 		// Execute the module function
@@ -49,6 +49,7 @@
 	var modewin=__webpack_require__(3)
 	var hx=__webpack_require__(4)
 	ck.import()
+	CKEDITOR.timestamp='ABCDFD';
 
 	app = angular.module('share',['ngSanitize']);
 	app.config(function($interpolateProvider) {

@@ -89,6 +89,7 @@
 		$scope.$watch(function () {return $scope.crt_file.content},function () {
 			$timeout(function () {
 				$('#file-index').html(update_file_index($('#file-content')))
+				MathJax.Hub.Queue(["Typeset",MathJax.Hub])
 			})
 			
 		})
