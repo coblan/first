@@ -63,7 +63,8 @@ class CtxIndex(object):
         self.crtCatName='' # CatModel; 索引页当前所属的分类
         self.articles=''
         self.custom_js=['/static/js/blog.pack.js?%s'%int(path.getmtime(path.join(
-            base_dir,'static/js/blog.pack.js')))]        
+            base_dir,'static/js/blog.pack.js'))),
+                        'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML']        
         self.title=u'我的网络日志'
         self.tags='' # 显示中右侧导航栏中的标签
     

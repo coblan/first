@@ -168,7 +168,7 @@
 	<div ng-controller='head' id='head'>
 		<ul class="menu" id='head-menu'>
 			<li ng-repeat='menu in menus' >
-				<a ng-href="/blog/index/[[menu.name]]"
+				<a ng-href="/blog/index/$[[menu.name]]^"
 					ng-class='{"active":crt.is_active(menu)}'
 					ng-click='crt.name=menu.name'
 					ng-mouseover='crt.overname=menu.name'

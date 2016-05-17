@@ -53,8 +53,8 @@
 
 	var app = angular.module('he',[]);
 	app.config(function($interpolateProvider) {
-		  $interpolateProvider.startSymbol('[[');
-		  $interpolateProvider.endSymbol(']]');
+		  $interpolateProvider.startSymbol('$[[');
+		  $interpolateProvider.endSymbol(']]^');
 	});
 	var agc=__webpack_require__(4)
 	agc.input_hole()

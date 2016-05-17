@@ -17,8 +17,8 @@
 		<script type="text/javascript">
 			var app = angular.module('he',['ngSanitize','ngAnimate']);
 			app.config(function($interpolateProvider) {
-				  $interpolateProvider.startSymbol('[[');
-				  $interpolateProvider.endSymbol(']]');
+				  $interpolateProvider.startSymbol('$[[');
+				  $interpolateProvider.endSymbol(']]^');
 				});
 		</script>
 		</head>
