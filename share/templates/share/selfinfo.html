@@ -89,11 +89,14 @@
 		}
 		$scope.$watch(function () {return $scope.crt_file.content},function () {
 			$timeout(function () {
-				$('#file-index').html(update_file_index($('#file-content')))
-				MathJax.Hub.Queue(["Typeset",MathJax.Hub])
+				refresh_show_info()
 			})
 			
 		})
+		function refresh_show_info() {
+			$('#file-index').html(update_file_index($('#file-content')))
+			MathJax.Hub.Queue(["Typeset",MathJax.Hub])
+		}
 		$scope.add_new=function (v,file) {
 			if(!v)return
 			
@@ -227,6 +230,15 @@
 				$scope.search_result=data.search_file.files
 			})
 		}
+		$scope.cancel=function () {
+			$scope.file_win='reading'
+			$timeout(function () {
+				refresh_show_info()
+			}
+			)
+			
+		}
+		
 	
 	})
 	
