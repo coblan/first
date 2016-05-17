@@ -16,13 +16,6 @@ app.controller('hole',function ($scope) {
 	$scope.wo='wold';
 	$scope.src_type=$('#id_type').val();
 	$scope.src=$('#id_src').val();
-	//$scope.$watch('src_type',function (nv,ov) {
-	//	if(nv=='ck'){
-	//		$('.field-html').hide()
-	//	}else{
-			
-	//	}
-	//})
 })
 compileAngularElement=agc.compileAngularElement
 CKEDITOR.timestamp='ABCDF';
@@ -35,9 +28,15 @@ $(function () {
 
 	$('<div id="ck_wrap" style="margin-left:200px;min-width:750px;" ng-show="src_type==\'ck\'"><textarea name="editor1" id="editor1" cols="40" ng-model="src"></textarea></div>').insertAfter($('#id_src'))
 	var editor=$( '#editor1' ).ckeditor().editor;
-	editor.on('change',function () {
-		$('#id_src').val($('#editor1').val())
-	})
+	$( "form" ).submit(function( event ) {
+  		$('#id_src').val($('#editor1').val())
+	});
+	//editor.on('change',function () {
+	//	$('#id_src').val($('#editor1').val())
+	//})
+	//editor.on('instanceReady',function () {
+	//	$('#id_src').val($('#editor1').val())
+	//})
 	 //CKEDITOR.replace( 'editor1')
 	//var editor=$( '#editor1' ).ckeditor().editor;
 	//editor.on('instanceReady',function () {

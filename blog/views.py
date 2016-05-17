@@ -39,11 +39,18 @@ def upload_file(request,Add):
         file_path= path.join(settings.MEDIA_ROOT,Add,f.name)
         handle_uploaded_file(f,file_path)
         file_url='/media/image/%s'%f.name
-        return HttpResponse("""
-        <script type="text/javascript">
-        window.parent.CKEDITOR.tools.callFunction(%s,'%s')
-        </script>
-        """%(callback,file_url))
+        if callback:
+            return HttpResponse("""
+            <script type="text/javascript">
+            window.parent.CKEDITOR.tools.callFunction({callback},'{img_url}')
+            </script>
+            """.format(callback=callback,img_url=file_url))
+        else:
+            dc={"uploaded": 1,
+                "fileName": f.name,
+                'url':file_url
+            }
+            return HttpResponse(json.dumps(dc),content_type="application/json")
 
 def handle_uploaded_file(f,file_path):
     with open( file_path, 'wb+') as destination:
@@ -56,7 +63,8 @@ class CtxIndex(object):
         self.crtCatName='' # CatModel; 索引页当前所属的分类
         self.articles=''
         self.custom_js=['/static/js/blog.pack.js?%s'%int(path.getmtime(path.join(
-            base_dir,'static/js/blog.pack.js')))]        
+            base_dir,'static/js/blog.pack.js'))),
+                        'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML']        
         self.title=u'我的网络日志'
         self.tags='' # 显示中右侧导航栏中的标签
     
