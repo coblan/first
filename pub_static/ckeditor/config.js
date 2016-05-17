@@ -37,6 +37,7 @@ CKEDITOR.editorConfig = function( config ) {
 	config.removeDialogTabs = 'image:advanced;link:advanced';
 	config.image_previewText='image preview';
 	config.filebrowserImageUploadUrl= '/blog/upload/image/';
-	config.extraPlugins = 'justify,codesnippet';
+	config.extraPlugins = 'justify,codesnippet,lineutils,mathjax';
+	config.mathJaxLib = '//cdn.mathjax.org/mathjax/2.6-latest/MathJax.js?config=TeX-AMS_HTML';
 	config.extraAllowedContent ='img[class]';
 };
