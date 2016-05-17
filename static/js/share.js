@@ -3,7 +3,7 @@ var http = require('augular/http')
 var modewin=require('augular/modelwin')
 var hx=require('dosome/hx')
 ck.import()
-CKEDITOR.timestamp='ABCDFD';
+
 
 app = angular.module('share',['ngSanitize']);
 app.config(function($interpolateProvider) {
