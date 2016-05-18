@@ -40,15 +40,12 @@
 /******/ 	return __webpack_require__(0);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
 	
-	//document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.6/angular.min.js"></script>')
-	//document.write("<div style='display:none' ng-app='he'><span ng-controller='hole' id='hole'></span></div>")
-
-
 
 
 	var app = angular.module('he',[]);
@@ -56,7 +53,7 @@
 		  $interpolateProvider.startSymbol('$[[');
 		  $interpolateProvider.endSymbol(']]^');
 	});
-	var agc=__webpack_require__(4)
+	var agc=__webpack_require__(5)
 	agc.input_hole()
 	app.controller('hole',function ($scope) {
 		$scope.wo='wold';
@@ -119,10 +116,8 @@
 	//        }
 
 /***/ },
-/* 1 */,
-/* 2 */,
-/* 3 */,
-/* 4 */
+
+/***/ 5:
 /***/ function(module, exports) {
 
 	
@@ -160,4 +155,5 @@
 	}
 
 /***/ }
-/******/ ]);
+
+/******/ });

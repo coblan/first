@@ -9,7 +9,9 @@ import json
 from core.port import jsonpost
 
 from core.db_tools import get_or_none
+from datetime import datetime
 import os.path as path
+import os
 from ajax import get_globe
 base_dir=path.dirname(__file__)
 
@@ -33,12 +35,20 @@ def index(request,cat_name=''):
 
 
 def upload_file(request,Add):
+    """ ADD = image """
     if request.method == 'POST':
         callback=request.GET.get('CKEditorFuncNum')
         f= request.FILES['upload']
-        file_path= path.join(settings.MEDIA_ROOT,Add,f.name)
+        
+        file_dir= path.join(settings.MEDIA_ROOT,'userdata',request.user.username,Add)
+        try:
+            os.makedirs(file_dir)
+        except os.error as e:
+            print(e)
+        file_name=datetime.now().strftime('%Y%m%d%H%M%S')+f.name
+        file_path=path.join(file_dir,file_name)
         handle_uploaded_file(f,file_path)
-        file_url='/media/image/%s'%f.name
+        file_url='/media/userdata/{user}/image/{file_name}'.format(user=request.user.username,file_name=file_name)
         if callback:
             return HttpResponse("""
             <script type="text/javascript">
@@ -51,6 +61,8 @@ def upload_file(request,Add):
                 'url':file_url
             }
             return HttpResponse(json.dumps(dc),content_type="application/json")
+
+
 
 def handle_uploaded_file(f,file_path):
     with open( file_path, 'wb+') as destination:

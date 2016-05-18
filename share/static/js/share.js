@@ -2,7 +2,10 @@ var ck=require('editor/ckeditor')
 var http = require('augular/http')
 var modewin=require('augular/modelwin')
 var hx=require('dosome/hx')
+var syntax=require('editor/syntax')
 ck.import()
+syntax.myimport()
+window.syntax=syntax
 
 
 app = angular.module('share',['ngSanitize']);

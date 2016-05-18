@@ -1,8 +1,4 @@
 
-//document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.6/angular.min.js"></script>')
-//document.write("<div style='display:none' ng-app='he'><span ng-controller='hole' id='hole'></span></div>")
-
-
 
 
 var app = angular.module('he',[]);

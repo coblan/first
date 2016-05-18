@@ -96,6 +96,7 @@
 		function refresh_show_info() {
 			$('#file-index').html(update_file_index($('#file-content')))
 			MathJax.Hub.Queue(["Typeset",MathJax.Hub])
+			load_syntax()
 		}
 		$scope.add_new=function (v,file) {
 			if(!v)return
@@ -115,6 +116,9 @@
 			}
 			ajax.post(post_url,postData)
 			$scope.file_win='reading'
+			$timeout(function () {
+				refresh_show_info()
+			})
 		}
 		$scope.del_selected=function () {
 			rt=confirm('是否删除？')
@@ -238,10 +242,15 @@
 			)
 			
 		}
+
 		
 	
 	})
-	
+	function load_syntax() {
+		syntax.adapt_ck()
+		syntax.autoload()
+		syntax.all()
+	}
 </script>
 <style type="text/css" media="screen" id="test">
 	#file-index ul{

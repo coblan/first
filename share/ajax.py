@@ -6,31 +6,17 @@ import logic
 def get_globe():
     return globals()
 
-def add_dir(name,p_dir):
+def add_dir(name,p_dir,user):
     p_dir=from_dict(p_dir)
-    d = DirModel(name=name,p_dir=p_dir)
+    d = DirModel(name=name,p_dir=p_dir,owner=user)
     d.save()
 
 
-# def modify_dir(name,id):
-    # d = DirModel.objects.get(id=id)
-    # d.name=name
-    # d.save()
-    # return {'name':d.name,'id':d.id}
-
-def add_file(name,content,p_dir):
+def add_file(name,content,p_dir,user):
     p_dir=from_dict(p_dir) 
-    f = NoteModel(name=name,content=content,p_dir=p_dir)
+    f = NoteModel(name=name,content=content,p_dir=p_dir,owner=user)
     f.save()
     return {'file':to_dict(f)}
-
-
-# def modify_file(name,content,id):
-    # f = NoteModel.objects.get(id=id)
-    # f.name=name
-    # f.content=content
-    # f.save()
-    # return {'name':f.name,'content':f.content,'id':f.id}
 
 def file_data_all(pk):
     file = NoteModel.objects.get(pk=pk)
