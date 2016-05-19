@@ -1,5 +1,6 @@
 from models import DirModel,NoteModel
 from core.db_tools import to_dict,from_dict
+from django.db.models import Q
 import json
 import logic
 
@@ -55,9 +56,13 @@ def move(ele_array,p_dir):
         ele_obj.save()
 
 
-def search_file(keywords,user):
+def search(keywords,user):
+    dirs=[]
+    for dir in DirModel.objects.filter(name__icontains=keywords,owner=user):
+        dirs.append(to_dict(dir))
+        
     files=[]
-    for file in NoteModel.objects.filter(content__contains=keywords,owner=user):
+    for file in NoteModel.objects.filter(Q(content__icontains=keywords)|Q(name__icontains=keywords),owner=user):
         files.append(to_dict(file))
-    return {'files':files}
+    return {'files':files,'dirs':dirs}
         

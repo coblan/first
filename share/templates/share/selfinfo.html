@@ -190,6 +190,7 @@
 			$scope.edit_win=win;
 		};
 		$scope.switch_dir = function (dir_pk) {
+			$scope.sub_page="dir"
 			var postData = {
 				dir_data_all:{pk:dir_pk},
 			}
@@ -225,15 +226,6 @@
 			else{return false}
 			
 		}
-		$scope.search=function (keywords) {
-			if(!keywords)return
-			var postData={
-				search_file:{keywords:keywords}
-			}
-			ajax.post(post_url,postData,function (data) {
-				$scope.search_result=data.search_file.files
-			})
-		}
 		$scope.cancel=function () {
 			$scope.file_win='reading'
 			$timeout(function () {
@@ -241,6 +233,21 @@
 			}
 			)
 			
+		}
+
+		$scope.search={
+			update:function (keywords) {
+					if(!keywords)return
+					var postData={
+						search:{keywords:keywords}
+					}
+					var self=this
+					ajax.post(post_url,postData,function (data) {
+						self.dirs=data.search.dirs
+						self.files=data.search.files
+					})
+				},
+				
 		}	
 	})
 	function load_syntax() {
@@ -248,6 +255,7 @@
 		syntax.autoload()
 		syntax.all()
 	}
+
 </script>
 <style type="text/css" media="screen" id="test">
 	#file-index ul{
@@ -312,7 +320,8 @@
 		<div class='head-sel'>
 			<div class='head-icon' ng-class='{"active":sub_page=="dir"}' 
 				ng-click='sub_page="dir"'>
-				<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+				<span class="glyphicon glyphicon-list" 
+					aria-hidden="true"></span>
 			</div>
 			<div class='head-icon' ng-class='{"active":sub_page=="search"}' 
 				ng-click='sub_page="search"'>
@@ -338,7 +347,9 @@
 			<ul class='nodot-li'>
 				<li ng-repeat='item in child_dirs'>
 					<input type="checkbox" name="test" value="" ng-model='item.checked'/>
-					<span class="glyphicon glyphicon-folder-close" aria-hidden="true">
+					<span class="glyphicon glyphicon-folder-close" 
+						style='color: #FFCC00;'
+						aria-hidden="true">
 						
 					</span>
 					<a href="" ng-click='switch_dir(item.pk)'>
@@ -347,7 +358,8 @@
 				</li>
 				<li ng-repeat='item in child_files'>
 					<input type="checkbox" name="test" value="" ng-model='item.checked'/>
-					 <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+					 <span class="glyphicon glyphicon-file" 
+					 	aria-hidden="true"></span>
 					<a ng-href="#/file/[[item.pk]]"><span ng-bind='item.name'></span></a>
 				</li>  <!-- ng-click='show_content(item)'-->
 			</ul>
@@ -358,10 +370,23 @@
 		<div class='ctn-list' ng-show='sub_page=="search"'>
 		<div class='inn-wrap' >
 			<input type="text" name="test" value="" ng-model='keywords'/>
-			<span class="glyphicon glyphicon-search" aria-hidden="true" ng-click='search(keywords)' style="cursor:pointer"></span>
+			<span class="glyphicon glyphicon-search" aria-hidden="true" ng-click='search.update(keywords)' style="cursor:pointer"></span>
 			<div>
 				<ul>
-					<li ng-repeat='file in search_result'>
+					<li ng-repeat='dir in search.dirs'>
+						<span class="glyphicon glyphicon-folder-close" 
+							style='color: #FFCC00;'
+							aria-hidden="true">
+						</span>
+						
+						<a href="" ng-click='switch_dir(dir.pk)'>
+							<span ng-bind='dir.name'></span>
+						</a>
+					</li>
+					<li ng-repeat='file in search.files'>
+						 <span class="glyphicon glyphicon-file" 
+					 		aria-hidden="true"></span>
+					 	
 						<a href="#/file/[[file.pk]]"><span ng-bind='file.name'></span></a>
 					</li>
 				</ul>
