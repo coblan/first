@@ -51,7 +51,7 @@
 	var syntax=__webpack_require__(5)
 	ck.import()
 	syntax.myimport()
-	syntax.load_all_brush()
+	//syntax.load_all_brush()
 	window.syntax=syntax
 
 
