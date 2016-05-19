@@ -51,6 +51,7 @@
 	var syntax=__webpack_require__(5)
 	ck.import()
 	syntax.myimport()
+	syntax.load_all_brush()
 	window.syntax=syntax
 
 
@@ -532,6 +533,14 @@
 			$(this).parent().html($(this).html())
 		})
 	 }
+	 function load_all_brush() {
+		 // load all brush
+		 var brushs=['Python','JScript','Bash']
+		 for (var i =0;i<brushs.length;i++){
+			document.write('<script src="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/scripts/shBrush'+brushs[i]+'.min.js"></script>')
+		 }
+	 	
+	 }
 	 function all() {
 	 	SyntaxHighlighter.all();
 	 }
@@ -540,6 +549,7 @@
 			autoload:autoload,
 			adapt_ck:adapt_ck,
 			all:all,
+			load_all_brush:load_all_brush,
 		}
 
 /***/ }

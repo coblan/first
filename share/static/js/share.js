@@ -5,6 +5,7 @@ var hx=require('dosome/hx')
 var syntax=require('editor/syntax')
 ck.import()
 syntax.myimport()
+syntax.load_all_brush()
 window.syntax=syntax
 
 
