@@ -153,6 +153,7 @@
 	    }
 	    
 	function autoload() {
+		SyntaxHighlighter.vars.discoveredBrushes=null; // ���ڶ�̬���ݼ�Ϊ��Ҫ����ʹsyntax���²鿴ҳ�棬����load brush
 		 SyntaxHighlighter.autoloader.apply(null, path(
 	            'applescript            $shBrushAppleScript.js',
 	            'actionscript3 as3      $shBrushAS3.js',
@@ -183,20 +184,39 @@
 
 
 	 function  adapt_ck() {
+		/*
+		ckeditor����������Ϊ:<pre><code class='language-python'></code></pre>
+		��Ҫ����Ϊ<pre class='brush:python'></pre>
+		*/
 	 	$('code[class^="language-"]').each(function () {
 		 	var lan=/language-(\w+)/.exec($(this).attr('class'))
 			$(this).parent().addClass('brush:'+lan[1])
 			$(this).parent().html($(this).html())
 		})
 	 }
+	 function load_all_brush() {
+		 // load all brush
+		 // ���ڽ�����autoload�����⣬������������û���ˡ�����������Ϊ����
+		 var brushs=['Python','JScript','Bash']
+		 for (var i =0;i<brushs.length;i++){
+			document.write('<script src="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/scripts/shBrush'+brushs[i]+'.min.js"></script>')
+		 }
+	 	
+	 }
 	 function all() {
 	 	SyntaxHighlighter.all();
+	 }
+	 function highlight() {
+		 // all()�Ǽ�����load�¼����ܹ���autoloader����ʹ�ã���������Ҫ�Լ��ֶ�ˢ�£�����Ҫʹ����������
+	 	SyntaxHighlighter.highlight()
 	 }
 	module.exports={
 			myimport:myimport,
 			autoload:autoload,
 			adapt_ck:adapt_ck,
 			all:all,
+			load_all_brush:load_all_brush,
+			highlight:highlight,
 		}
 
 /***/ }
