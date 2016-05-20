@@ -11,7 +11,7 @@ class ArticleAdmin(admin.ModelAdmin):
             'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.6/angular.min.js',
             'ckeditor/ckeditor.js',
             'ckeditor/adapters/jquery.js',
-            'js/blog_ck.pack.js?t=20160427',)
+            'js/blog_ck.pack.js?t=20160520',)
 admin.site.register(models.ArticleModel,ArticleAdmin)
 #admin.site.register(models.HtmlArt)
 admin.site.register(models.Tag)

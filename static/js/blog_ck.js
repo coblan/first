@@ -14,7 +14,7 @@ app.controller('hole',function ($scope) {
 	$scope.src=$('#id_src').val();
 })
 compileAngularElement=agc.compileAngularElement
-CKEDITOR.timestamp='ABCDF';
+CKEDITOR.timestamp='520';
 $(function () {
 	
 	$('<span id="pig"><span>ok</span><span ng-bind="wo"></span></span>').insertAfter($('#id_type'))

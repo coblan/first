@@ -1,27 +1,6 @@
 {% extends 'blog/index.html' %}
 
 {% block art_content %}
-<!--<script src="//cdn.ckeditor.com/4.5.8/standard/ckeditor.js"></script>-->
-<!--<script src="//cdn.ckeditor.com/4.5.8/standard/ckeditor.js"></script>-->
-<!--<script src="/static/ckeditor/ckeditor.js"></script>-->
-<!--<script src="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/scripts/shCore.min.js"></script>-->
-<!--<script src="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/scripts/shBrushPython.min.js"></script>-->
-<!--<script src="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/scripts/shAutoloader.min.js"></script>
-
-<link rel="stylesheet" href="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/styles/shCore.min.css">
-
-<link rel="stylesheet" href="http://apps.bdimg.com/libs/SyntaxHighlighter/3.0.83/styles/shThemeDefault.min.css">-->
-<!--<script src="/static/blog/"></script>-->
-
-<script type="text/javascript">
-	
-    $(function () {
-       
-        //SyntaxHighlighter.all();
-    })
-</script>
-
-
 
 <div class='article'>
 	<div id='article'>
@@ -44,33 +23,7 @@
 		syntax.adapt_ck()
 		syntax.autoload()
 		SyntaxHighlighter.all();
-		 //SyntaxHighlighter.autoloader.apply(null, path(
-   //         'applescript            $shBrushAppleScript.js',
-   //         'actionscript3 as3      $shBrushAS3.js',
-   //         'bash shell             $shBrushBash.js',
-   //         'coldfusion cf          $shBrushColdFusion.js',
-   //         'cpp c                  $shBrushCpp.js',
-   //         'c# c-sharp csharp      $shBrushCSharp.js',
-   //         'css                    $shBrushCss.js',
-   //         'delphi pascal          $shBrushDelphi.js',
-   //         'diff patch pas         $shBrushDiff.js',
-   //         'erl erlang             $shBrushErlang.js',
-   //         'groovy                 $shBrushGroovy.js',
-   //         'java                   $shBrushJava.js',
-   //         'jfx javafx             $shBrushJavaFX.js',
-   //         'js jscript javascript  $shBrushJScript.js',
-   //         'perl pl                $shBrushPerl.js',
-   //         'php                    $shBrushPhp.js',
-   //         'text plain             $shBrushPlain.js',
-   //         'py python              $shBrushPython.js',
-   //         'ruby rails ror rb      $shBrushRuby.js',
-   //         'sass scss              $shBrushSass.js',
-   //         'scala                  $shBrushScala.js',
-   //         'sql                    $shBrushSql.js',
-   //         'vb vbnet               $shBrushVb.js',
-   //         'xml xhtml xslt html    $shBrushXml.js'
-   //     ));
-
+		
 
      	$('#index_container').html(hx.build_index($('.article')))
 	})
