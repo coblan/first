@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^share/',include('share.urls')),
     url(r'^blog/',include('blog.urls')),
+    url(r'hello/','hello.views.hello')
     
 ]
 
