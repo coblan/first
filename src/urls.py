@@ -15,15 +15,17 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-import index
+#import index
 
 urlpatterns = [
-    url(r'^$',index.index),
+    
     url(r'^accounts/',include('authuser.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^share/',include('share.urls')),
     url(r'^blog/',include('blog.urls')),
-    url(r'hello/','hello.views.hello')
+    #url(r'hello/','hello.views.hello'),
+    url(r'^$','hello.views.hello'),
+    url(r'^talk/','hello.views.talk')
     
 ]
 
@@ -31,5 +33,5 @@ urlpatterns = [
 from django.conf import settings
 from django.conf.urls.static import static
 
-if hasattr(settings,'LOCAL'):
+if getattr(settings,'ROUT_MEDIA'):
     urlpatterns = urlpatterns+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

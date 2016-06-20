@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app="share">
+
+	<head>
+		<meta charset='utf-8' />
+		<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript" src="http://apps.bdimg.com/libs/vue/1.0.14/vue.js"></script>
+	<script type="text/javascript">
+
+		var ws = new WebSocket('ws://{{site_url}}/ws/talk?subscribe-broadcast&publish-broadcast&echo');
+		ws.onopen = function() {
+		    console.log("websocket connected");
+		};
+		first = true;
+		ws.onmessage = function(e) {
+		    //console.log("Received: " + e.data);
+		    
+		    if(e.data!='--heartbeat--' && !first){
+			     vm.msgs.push(JSON.parse(e.data) )
+		    }
+		   	first=false
+		};
+		ws.onerror = function(e) {
+		    console.error(e);
+		};
+		ws.onclose = function(e) {
+		    console.log("connection closed");
+		}
+		function send_message(msg) {
+		    ws.send(msg);
+		}
+	</script>
+
+	<script type="text/javascript">
+		$(function () {
+			vm=new Vue({
+				el:'#talk',
+				data:{
+					msgs:[],
+					crt_msg:'',
+					name:'your name'
+				},
+				methods:{
+					send:function () {
+						$.post('',JSON.stringify({name:this.name,content:this.crt_msg}))
+						//this.msgs.push(msg)
+						this.crt_msg=''
+					}
+				}
+			})
+		})
+	
+	</script>
+	</head>
+	<body>
+		<div id="talk" class="test">
+				<div>
+			<ul>
+				<li v-for='msg in msgs' track-by="$index">
+					<b v-text='msg.name'></b>
+					<div><span class="test" v-text='msg.content'></span></div>
+					
+				</li>
+			</ul>
+		</div>
+
+		<label for="yourname">名字</label>
+		<input type="text" id="yourname" v-model='name'/>
+		<label for="content"></label>
+		<input type="text" id="content"  v-model='crt_msg'/>
+		<button name="test" type="button"  @click='send()'>send message</button>
+		</div>
+	
+	</body>
+</html>

@@ -1,10 +1,10 @@
 from base import *
 
-BASE_DIR =os.path.dirname(BASE_DIR)
+#BASE_DIR =os.path.dirname(BASE_DIR)
 STATIC_ROOT= os.path.join(BASE_DIR,'static')
 STATICFILES_DIRS = (os.path.join(BASE_DIR,'pub_static'),)
 
-LOCAL=True
+ROUT_MEDIA=True
 
 
 import os
@@ -26,3 +26,6 @@ else:
             'PORT': '3306',        
           },
         }
+
+
+SITE_URL='localhost:8000'

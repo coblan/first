@@ -34,6 +34,6 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-/first/settings/__init__.py
+/src/settings/__init__.py
 /media/image
 /media
