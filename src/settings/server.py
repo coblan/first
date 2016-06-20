@@ -10,3 +10,5 @@ DATABASES = {
         'PORT': '3306',        
       },
     }
+
+SITE_URL='enjoyst.com'
