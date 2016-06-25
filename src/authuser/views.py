@@ -7,9 +7,7 @@ import json
 
 def login(request):
     if request.method=='GET':
-        next_url=request.GET.get('next')
-        if not next_url:
-            next_url='/'
+        next_url=request.GET.get('next','/')
         dc={
             'next':next_url,
             'regist_url':reverse('regist')

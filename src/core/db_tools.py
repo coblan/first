@@ -38,20 +38,40 @@ def to_dict(instance,filt_attr=None,include=None,exclude=None):
         if field.name in out:
             continue
         else:
-            if isinstance(field,models.ForeignKey):
-                foreign=getattr(instance,field.name)
-                if foreign:
-                    out[field.name]=foreign.pk
-                else:
-                    out[field.name]=None
-            elif isinstance(field,models.DateTimeField):
-                out[field.name]=getattr(instance,field.name).strftime('%Y-%m-%d %H:%M:%S')
+            if field_map.get(field.__class__):
+                out[field.name] = field_map.get(field.__class__)().to_dict(instance,field.name)
+            #if isinstance(field,models.ForeignKey):
+                #foreign=getattr(instance,field.name)
+                #if foreign:
+                    #out[field.name]=foreign.pk
+                #else:
+                    #out[field.name]=None
+            #elif isinstance(field,models.DateTimeField):
+                #out[field.name]=getattr(instance,field.name).strftime('%Y-%m-%d %H:%M:%S')
             else:
                 out[field.name]=field.get_prep_value( getattr(instance,field.name) )
     out['pk']=instance.pk
     out['_class']= instance.__module__.split('.')[0]+'.'+instance.__class__.__name__
     return out
 
+
+
+
+class DatetimeProc(object):
+    def to_dict(self,inst,name):
+        value = getattr(inst,name)
+        if value:
+            return value.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            return ''
+        
+class ForeignProc(object):
+    def to_dict(self,inst,name):
+        foreign=getattr(inst,name)
+        if foreign:
+            return foreign.pk
+
+    
 
 def from_dict(dc,model=None,pre_proc=None):
     """
@@ -63,6 +83,8 @@ def from_dict(dc,model=None,pre_proc=None):
     processed={}
     if model is None and '_class' in dc:
         model=apps.get_model(dc['_class'])
+    if not model:
+        raise UserWarning,'when constuct model object, but no model set'
     if pre_proc:
         processed=pre_proc(dc,model)
     for k in processed:
@@ -103,4 +125,7 @@ def _field_name_to_filed(fields,instance):
                 
             
             
-    
+field_map={
+    models.DateTimeField:DatetimeProc,
+    models.ForeignKey : ForeignProc
+}

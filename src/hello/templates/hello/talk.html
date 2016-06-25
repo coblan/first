@@ -10,6 +10,7 @@
 		var ws = new WebSocket('ws://{{site_url}}/ws/talk?subscribe-broadcast&publish-broadcast&echo');
 		ws.onopen = function() {
 		    console.log("websocket connected");
+		    vm.status='connected'
 		};
 		first = true;
 		ws.onmessage = function(e) {
@@ -19,12 +20,16 @@
 			     vm.msgs.push(JSON.parse(e.data) )
 		    }
 		   	first=false
+		   	//if(e.data=='--heartbeat--'){
+			   //	ws.send(e.data);
+		   	//}
 		};
 		ws.onerror = function(e) {
 		    console.error(e);
 		};
 		ws.onclose = function(e) {
 		    console.log("connection closed");
+		    vm.status='connection closed'
 		}
 		function send_message(msg) {
 		    ws.send(msg);
@@ -38,7 +43,8 @@
 				data:{
 					msgs:[],
 					crt_msg:'',
-					name:'your name'
+					name:'your name',
+					status:'',
 				},
 				methods:{
 					send:function () {
@@ -64,11 +70,16 @@
 			</ul>
 		</div>
 
+		<div>
+			
+		</div>
 		<label for="yourname">名字</label>
-		<input type="text" id="yourname" v-model='name'/>
+		<input type="text" id="yourname" v-model='name'/><br>
 		<label for="content"></label>
 		<input type="text" id="content"  v-model='crt_msg'/>
 		<button name="test" type="button"  @click='send()'>send message</button>
+		<div v-text='status'>
+		</div>
 		</div>
 	
 	</body>

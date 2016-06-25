@@ -1,7 +1,8 @@
 
 {% extends 'authuser/base.html' %}
 {% block content %}
-<script type="text/javascript">
+
+<!--<script type="text/javascript">
 	
 		app.controller('content',function ($scope,$http) {
 			// 
@@ -58,12 +59,67 @@
 				};
 		});
 </script>
-<div class='container'>
+-->
+<script type="text/javascript">
+	next="{{next |default:'/'}}"
+	regist_url='{{regist_url}}'
+	
+	meta={
+		errors:{},
+		models:{
+			username:'',
+			password:'',
+		},
+		heads:[
+			{name:'username',label:'用户名',type:'text',autofocus:true,placeholder:'username'},
+			{name:'password',label:'密码',type:'password',placeholder:'your password',},
+		]
+	}
+
+	$(function () {
+		new Vue({
+			el:'#content',
+			data:{
+				meta:meta
+			},
+			methods:{
+				submit_info:function () {
+					var models=this.meta.models
+					var post_data={
+						do_login:{username:models.username,password:models.password}
+					}
+					var self=this;
+					$.post('',JSON.stringify(post_data),function (data) {
+						is_valid(data.do_login,self.meta.errors,function () {
+							location=next;
+						})
+						//if(data.do_login ){
+						//	if(data.do_login.errors){
+						//		for(x in self.meta.errors){
+						//			Vue.delete(self.meta.errors,x)
+						//		}
+						//		for(x in data.do_login.errors){
+						//			Vue.set(self.meta.errors,x,data.do_login.errors[x])
+						//		}
+						//	}else{
+						//		location=next;
+						//	}
+						//}
+					})
+				}
+			}
+		})
+	})
+
+</script>
+
+<div class='container' id='content'>
 	<div ng-controller='content'>
 		<form name="logForm" ng-submit='submit_func(logForm.$valid)' class='form-signin' novalidate>
 			<h2 class='form-signin-heading'>欢迎登陆</h2>
-			
-			<input type="test" 
+			<field name='username' :meta='meta'></field>
+			<field name='password' :meta='meta'></field>
+			<!--<input type="test" 
 				class='form-control' 
 				name='name' 
 				placeholder='用户名' 
@@ -74,18 +130,18 @@
 				name="pswd" 
 				placeholder='password' 
 				ng-model='user.password' 
-				required />
-	
-			<input type="submit" 
+				required />-->
+			<button name="test" type="button" value="val" @click='submit_info()'>登陆</button>
+			<!--<input type="submit" 
 				class='btn btn-lg btn-primary btn-block' 
-				value="登陆" />
+				value="登陆" />-->
 			<div style='text-align: right;padding-top:10px;'>
 				<a ng-href="[[regist_url]]" >注册</a>
 			</div>
-			<div ng-show='infome' style='color: red;'>
+			<!--<div ng-show='infome' style='color: red;'>
 				<p ng-show='logForm.name.$error.required'>* 用户名不能为空</p>
 				<p ng-show='logForm.pswd.$error.required'>* 密码不能为空</p>
-			</div>
+			</div>-->
 			
 		</form>
 	<!--</div>-->
@@ -94,7 +150,7 @@
 		<div>已经登陆了... <a ng-href='[[next]]'>返回</a><a href="" ng-click="logout()">登出</a></div>
 	</div>-->
 	
-	<div ng-bind='stdout' class='form-signin' style='color:red'></div>
+	<!--<div ng-bind='stdout' class='form-signin' style='color:red'></div>-->
 </div>
 
 </div>

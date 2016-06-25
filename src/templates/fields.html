@@ -1,0 +1,111 @@
+<script type="text/javascript">
+	$(document).ajaxSuccess(function (event,data) {
+		var rt = data.responseJSON
+		if(rt && rt.msg){
+			alert(rt.msg)
+		}
+	}).ajaxError(function (event) {
+	    alert('server has error')
+	})
+
+/*
+自动处理form.errors
+$.post('',JSON.stringify(post_data),function (data) {
+	is_valid(data.do_login,self.meta.errors,function () {
+		location=next;
+})
+*/
+function is_valid(form_fun_rt,errors_obj,callback) {
+	if(form_fun_rt){
+		if(form_fun_rt.errors){
+			for(x in errors_obj){
+				Vue.delete(errors_obj,x)
+			}
+			for (x in form_fun_rt.errors){
+				Vue.set(errors_obj,x,form_fun_rt.errors[x])
+			}
+		}else{
+			callback()
+		}
+	}
+}
+
+/*
+使用的meta结构
+meta={
+		errors:{},
+		models:{
+			username:'',
+			password:'',
+			pas2:'',
+		},
+		heads:[
+			{name:'username',label:'用户名',type:'text',required:true,autofocus:true},
+		]
+	}
+
+<field name='username' :meta='meta'></field>
+
+*/
+	Vue.component('field',{
+		template:'#field',
+		props:['name','meta'],
+		data:function () {
+			var heads=this.meta.heads
+			var head=''
+			for(x in heads){
+				if(heads[x].name==this.name){
+					head = heads[x]
+					break
+				}
+			}
+			return {
+				head:head,
+				models: this.meta.models,
+				errors:this.meta.errors,
+			}
+		},
+		methods:{
+			error_data:function (name) {
+				if(this.errors[name]){
+					return this.errors[name]
+				}else{
+					return ''
+				}
+			}
+		},
+		components:{
+			text:{
+				props:['name'],
+				template:'<input type="text" class="form-control">'
+			},
+			password:{
+				props:['name'],
+				template:'<input type="password" class="form-control">'
+			}
+		}
+})
+</script>
+
+
+<template id='field'>
+	<div for='field' class="form-group" :class='{"error":error_data(name)}'>
+	    <label for="[['id_'+name]]">[[head.label]]<span class="req_star" v-if='head.required'> *</span>
+	    </label>
+	    <component :is='head.type' 
+	    	v-model='models[name]' 
+	    	:name='name' 
+	    	id="[['id_'+name]]"
+	    	:placeholder='head.placeholder'
+	    	:autofocus='head.autofocus'></component> 
+	    <slot> </slot>
+		<div v-text='error_data(name)' class='error'></div>
+	    
+	</div>
+</template>
+
+<style type="text/css" media="screen" id="test">
+	.error{
+		color: red;
+	}
+</style>

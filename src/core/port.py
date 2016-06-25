@@ -24,7 +24,7 @@ def ajax_view(request):
             return HttpResponse(json.dumps(rt),content_type="application/json")
             
     """
-    router=RouterAjax(request, scope,rt_except=True)#,rt_except=not settings.DEBUG)
+    router=RouterAjax(request, scope,rt_except=not settings.DEBUG)
     return router.run()
 
 class RouterAjax(object):
@@ -42,10 +42,10 @@ class RouterAjax(object):
             try:
                 self.proc_order()
                 self.proc_common()
-            except (UserWarning,TypeError) as e:
-                self.msgs.append(str(e))
-            except KeyError as e:
-                self.msgs.append('no function %s'%k)
+            except (UserWarning,TypeError,KeyError) as e:
+                self.msgs.append(repr(e))
+            #except KeyError as e:
+                #self.msgs.append('no function %s'%k)
         else:
             self.proc_order()
             self.proc_common()
