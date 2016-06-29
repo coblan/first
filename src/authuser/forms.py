@@ -4,8 +4,7 @@ from core.db_tools import get_or_none
 from django.contrib import auth 
 
 class AuthForm(forms.ModelForm):
-    #pas1= forms.CharField()
-    pas2= forms.CharField()
+    pas2= forms.CharField(max_length=100,label='seconde password')
     class Meta:
         model = User
         fields = ['username', 'password']

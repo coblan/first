@@ -4,13 +4,16 @@ from core.port import jsonpost
 from django.core.urlresolvers import reverse
 from ajax import get_globe
 import json
+from core.db_tools import form_to_head
+from forms import AuthForm
 
 def login(request):
     if request.method=='GET':
         next_url=request.GET.get('next','/')
         dc={
             'next':next_url,
-            'regist_url':reverse('regist')
+            'regist_url':reverse('regist'),
+            
         }
         return render(request,'authuser/login.html',context=dc)
   
@@ -21,7 +24,8 @@ def login(request):
 def regist_user(request):
     if request.method=='GET':
         dc={
-            'login_url':reverse('login')
+            'login_url':reverse('login'),
+            'heads':json.dumps( form_to_head(AuthForm()))
         }
         return render(request,'authuser/regist.html',context=dc)
     elif request.method=='POST':

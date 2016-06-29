@@ -25,8 +25,9 @@ urlpatterns = [
     url(r'^blog/',include('blog.urls')),
     #url(r'hello/','hello.views.hello'),
     url(r'^$','hello.views.hello'),
-    url(r'^talk/','hello.views.talk')
+    url(r'^talk/','hello.views.talk'),
     
+    url(r'^build/','pagebuilder.views.build')
 ]
 
 

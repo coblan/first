@@ -1,7 +1,7 @@
 # -*- encoding:utf-8 -*-
 from django.db import models
 from django.apps import apps
-
+from django import forms
 import json
 
 
@@ -123,8 +123,21 @@ def _field_name_to_filed(fields,instance):
                 break  
     return out
                 
-            
-            
+
+def form_to_head(form):
+    out = []
+    for k,v in form.fields.items():
+        dc = {'name':k,'label':str(v.label),'required':v.required,}
+        if v.__class__==forms.fields.CharField:
+            dc.update({'type':'text','max_length':v.max_length})
+        elif v.__class__ == forms.fields.TimeField:
+            dc.update({'type':'area'})
+        
+        out.append(dc)
+    return out
+    
+
+
 field_map={
     models.DateTimeField:DatetimeProc,
     models.ForeignKey : ForeignProc
