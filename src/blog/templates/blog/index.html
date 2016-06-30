@@ -4,16 +4,9 @@
 	<script src="{{js}}"></script>
 {% endfor %}
 
-<script type="text/javascript">
+<!--<script type="text/javascript">
 	app.controller('head',function ($scope) {
 		$scope.menus={{categorys | safe}}
-		//$scope.content_url='{{content_url}}'
-		//[
-			//{name:'math',label:'数学',url:'/blog/index/math'},
-			//{name:'science',label:'科技',url:'/blog/index/science'},
-			//{name:'program',label:'编程',url:'/blog/index/program'},
-			//{name:'common',label:'随笔',url:'/blog/index/common'}
-		//]
 		$scope.crt={
 			name:'{{crtCatName | default:""}}',
 			overname:'',
@@ -36,6 +29,7 @@
 		
 	})
 </script>
+-->
 <style type="text/css" media="screen" id="test">
 	@media (min-width: 1400px){
 		.main-content{
@@ -93,37 +87,7 @@
 		/*padding-bottom: 200px;*/
 		
 	}
-	/*.menu{
-		padding: 20px;
-	}*/
-	#head-out{
-		min-height:100px;
-	}
-	#head{
-		/*float: right;*/
-		/*padding:0 5%;*/
-		margin-top:60px;
-		text-align: right;
-		position: relative;
-		margin-right:15%;
-	}
 
-	/*#head-menu{
-		
-		display: inline-block;
-
-	}*/
-	.menu li{
-		display: inline;
-		padding: 10px;
-	}
-	.menu a.active{
-		border-bottom: 2px solid red;
-		/*font-size: 150%;*/
-	}
-	.menu a{
-		text-decoration: none;
-	}
 	#robot_dog{
 		width:70px;
 		margin: 0 auto;
@@ -164,20 +128,6 @@
 		width:80%;
 	}
 </style>
-<div class='mycontainer' id='head-out'>
-	<div ng-controller='head' id='head'>
-		<ul class="menu" id='head-menu'>
-			<li ng-repeat='menu in menus' >
-				<a ng-href="/blog/index/$[[menu.name]]^"
-					ng-class='{"active":crt.is_active(menu)}'
-					ng-click='crt.name=menu.name'
-					ng-mouseover='crt.overname=menu.name'
-					ng-mouseleave='crt.overname=""'><span ng-bind='menu.label'></span></a>
-			</li>
-		</ul>
-
-</div>
-</div>
 
 	<div class='mycontainer'>
 		<div class='main-content'>
@@ -187,13 +137,41 @@
 					<div class='article'>
 						<h3 class='art_title'>{{art.title}}</h3>
 						<hr>
-						<div>{{art.content | safe |truncatechars_html:200}}</div>
+						<div>{{art.html | safe |truncatechars_html:200}}</div>
 						<div style='text-align: right;'><a href='/blog/article/{{art.name}}'>View Detail</a></div>
 					</div>
 					
 				</div>
 			{% endfor %}
 		{% endblock %}
+
+		<nav style='float: right;'>
+		  <ul class="pagination">
+
+			{% if page_nums.0 != 1 %}
+		    <li>
+		      <a href="?page=1" aria-label="Previous">
+		        <span aria-hidden="true">&laquo;</span>
+		      </a>
+		    </li>
+		    {% endif %}
+		    {% for num in page_nums %}
+		    	{% if num == page %}
+		    	<li class='active'><a href="#">{{num}}</a></li>
+		    	{% else %}
+		    	<li><a href="?page={{num}}">{{num}}</a></li>
+		    	{% endif %}
+		    {% endfor %}
+		    {% if last_num != page_count %}
+		    <li>
+		      <a href="?page={{page_count}}" aria-label="Next">
+		        <span aria-hidden="true">&raquo;</span>
+		      </a>
+		    </li>
+		    {% endif %}
+		  </ul>
+		</nav>
+		
 		</div>
 		<div class='side-content' >
 			<div class='info_panel'>
@@ -221,6 +199,7 @@
 		</div>
 		
 	</div>
+	
 
 
 

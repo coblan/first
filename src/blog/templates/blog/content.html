@@ -13,26 +13,20 @@
     This is my textarea to be replaced with CKEditor.
  </textarea>-->
 <script type="text/javascript">
-	$(function () {
-
-		//$('.language-python').each(function () {
-		//	$(this).parent().addClass('brush:python')
-		//	$(this).parent().html($(this).html())
-		//})
-		
-		syntax.adapt_ck()
-		syntax.autoload()
-		SyntaxHighlighter.all();
+	//$(function () {
+	//	syntax.adapt_ck()
+	//	syntax.autoload()
+	//	SyntaxHighlighter.all();
 		
 
-     	$('#index_container').html(hx.build_index($('.article')))
-	})
+ //    	$('#index_container').html(hx.build_index($('.article')))
+	//})
 	
 </script>
 <script>
 
 </script>
-<script type="text/javascript">
+<!--<script type="text/javascript">
 	app.controller('comment',function ($scope,$http) {
 		var art_pk='{{art_pk}}'
 		$scope.save=function (valid) {
@@ -72,6 +66,7 @@
 		init();
 	})
 </script>
+-->
 <style type="text/css" media="screen" id="test">
 	.short-input{
 		max-width:300px;
