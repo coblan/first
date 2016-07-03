@@ -10,6 +10,7 @@
 		
 		<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<script src="//cdn.bootcss.com/vue/1.0.24/vue.js"></script>
 		<title>{{title | default:'我的网络日志'}}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<script type="text/javascript">
@@ -49,6 +50,9 @@
 				text-decoration: none;
 			}
 		</style>
+		{% for js in custom_js %}
+			<script src="{{js}}"></script>
+		{% endfor %}
 		</head>
 		<body >
 		<div class='mycontainer' id='head-out'>

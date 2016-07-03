@@ -1,8 +1,6 @@
 ﻿{% extends 'blog/base.html' %}
 {% block content %}
-{% for js in custom_js %}
-	<script src="{{js}}"></script>
-{% endfor %}
+
 
 <!--<script type="text/javascript">
 	app.controller('head',function ($scope) {
@@ -143,7 +141,6 @@
 					
 				</div>
 			{% endfor %}
-		{% endblock %}
 
 		<nav style='float: right;'>
 		  <ul class="pagination">
@@ -172,6 +169,8 @@
 		  </ul>
 		</nav>
 		
+		{% endblock %}
+
 		</div>
 		<div class='side-content' >
 			<div class='info_panel'>
@@ -189,7 +188,7 @@
 					标签
 				</div>
 				{% for tag in tags %}
-				<a class="btn btn-default" href="/blog/tag/{{tag.name}}/?crtCatName={{crtCatName}}" role="button">{{tag.label}}</a>
+				<a class="btn btn-default" href="/blog/tag/{{tag.name}}/?crt_cat={{crt_cat}}" role="button">{{tag.label}}</a>
 					
 				{% endfor %}
 			</div>

@@ -68,9 +68,9 @@ class ArticleModel(TagAble):
         #return self.title
 
 class ArtComment(models.Model):
-    nickname=models.CharField(u'称呼',max_length=200,blank=True)
+    nickname=models.CharField(u'称呼',max_length=200,default='')
     art=models.ForeignKey(ArticleModel,verbose_name=u'文章',null=True,blank=True)
-    comment=models.TextField(u'评论内容',blank=True)
+    comment=models.TextField(u'评论内容',default='')
     create_time=models.DateTimeField(u'创建时间',auto_now=True)
 
 

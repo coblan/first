@@ -76,6 +76,5 @@ def handle_uploaded_file(f,file_path):
    
 def tag_view(request,tagname):
     if request.method=='GET':
-        ctx=CtxTag(tagname)
-        ctx.build(request.GET.get('crtCatName'))
-        return render(request,'blog/tag.html',context=ctx.__dict__)
+        ctx=CtxTag(request.GET.get('crt_cat'),tagname)
+        return render(request,'blog/tag.html',context=ctx.get_dict())

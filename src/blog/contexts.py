@@ -1,22 +1,29 @@
 # -*- encoding:utf8 -*-
 from __future__ import unicode_literals
 from os import path
-from models import CatModel,ArticleModel
+from models import CatModel,ArticleModel,Tag
 import json
-from core.db_tools import get_or_none
+from core.db_tools import get_or_none,form_to_head,to_dict
 from django.core.paginator import Paginator
-
+from django.http import Http404
+from forms import CommentForm
+from django.conf import settings
 base_dir=path.dirname(__file__)
 
 class CtxHead(object):
     def __init__(self,name=''):
         self.crt_cat=name  # CatModel; 索引页当前所属的分类
+        self.custom_js=['/static/js/blog.pack.js?%s'%int(path.getmtime(path.join(
+            base_dir,'static/js/blog.pack.js')))]        
+        self.title=u'我的网络日志'
+        self.tags='' # 显示中右侧导航栏中的标签        
     
-    def build_head(self):
+    def build(self):
         self.menus = CatModel.objects.all()
         for menu in self.menus:
             if menu.name==self.crt_cat:
                 self.tags = menu.tag_set.all()
+
     
 class CtxIndex(CtxHead):
     def __init__(self,name='',page=1):  
@@ -24,22 +31,18 @@ class CtxIndex(CtxHead):
         self.categorys='' # 所有的分类，用json来表示的字典
         self.page=page
         self.articles=''
-        self.custom_js=['/static/js/blog.pack.js?%s'%int(path.getmtime(path.join(
-            base_dir,'static/js/blog.pack.js'))),
-                        'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML']        
-        self.title=u'我的网络日志'
-        self.tags='' # 显示中右侧导航栏中的标签
+ 
     
     def get_dict(self):
         self.build()
         return self.__dict__
     
     def build(self):
-        self.build_head()
+        super(CtxIndex,self).build()
         self.build_index()
         
     def build_index(self):
-        self.pgnt = Paginator(ArticleModel.objects.filter(category__name=self.crt_cat,statue='publish'),1)
+        self.pgnt = Paginator(ArticleModel.objects.filter(category__name=self.crt_cat,statue='publish'),settings.INDEX_PER_PAGE)
         self.articles = self.pgnt.page(self.page)
         ls = list(self.pgnt.page_range)
         c=self.page
@@ -59,42 +62,48 @@ class CtxIndex(CtxHead):
 
 
 class CtxPage(CtxHead):
-    def __init__(self,name):
-        super(CtxPage,self).__init__(name)
-        self.name=name
-        self.article='' # ArticleModel
-        self.art_pk='' # @int ; ArticleModel.pk 
+    def __init__(self,page_name):
+        page=get_or_none(ArticleModel,name=page_name)
+        if not page:
+            raise Http404("%s not found"%page_name)
+        super(CtxPage,self).__init__(page.category.name)
+        self.article=page
+        self.custom_js.append('https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
+
     
     def get_dict(self):
         self.build()
         return self.__dict__
     
     def build(self):
-        self.build_head()
-        self.build_page()
+        super(CtxPage,self).build()
+        #self.build_head()
+        self.build_comment()
+        
+        self.heads= json.dumps(form_to_head( CommentForm()))
         #self.build_crt_cat(category.name)
         
     
-    def build_page(self):
-        page=get_or_none(ArticleModel,name=self.name)
-        if page:
-            self.article = page
-            self.crt_cat = page.category.name
-            #self.art_pk=page.pk
-            #return page.category
-        else:
-            raise UserWarning,'%s has not found'%name
+    def build_comment(self):
+        self.comments= json.dumps([to_dict(comment) for comment in self.article.artcomment_set.all()])
+
 
 class CtxTag(CtxIndex):
-    def __init__(self,tag_name):
-        super(CtxTag,self).__init__()
-        self._tag_name=tag_name
+    def __init__(self,cat_name,tag_name):
+        super(CtxTag,self).__init__(cat_name)
+        self.name=tag_name
     
-    def build_index(self,*arg,**kw):
-        tag=get_or_none(Tag,name=self._tag_name)
-        articles=[]
+    
+    def get_dict(self):
+        super(CtxTag,self).build()
+        self.build()
+        return self.__dict__
+    
+    def build(self):
+        tag=get_or_none(Tag,name=self.name)
+        #articles=[]
         if tag:
-            for art in tag.articlemodel_set.filter(statue='publish') :
-                articles.append({'title':art.title,'content':art.html,'name':art.name})
-        self.articles = articles
+            self.articles=tag.articlemodel_set.filter(statue='publish') 
+                #articles.append({'title':art.title,'content':art.html,'name':art.name})
+        #self.articles = articles
         

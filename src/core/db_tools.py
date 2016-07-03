@@ -1,4 +1,5 @@
 # -*- encoding:utf-8 -*-
+from __future__ import unicode_literals
 from django.db import models
 from django.apps import apps
 from django import forms
@@ -104,7 +105,8 @@ def from_dict(dc,model=None,pre_proc=None):
 def _convert_foreign(dc,model):
     fields=model._meta.fields
     for field in fields:
-        if field.name in dc and isinstance(field,models.ForeignKey):
+        if field.name in dc and isinstance(field,models.ForeignKey)\
+           and not isinstance(dc[field.name],field.rel.to):
             dc[field.name]=_deserilize_foreignkey(field, dc[field.name])    
 
 def _deserilize_foreignkey(field,pk):
@@ -127,15 +129,45 @@ def _field_name_to_filed(fields,instance):
 def form_to_head(form):
     out = []
     for k,v in form.fields.items():
-        dc = {'name':k,'label':str(v.label),'required':v.required,}
+        dc = {'name':k,'label':unicode(v.label),'required':v.required,}
         if v.__class__==forms.fields.CharField:
-            dc.update({'type':'text','max_length':v.max_length})
-        elif v.__class__ == forms.fields.TimeField:
-            dc.update({'type':'area'})
-        
+            if v.max_length:
+                dc.update({'type':'text','maxlength':v.max_length})
+            else:
+                dc.update({'type':'area'})
+        else:
+            dc.update({'type':'text'})
         out.append(dc)
     return out
     
+def model_form_save(form,models,success=None,**kw):
+    model_dict= models # kw.pop('models')
+    model_dict.update(kw)
+    iform = form(model_dict)
+
+    if iform.is_valid():
+        model = form.Meta.model
+        obj = from_dict(iform.cleaned_data,model)
+        if success:
+            return success(obj)
+        else:
+            return {'status':'success'}
+    else:
+        return {'errors':iform.errors}
+
+
+def save_model(models,scope):
+    if '_form' in models:
+        form = scope.get(models.get('_form'))
+    else:
+        model=apps.get_model(models['_class'])
+        for k,v in scope.items():
+            if isinstance(v,forms.ModelForm):
+                if v.Meta.model==model:
+                    form = v
+                    break
+    return model_form_save(form,models)
+                
 
 
 field_map={

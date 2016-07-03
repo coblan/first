@@ -29,3 +29,4 @@ else:
 
 
 SITE_URL='localhost:8000'
+PER_PAGE=10

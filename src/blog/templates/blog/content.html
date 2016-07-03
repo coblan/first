@@ -13,17 +13,58 @@
     This is my textarea to be replaced with CKEditor.
  </textarea>-->
 <script type="text/javascript">
-	//$(function () {
-	//	syntax.adapt_ck()
-	//	syntax.autoload()
-	//	SyntaxHighlighter.all();
+	Vue.config.delimiters = ['[[', ']]'];
+	$(function () {
+		syntax.adapt_ck()
+		syntax.autoload()
+		SyntaxHighlighter.all();
 		
 
- //    	$('#index_container').html(hx.build_index($('.article')))
-	//})
+     	$('#index_container').html(hx.build_index($('.article')))
+	})
 	
 </script>
-<script>
+
+<script type="text/javascript">
+	heads={{heads | safe }}
+	models={}
+	for(x in heads){
+		models[heads[x]['name']]=''
+	}
+	models.art= {{article.pk}}
+	models._form='CommentForm'
+	//art_pk=
+	meta={
+		errors:{},
+		models:models,
+		heads:heads,
+	}
+	$(function () {
+		new Vue({
+			el:'#comment',
+			data:{
+				meta:meta,
+				comments:{{comments |safe | default:'[]'}},
+			},
+			methods:{
+				submit_comment:function () {
+					if(!confirm("确认要提交吗？？")){return}
+					var self = this
+					var post_data=[
+					{fun:'save',models:models},
+					{fun:'get_art_comment',art_pk:models.art}
+					]
+					$.post('',JSON.stringify(post_data),function (data) {
+						if(data.save.errors){
+							update_vue_obj(meta.errors,data.save.errors)
+						}
+						self.comments= data.get_art_comment
+						models.comment=''
+					})
+				}
+		}
+		})
+	})
 
 </script>
 <!--<script type="text/javascript">
@@ -90,9 +131,12 @@
 		/*left:-30px;*/
 	}
 </style>
-<div class='comment' ng-controller='comment' style='margin-top:50px'>
+<div class='comment' ng-controller='comment' style='margin-top:50px' id='comment'>
 	<h2>留言</h2>
-	<form name='comment' ng-submit="save(comment.$valid)" novalidate>
+	<field name='nickname' :meta='meta' style='max-width:300px'></field>
+	<field name='comment' :meta='meta'></field>
+	<button type="button" class="btn btn-success" @click='submit_comment()'>确定</button>
+	<!--<form name='comment' ng-submit="save(comment.$valid)" novalidate>
 		<div class="form-group short-input" >
 		    <label for="nickname">称呼</label>
 		    <input type="text" class="form-control" id="nickname" placeholder="nickname" ng-model='nickname' class='short-input' name='nickname' required>
@@ -111,13 +155,14 @@
 		  	<span style='clear: both;'>.</span>
 	  	</div>
 	  	
-  	</form>
-  	<div ng-repeat='comment in comments | orderBy:"-pk"' style='margin-bottom:30px;'>
-	  	<h3><span ng-bind='comment.nickname'></span></h3>
+  	</form>-->
+  	<div v-for='comment in comments | orderBy "-pk"' style='margin-bottom:30px;'>
+	  	<h3><span v-text='comment.nickname'></span></h3>
 	  	<hr>
-	  	<div ng-bind='comment.comment' style='margin-left:30px;'></div>
+	  	<div v-text='comment.comment' style='margin-left:30px;'></div>
   	</div>
 </div>
+{% include 'fields.html' %} 
 
 {% endblock %}
 

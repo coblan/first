@@ -37,6 +37,29 @@ class RouterAjax(object):
         
     def run(self):
         self.commands = json.loads(self.request.body)
+        if isinstance(self.commands,list):
+            return self.run_list()
+        else:
+            return self.run_dict()
+    
+    def run_list(self):
+        for func_dic in self.commands:
+            # [{fun:'name',k1:'v1',k2:'v2',rt_name:'rt_value},
+            #  {fun:'name',value:'last_fun',kk1:'vv1'}]
+            
+            try:
+                fun_name= func_dic.pop('fun')
+                func = self.scope[fun_name]
+                self.rt[fun_name] = self._run_func(func,**func_dic)
+            except (UserWarning,TypeError,KeyError) as e:
+                if self.rt_except:
+                    self.msgs.append(repr(e))
+                else:
+                    raise e
+        self.rt['msg']=';'.join(self.msgs)
+        return HttpResponse(json.dumps(self.rt), content_type="application/json")            
+            
+    def run_dict(self):
         self.orders=self.commands.pop('order',[])
         if self.rt_except:
             try:

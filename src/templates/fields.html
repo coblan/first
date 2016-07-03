@@ -82,9 +82,23 @@ meta={
 			password:{
 				props:['name'],
 				template:'<input type="password" class="form-control">'
+			},
+			area:{
+				props:['name'],
+				template:'<textarea class="form-control" rows="3"></textarea>'
 			}
 		}
 })
+
+function update_vue_obj(vue_obj,obj) {
+	for(x in vue_obj){
+		Vue.delete(vue_obj,x)
+	}
+	for(x in obj){
+		Vue.set(vue_obj,x,obj[x])
+	}
+}
+
 </script>
 
 
@@ -97,7 +111,8 @@ meta={
 	    	:name='name' 
 	    	id="[['id_'+name]]"
 	    	:placeholder='head.placeholder'
-	    	:autofocus='head.autofocus'></component> 
+	    	:autofocus='head.autofocus'
+	    	:maxlength='head.maxlength'></component> 
 	    <slot> </slot>
 		<div v-text='error_data(name)' class='error'></div>
 	    
