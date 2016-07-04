@@ -29,7 +29,8 @@ def index(request,cat_name=''):
             page = int(request.GET.get('page'))
         except Exception:
             page=1
-            
+        if not cat_name:
+            cat_name=CatModel.objects.first().name
         ctx_index=CtxIndex(cat_name,page)
         #ctx_index.build()
         return render(request,'blog/index.html',context=ctx_index.get_dict())  

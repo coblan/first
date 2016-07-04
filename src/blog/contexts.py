@@ -42,7 +42,8 @@ class CtxIndex(CtxHead):
         self.build_index()
         
     def build_index(self):
-        self.pgnt = Paginator(ArticleModel.objects.filter(category__name=self.crt_cat,statue='publish'),settings.INDEX_PER_PAGE)
+        pages= ArticleModel.objects.filter(category__name=self.crt_cat,statue='publish').order_by('-update_time')
+        self.pgnt = Paginator(pages,settings.INDEX_PER_PAGE)
         self.articles = self.pgnt.page(self.page)
         ls = list(self.pgnt.page_range)
         c=self.page
