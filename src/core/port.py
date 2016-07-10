@@ -43,14 +43,18 @@ class RouterAjax(object):
             return self.run_dict()
     
     def run_list(self):
+        """
+        json format :
+        
+        [{fun:'name',k1:'v1',k2:'v2'},
+        {fun:'name',value:'last_fun',kk1:'vv1'}]
+        
+        """
         for func_dic in self.commands:
-            # [{fun:'name',k1:'v1',k2:'v2',rt_name:'rt_value},
-            #  {fun:'name',value:'last_fun',kk1:'vv1'}]
-            
             try:
                 fun_name= func_dic.pop('fun')
                 func = self.scope[fun_name]
-                self.rt[fun_name] = self._run_func(func,**func_dic)
+                self.rt[fun_name] = self.inject_and_run(func,**func_dic)
             except (UserWarning,TypeError,KeyError) as e:
                 if self.rt_except:
                     self.msgs.append(repr(e))
@@ -64,14 +68,14 @@ class RouterAjax(object):
         if self.rt_except:
             try:
                 self.proc_order()
-                self.proc_common()
+                self.proc_no_order()
             except (UserWarning,TypeError,KeyError) as e:
                 self.msgs.append(repr(e))
             #except KeyError as e:
                 #self.msgs.append('no function %s'%k)
         else:
             self.proc_order()
-            self.proc_common()
+            self.proc_no_order()
         self.rt['msg']=';'.join(self.msgs)
         return HttpResponse(json.dumps(self.rt), content_type="application/json")     
 
@@ -79,14 +83,15 @@ class RouterAjax(object):
         for k in self.orders:
             func = self.scope[k]
             kw=self.commands.pop(k)                
-            self.rt[k]=self._run_func(func,**kw)
+            self.rt[k]=self.inject_and_run(func,**kw)
             
-    def proc_common(self):
+    def proc_no_order(self):
         for k, kw in self.commands.items():
             func = self.scope[k]
-            self.rt[k]=self._run_func(func,**kw) 
+            self.rt[k]=self.inject_and_run(func,**kw) 
     
-    def _run_func(self,func,**kw):
+    def inject_and_run(self,func,**kw):
+        """Inject user , request"""
         args=inspect.getargspec(func).args
         if 'request' in args:
             kw['request']=self.request

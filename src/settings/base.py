@@ -130,3 +130,11 @@ WSGI_APPLICATION = 'ws4redis.django_runserver.application'
 WS4REDIS_HEARTBEAT = '--heartbeat--'
 
 INDEX_PER_PAGE=5
+
+
+EMAIL_HOST='smtp.163.com'
+EMAIL_HOST_PASSWORD='he7125158'
+EMAIL_HOST_USER='coblan'
+EMAIL_SUBJECT_PREFIX='[FIRST]'
+SERVER_EMAIL='coblan@163.com'
+DEFAULT_FROM_EMAIL='coblan@163.com'
