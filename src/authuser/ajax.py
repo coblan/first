@@ -39,6 +39,7 @@ def registe(info):
     form = AuthForm(info)
     if form.is_valid(): 
         user=from_dict(form.cleaned_data,User)
+        user.set_password(user.password)
         #user=User.objects.create_user(username=username,password=password)
         user.is_active=True
         user.save()

@@ -80,7 +80,8 @@
 		new Vue({
 			el:'#content',
 			data:{
-				meta:meta
+				meta:meta,
+				regist_url:regist_url
 			},
 			methods:{
 				submit_info:function () {
@@ -136,7 +137,7 @@
 				class='btn btn-lg btn-primary btn-block' 
 				value="登陆" />-->
 			<div style='text-align: right;padding-top:10px;'>
-				<a ng-href="[[regist_url]]" >注册</a>
+				<a :href="regist_url" >注册</a>
 			</div>
 			<!--<div ng-show='infome' style='color: red;'>
 				<p ng-show='logForm.name.$error.required'>* 用户名不能为空</p>

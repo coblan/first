@@ -4,6 +4,8 @@ from django.db.models import Q
 import json
 import logic
 
+from authuser.ajax import logout
+
 def get_globe():
     return globals()
 
@@ -65,4 +67,6 @@ def search(keywords,user):
     for file in NoteModel.objects.filter(Q(content__icontains=keywords)|Q(name__icontains=keywords),owner=user):
         files.append(to_dict(file))
     return {'files':files,'dirs':dirs}
+
+
         

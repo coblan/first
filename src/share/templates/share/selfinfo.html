@@ -222,8 +222,7 @@
 		$scope.can_rename=function () {
 			var selectd=current_selected()
 			var count=selectd.length
-			if(count==1){return true}
-			else{return false}
+			return count==1
 			
 		}
 		$scope.cancel=function () {
@@ -234,7 +233,11 @@
 			)
 			
 		}
-
+		$scope.has_select=function () {
+			var selectd=current_selected()
+			var count=selectd.length
+			return count>=1
+		}
 		$scope.search={
 			update:function (keywords) {
 					if(!keywords)return
@@ -248,6 +251,14 @@
 					})
 				},
 				
+		}
+		$scope.logout=function () {
+			var postData={
+				logout:{}
+			}
+			ajax.post(post_url,postData,function (data) {
+				location='/'
+			})
 		}	
 	})
 	function load_syntax() {
@@ -338,9 +349,12 @@
 			<option value="[[dir.pk]]" >[[dir.name]]</option>
 			</select>-->
 		<div><span ng-repeat='d in parents'> 
-			<a href="" ng-click='switch_dir(d.pk)' style='min-width:10px'>[[d.name]]</a>
-			&gt;</span>
-			<span ng-bind='dir.name'></span>
+			<a href="" ng-click='switch_dir(d.pk)' style='min-width:10px'>
+				<span ng-show='$index!=0'>[[d.name]]</span>
+				<span class="glyphicon glyphicon-cloud" aria-hidden="true" ng-show='$index==0' style='color: blue;'></span></a>
+			/</span>
+			<span ng-bind='dir.name' ng-show='parents.length!=0'></span>
+			<span class="glyphicon glyphicon-cloud" aria-hidden="true" ng-show='parents.length==0' style='color: blue;'></span>
 		</div>
 		
 		<div class='col-sm-12'>
@@ -395,23 +409,43 @@
 		</div>
 
 		<!------------------编辑逻辑页面----------------------->
+		<div style='float: right;margin-right: 20px;'>
+			<span>Welcome &nbsp{{user.username}}</span>&nbsp/&nbsp
+			<a href="" ng-click='logout()'>logout</a>
+		</div><!--border: 1px solid #999;display: inline-block;padding: 10px;radius:3px;-->
 		<div class='col-md-9'>
-			<button name="test" type="button" value="val" 
-				ng-click='file_win="modify"' ng-disabled='!crt_file'>编辑当前文件</button>
+			<div class='well well-lg' >
+			<button name="test" type="button" value="val" class='btn btn-default'
+				ng-click='file_win="modify"' ng-disabled='!crt_file'>
+				<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+				编辑当前文件</button>
 				
-			<button name="ssf" type="button" value="val" 
-				ng-click='set_editWin("new_dir")'>新增文件夹</button>
-			<button name="test" type="button" value="val" 
-				ng-click='file_win="new_file"'>新增文件</button>
-			<button name="sg" type="button" value="val" 
-				ng-click='set_editWin("rename")'
-				ng-disabled='!can_rename()'>重命名</button>
+			<button name="test" type="button" value="val" class='btn btn-default'
+				ng-click='file_win="new_file"'>
+				<span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+				新增文件</button>
+				
+			<button name="ssf" type="button" value="val" class='btn btn-default'
+				ng-click='set_editWin("new_dir")'>
+				<span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+				新增文件夹</button>
 
-			<button name="test" type="button" value="val" 
-				ng-click='del_selected()'>删除选中项</button>
+			<button name="sg" type="button" value="val" class='btn btn-default'
+				ng-click='set_editWin("rename")'
+				ng-disabled='!can_rename()'>
+				<span class="glyphicon glyphicon-font" aria-hidden="true"></span>
+				重命名选中项</button>
+
+			<button name="test" type="button" value="val" class='btn btn-default'
+				ng-click='del_selected()' ng-disabled='!has_select()'>
+				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+				删除选中项</button>
 				
-			<button name="test" type="button" value="val" 
-				ng-click='edit_win="move"'>移动选中项</button>
+			<button name="test" type="button" value="val" class='btn btn-default'
+				ng-click='edit_win="move"' ng-disabled='!has_select()'>
+				<span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+				移动选中项</button>
+			</div>
 
 			<div ng-switch='file_win'>
 				<div ng-switch-when='reading'>
@@ -419,7 +453,7 @@
 						<h2 ng-bind='crt_file.name' 
 							style='border-bottom: 1px solid #999;'></h2>
 		<!--------------------显示内容--------------------->
-			<div id='file-index' style='width:200px;float: right;'></div>
+			<div id='file-index' style='width:200px;float: right;border: 1px solid #EBEBEB;border-radius:5px;padding: 8px;'></div>
 			<div id='file-content' ng-bind-html='trustAsHtml(crt_file.content)'
 				style='margin-right:100px;'></div>
 			
