@@ -1,5 +1,5 @@
 from models import ArtComment,ArticleModel
-from core.db_tools import to_dict,model_form_save,save_model
+from core.db_tools import to_dict,model_form_save,save_model_form
 #from forms import CommentForm
 import forms
 
@@ -9,8 +9,9 @@ import forms
 def get_globe():
     return globals()
 
-def save(models):
-    return save_model(models, forms.get_globe())
+def save(row):
+    return save_model_form(row, forms.get_globe())
+    #return save_model(models, forms.get_globe())
 
 
 
@@ -21,8 +22,8 @@ def get_art_comment(art_pk):
     return out
 
 
-def add_art_comment(models):
-    return model_form_save(CommentForm,models=models)
+#def add_art_comment(models):
+    #return model_form_save(CommentForm,models=models)
     #art=ArticleModel.objects.get(pk=art_pk)
     #form = CommentForm({'art':art,'nickname':nickname,'comment':comment})
     #if form.is_valid():

@@ -51,15 +51,17 @@ class RouterAjax(object):
         
         """
         for func_dic in self.commands:
-            try:
+            if self.rt_except:
+                try:
+                    fun_name= func_dic.pop('fun')
+                    func = self.scope[fun_name]
+                    self.rt[fun_name] = self.inject_and_run(func,**func_dic)
+                except (UserWarning,TypeError,KeyError) as e:
+                    self.msgs.append(repr(e))
+            else:
                 fun_name= func_dic.pop('fun')
                 func = self.scope[fun_name]
-                self.rt[fun_name] = self.inject_and_run(func,**func_dic)
-            except (UserWarning,TypeError,KeyError) as e:
-                if self.rt_except:
-                    self.msgs.append(repr(e))
-                else:
-                    raise e
+                self.rt[fun_name] = self.inject_and_run(func,**func_dic)                
         self.rt['msg']=';'.join(self.msgs)
         return HttpResponse(json.dumps(self.rt), content_type="application/json")            
             

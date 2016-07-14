@@ -61,7 +61,7 @@ meta={
 			}
 			return {
 				head:head,
-				models: this.meta.models,
+				row: this.meta.row,
 				errors:this.meta.errors,
 			}
 		},
@@ -107,7 +107,7 @@ function update_vue_obj(vue_obj,obj) {
 	    <label for="[['id_'+name]]">[[head.label]]<span class="req_star" v-if='head.required'> *</span>
 	    </label>
 	    <component :is='head.type' 
-	    	v-model='models[name]' 
+	    	v-model='row[name]' 
 	    	:name='name' 
 	    	id="[['id_'+name]]"
 	    	:placeholder='head.placeholder'

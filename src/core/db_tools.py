@@ -146,17 +146,39 @@ def form_to_head(form):
         out.append(dc)
     return out
 
-def save_model(models,scope):
-    if '_form' in models:
-        form = scope.get(models.get('_form'))
+
+def save_model_form(row, form_scope=None, Form=None):
+    if Form:
+        model=Form.Meta.model
     else:
-        model=apps.get_model(models['_class'])
-        for k,v in scope.items():
-            if isinstance(v,forms.ModelForm):
+        model=apps.get_model(row['_class'])
+        for k,v in form_scope.items():
+            if isinstance(v,type) and issubclass(v,forms.ModelForm):
                 if v.Meta.model==model:
-                    form = v
-                    break
-    return model_form_save(form,models)
+                    Form = v
+                    break 
+    if not Form:
+        raise UserWarning,'not valid form class in form_scope'
+    form =Form(row)
+    if form.is_valid():
+        obj = from_dict(form.cleaned_data,model)
+        obj.save()
+        return {'status':'success'}
+    else:
+        return {'errors':form.errors}
+    
+
+#def save_model(models,scope):
+    #if '_form' in models:
+        #form = scope.get(models.get('_form'))
+    #else:
+        #model=apps.get_model(models['_class'])
+        #for k,v in scope.items():
+            #if isinstance(v,forms.ModelForm):
+                #if v.Meta.model==model:
+                    #form = v
+                    #break
+    #return model_form_save(form,models)
 
 
 def model_form_save(form,models,success=None,**kw):

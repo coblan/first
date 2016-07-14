@@ -1,7 +1,7 @@
 # -*- encoding:utf8 -*-
 from __future__ import unicode_literals
 from os import path
-from models import CatModel,ArticleModel,Tag
+from models import CatModel,ArticleModel,Tag,ArtComment
 import json
 from core.db_tools import get_or_none,form_to_head,to_dict
 from django.core.paginator import Paginator
@@ -82,6 +82,7 @@ class CtxPage(CtxHead):
         self.build_comment()
         
         self.heads= json.dumps(form_to_head( CommentForm()))
+        self.row= json.dumps(to_dict(ArtComment(art=self.article)))
         #self.build_crt_cat(category.name)
         
     

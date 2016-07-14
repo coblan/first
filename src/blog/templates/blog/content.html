@@ -27,16 +27,16 @@
 
 <script type="text/javascript">
 	heads={{heads | safe }}
-	models={}
-	for(x in heads){
-		models[heads[x]['name']]=''
-	}
-	models.art= {{article.pk}}
-	models._form='CommentForm'
+	row={{row | safe}}
+	//for(x in heads){
+	//	models[heads[x]['name']]=''
+	//}
+	//models.art= {{article.pk}}
+	//models._form='CommentForm'
 	//art_pk=
 	meta={
 		errors:{},
-		models:models,
+		row:row,
 		heads:heads,
 	}
 	$(function () {
@@ -51,15 +51,15 @@
 					if(!confirm("确认要提交吗？？")){return}
 					var self = this
 					var post_data=[
-					{fun:'save',models:models},
-					{fun:'get_art_comment',art_pk:models.art}
+					{fun:'save',row:row},
+					{fun:'get_art_comment',art_pk:row.art}
 					]
 					$.post('',JSON.stringify(post_data),function (data) {
 						if(data.save.errors){
 							update_vue_obj(meta.errors,data.save.errors)
 						}
 						self.comments= data.get_art_comment
-						models.comment=''
+						row.comment=''
 					})
 				}
 		}
