@@ -50,7 +50,7 @@
 	}
 	@media (min-width: 800px) and (max-width: 1400px){
 		.mycontainer{
-			width:95%;
+			width:90%;
 			margin: 0 auto;
 		}
 		.main-content{
@@ -125,6 +125,9 @@
 		display: inline-block;
 		width:80%;
 	}
+	.main-content h2{
+		font-size: 100%;
+	}
 </style>
 
 	<div class='mycontainer'>
@@ -135,8 +138,9 @@
 					<div class='article'>
 						<h3 class='art_title'>{{art.title}}</h3>
 						<hr>
-						<div>{{art.html | safe |truncatechars_html:200}}</div>
-						<div style='text-align: right;'><a href='/blog/article/{{art.name}}'>View Detail</a></div>
+						<div>{{art.html | safe |truncatechars_html:150}}</div>
+						<div style='text-align: right;'>
+							<a href='/blog/article/{{art.name}}'>View Detail</a></div>
 					</div>
 					
 				</div>

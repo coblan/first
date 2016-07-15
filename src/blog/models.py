@@ -48,24 +48,13 @@ class ArticleModel(TagAble):
     category=models.ForeignKey(CatModel,verbose_name=u'分类',max_length=100,blank=True)
     statue=models.CharField(u'状态',max_length=100,blank=True,choices=HTML_STATUS)
     update_time=models.DateTimeField(u'更新日期',auto_now=True)
+    order = models.CharField(u'顺序',max_length=100, default='1000')
     #statue=models.CharField(u'状态',max_length=100,blank=True)
 
     def __unicode__(self):
         return self.title    
 
 
-#class HtmlArt(TagAble):
-    #name=models.CharField(u'名称',max_length=100,blank=True)
-    #src=models.ForeignKey(SrcModel,verbose_name=u'源文件',blank=True,null=True)
-    #title=models.CharField(u'标题',max_length=300,blank=True)
-    #html=models.TextField(u'html代码',blank=True)
-    ##tag=models.CharField(u'类型')
-    #update_time=models.DateTimeField(u'更新日期',auto_now=True)
-    #statue=models.CharField(u'状态',max_length=100,blank=True,choices=HTML_STATUS)
-    #category=models.CharField(u'分类',max_length=100,blank=True,choices=CATEGORY)
-    
-    #def __unicode__(self):
-        #return self.title
 
 class ArtComment(models.Model):
     nickname=models.CharField(u'称呼',max_length=200,default='')
