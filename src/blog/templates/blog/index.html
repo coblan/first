@@ -125,10 +125,15 @@
 		display: inline-block;
 		width:80%;
 	}
-	.main-content h2{
-		font-size: 100%;
-	}
+	
+	{% block self_style %}
+		.main-content h2{
+			font-size: 100%;
+		}
+	{% endblock %}
+	
 </style>
+
 
 	<div class='mycontainer'>
 		<div class='main-content'>
