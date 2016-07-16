@@ -27,7 +27,8 @@ urlpatterns = [
     url(r'^$','hello.views.hello'),
     url(r'^talk/','hello.views.talk'),
     
-    url(r'^build/','pagebuilder.views.build')
+    url(r'^build/','pagebuilder.views.build'),
+    url(r'^upload_image_demo/$','hello.views.upload_image_demo')
 ]
 
 
