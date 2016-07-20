@@ -6,20 +6,7 @@
 		color: red;
 	}
 </style>
-<script type="text/javascript">
-	function merge(main,sub) {
-		for(var x =0; x<sub.length;x++){
-			for (var y =0 ;y<main.length;y++){
-				if(main[y].name==sub[x].name){
-					for(k in sub[x]){
-						main[y][k]=sub[x][k]
-					}
-					break
-				}
-			}
-		}
-	}
-</script>
+
 <script type="text/javascript">
 	next="{{next |default:'/'}}"
 	login_url='{{login_url}}'
@@ -32,17 +19,12 @@
 	
 	meta={
 		errors:{},
-		models:{
+		row:{
 			username:'',
 			password:'',
 			pas2:'',
 		},
 		heads: heads
-		//heads:[
-		//	{name:'username',label:'用户名',type:'text',required:true},
-		//	{name:'password',label:'密码',type:'password',placeholder:'first input password',autofocus:true,required:true},
-		//	{name:'pas2',label:'重新输入密码',type:'password',placeholder:'second input password',required:true},
-		//]
 	}
 	
 	$(function () {
@@ -56,17 +38,11 @@
 				submit_info:function () {
 					var self=this;
 					var post_data={
-						registe:{info:this.meta.models}
+						registe:{info:this.meta.row}
 					}
 					$.post('',JSON.stringify(post_data),function (data) {
 						if(data.registe.errors){
-							for(x in self.meta.errors){
-								Vue.delete(self.meta.errors,x)
-							}
-							for(x in data.registe.errors){
-								Vue.set(self.meta.errors,x,data.registe.errors[x])
-							}
-							
+							update_vue_obj(self.meta.errors,data.registe.errors)
 						}else{
 							location=login_url;
 						}
@@ -78,58 +54,10 @@
 	
 	
 </script>
-<!--<script type="text/javascript">
-	
-		app.controller('content',function ($scope,$http,$timeout) {
-			$scope.next="{{next |default:'/'}}";
-			var login_url='{{login_url}}'
-			$scope.is_login={{ is_login |default:'false'}}
-			
-			$scope.user={
-				name:'',
-				password:''
-			}
-			$scope.infome=false;
-			$scope.submit_func=function (valid) {
-				$scope.submit_clicked=true;
-				if(!valid)return;
-				if ($scope.user.password1!=$scope.user.password2){
-					$scope.stdout='两次密码不一致';
-					return;
-					}
-				var postData={
-					registe:{username:$scope.user.username,password:$scope.user.password1}
-				}
-				$http.post('',postData)
-				.success(function(data, status, headers, config) {  
-					if(data.registe.status=='success'){
-						location=login_url;
-					}else{
-						$scope.stdout=data.registe.msg;
-					}
-					
-				}).error(function(data, status, headers, config) {  
-				    
-				    $scope.stdout='有错误,返回码为:',
-				    $scope.stdout+=status; 
-				});  
-				
-			};
-			$scope.eq=function (a,b) {
-			 	return (a==b)
-				};
-			
-		});
-</script>
--->
+
 <div class='container' id='content'>
 	<div ng-controller='content'>
 
-    <!--<input-wrap label='dog' name='dog' errors='{}'>
-	    <input type="text" name="test" value=""  class="form-control" />
-    </input-wrap>-->
-
-	
 	<form name="regForm" 
 		ng-submit='submit_func(regForm.$valid)' 
 		class='form-signin' novalidate>
@@ -141,44 +69,9 @@
 			<span>防止密码输错，所以请第二次输出相同的密码</span>
 		</field>
 		
-		<!--<div class="form-group" style='margin-top:30px;'>
-		    <label for="usrname">*用户名:</label>
-		    <input type="text" class='form-control' 
-		    		name='usrname' placeholder='username' 
-		    		ng-model='user.username' required>
-			<p ng-show='regForm.usrname.$error.required&&submit_clicked' 
-				class='warn'>用户名不能为空</p>
-		</div>
-		
-		
-		<div class="form-group">
-		  <label for="pswd1">第一次输入密码</label>
-		  <input type="password" 
-		  		class='form-control' 
-		  		name="pswd1" 
-		  		placeholder='password' 
-		  		ng-model='user.password1' required />
-		  <p ng-show='regForm.pswd1.$error.required&&submit_clicked'
-		  		class='warn'>密码不能为空</p>
-		</div>
-
-		
-		<div class="form-group">
-			<label for="pswd2">第二次输入密码</label>
-			<input type="password" 
-				class='form-control' 
-				name="pswd2" 
-				placeholder='password' 
-				ng-model='user.password2' required />
-			<p ng-show='user.password1!=user.password2&&submit_clicked' 
-				class='warn'>
-				两次密码不相等
-			</p>
-		</div>-->
 		<button name="test" type="button" value="val" 
 			class='btn btn-lg btn-primary btn-block'
 			@click='submit_info()'>注册</button>
-		<!--<input type="submit" class='btn btn-lg btn-primary btn-block' value="注册" />-->
 		
 	</form>
 

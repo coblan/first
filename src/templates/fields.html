@@ -99,6 +99,18 @@ function update_vue_obj(vue_obj,obj) {
 	}
 }
 
+function merge(main,sub) {
+	for(var x =0; x<sub.length;x++){
+		for (var y =0 ;y<main.length;y++){
+			if(main[y].name==sub[x].name){
+				for(k in sub[x]){
+					main[y][k]=sub[x][k]
+				}
+				break
+			}
+		}
+	}
+}
 </script>
 
 

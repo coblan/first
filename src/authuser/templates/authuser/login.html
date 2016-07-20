@@ -2,71 +2,13 @@
 {% extends 'authuser/base.html' %}
 {% block content %}
 
-<!--<script type="text/javascript">
-	
-		app.controller('content',function ($scope,$http) {
-			// 
-			$scope.next="{{next |default:'/'}}";
-			$scope.regist_url='{{regist_url}}'
-
-			//
-			$scope.user={
-				name:'',
-				password:''
-			}
-			$scope.infome=false;
-			$scope.submit_func=function (valid) {
-				if(!valid){
-					$scope.infome=true;
-				}else{
-					$scope.infome=false;
-					var postData={
-						do_login:{name:$scope.user.name,password:$scope.user.password}
-					}
-					$http.post('',postData)
-					.success(function(data, status, headers, config) {  
-					    if(data.msg){
-						    alert(data.msg)
-					    }
-						if(data.do_login.status=='success'){
-							$scope.stdout='登陆成功';
-							location=$scope.next;
-						}else{
-							alert(data.do_login.msg)
-						}
-					}).error(function(data, status, headers, config) {  
-					    alert('有错误,返回码为:'+status)
-					});  
-				}
-			};
-			$scope.logout=function () {
-					var postData={
-						logout:{},
-					};
-					$http.post('',postData)
-				.success(function(data, status, headers, config) {  
-				    //加载成功之后做一些事  
-					$scope.stdout="提交成功";
-					if(data.status=='success'){
-						$scope.stdout='退出成功';
-						location=$scope.next;
-					}
-				}).error(function(data, status, headers, config) {  
-				    //处理错误 
-				    $scope.stdout='有错误,返回码为:',
-				    $scope.stdout+=status; 
-				});  
-				};
-		});
-</script>
--->
 <script type="text/javascript">
 	next="{{next |default:'/'}}"
 	regist_url='{{regist_url}}'
 	
 	meta={
 		errors:{},
-		models:{
+		row:{
 			username:'',
 			password:'',
 		},
@@ -85,27 +27,21 @@
 			},
 			methods:{
 				submit_info:function () {
-					var models=this.meta.models
+					var models=this.meta.row
 					var post_data={
 						do_login:{username:models.username,password:models.password}
 					}
 					var self=this;
 					$.post('',JSON.stringify(post_data),function (data) {
-						is_valid(data.do_login,self.meta.errors,function () {
+						if(data.do_login.errors){
+							update_vue_obj(self.meta.errors,data.do_login.errors)
+						}else{
 							location=next;
-						})
-						//if(data.do_login ){
-						//	if(data.do_login.errors){
-						//		for(x in self.meta.errors){
-						//			Vue.delete(self.meta.errors,x)
-						//		}
-						//		for(x in data.do_login.errors){
-						//			Vue.set(self.meta.errors,x,data.do_login.errors[x])
-						//		}
-						//	}else{
-						//		location=next;
-						//	}
-						//}
+						}
+						//is_valid(data.do_login,self.meta.errors,function () {
+						//	location=next;
+						//})
+			
 					})
 				}
 			}
@@ -120,38 +56,15 @@
 			<h2 class='form-signin-heading'>欢迎登陆</h2>
 			<field name='username' :meta='meta'></field>
 			<field name='password' :meta='meta'></field>
-			<!--<input type="test" 
-				class='form-control' 
-				name='name' 
-				placeholder='用户名' 
-				ng-model='user.name' 
-				required autofocus>
-			<input type="password" 
-				class='form-control'
-				name="pswd" 
-				placeholder='password' 
-				ng-model='user.password' 
-				required />-->
+	
 			<button name="test" type="button" value="val" @click='submit_info()'>登陆</button>
-			<!--<input type="submit" 
-				class='btn btn-lg btn-primary btn-block' 
-				value="登陆" />-->
+	
 			<div style='text-align: right;padding-top:10px;'>
 				<a :href="regist_url" >注册</a>
 			</div>
-			<!--<div ng-show='infome' style='color: red;'>
-				<p ng-show='logForm.name.$error.required'>* 用户名不能为空</p>
-				<p ng-show='logForm.pswd.$error.required'>* 密码不能为空</p>
-			</div>-->
-			
+
 		</form>
-	<!--</div>-->
-	
-	<!--<div ng-if='is_login'>
-		<div>已经登陆了... <a ng-href='[[next]]'>返回</a><a href="" ng-click="logout()">登出</a></div>
-	</div>-->
-	
-	<!--<div ng-bind='stdout' class='form-signin' style='color:red'></div>-->
+
 </div>
 
 </div>
