@@ -64,7 +64,7 @@ def search(keywords,user):
         dirs.append(to_dict(dir))
         
     files=[]
-    for file in NoteModel.objects.filter(Q(content__icontains=keywords)|Q(name__icontains=keywords),owner=user):
+    for file in NoteModel.objects.filter(Q(searchcontent__content__icontains=keywords)|Q(name__icontains=keywords),owner=user):
         files.append(to_dict(file))
     return {'files':files,'dirs':dirs}
 
