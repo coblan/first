@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app="share">
+
+	<head>
+		<kw charset='utf-8' />
+		<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+        <script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+		<!--<script src="//cdn.bootcss.com/vue/1.0.24/vue.min.js"></script>-->
+		<script src="http://cdn.bootcss.com/vue/1.0.24/vue.js"></script>
+		<script src="/static/js/coblan.js"></script>
+		
+
+{% include 'components.html' %}
+{% include 'fields.html' %}
+
+<script type="text/javascript">
+	$(function () {
+		new Vue({
+			el:'#content',
+			data:{
+				crt_panel:{},
+				kw:'',
+				panel_view:'edit',
+				temp_meta:temp_meta
+			},
+			compiled:function () {
+				var self = this
+				var post_data=[{fun:'get_page',name:'page1'}]
+				$.post('',JSON.stringify(post_data),function (data) {
+					self.kw=JSON.parse(data.get_page.content); 
+					//self.kw=JSON.parse(JSON.stringify(temp_meta.def_com_contain))
+					
+				})
+			},
+			events:{
+				edit:function (panel) {
+					this.crt_panel=panel
+					if(this.crt_dom){
+						$(this.crt_dom).removeClass('crt_dom')
+					}
+					this.crt_dom=panel.$el
+					$(this.crt_dom).addClass('crt_dom')
+					//Vue.set(this,'kw',kw)
+					//this.crt_contain=kw
+					//for(i in kw){
+					//	Vue.set(this.kw,i,kw[i])
+					//}
+					
+				}
+			},
+			methods:{
+				save:function () {
+					this.$refs.crtTemp.save()
+				},
+				add:function (temp) {
+					var data = JSON.parse(JSON.stringify(temp_meta[temp]));
+					this.crt_panel.add_element(data)
+				},
+				remove:function () {
+					this.crt_panel.detach()
+				},
+				submit:function () {
+					var kw = this.$refs.totalContain.kw
+					var post_data=[{fun:'save_page',name:'page1',label:'no label',content:JSON.stringify(kw)}]
+					$.post('',JSON.stringify(post_data))
+				}
+			}
+			
+		})
+		dragable($('#edit_panel'))
+		sizeable($('#edit_panel'))
+	})
+
+</script>
+<style type="text/css" media="screen" id="test">
+	.com-contain{
+		display: inline-block;
+	}
+	.crt_dom{
+		border: 4px solid red;
+	}
+	.navtree{
+		width:200px;
+		float: left;
+	}
+</style>
+</head>
+	<body>
+		<div id='content'>
+		<nav-tree :kw='kw' class='navtree'></nav-tree>
+		<com-contain v-ref:total-contain :kw='kw'></com-contain>
+
+		<div id='edit_panel' style='background-color: #f5f5f5;overflow: auto;width:100%;height:100%;padding: 20px;'>
+			
+				<ul class="nav nav-tabs">
+				  <li role="presentation" :class="{'active':panel_view=='edit'}">
+					  <a href="#" @click="panel_view='edit'">Edit</a></li>
+				  <li role="presentation" :class="{'active':panel_view=='temp'}">
+					  <a href="#" @click="panel_view='temp'">Temp</a></li>
+				</ul>
+
+				<div v-show='panel_view=="edit"'>
+					<div>
+						<component :is="crt_panel.kw.edit_temp" :kw='crt_panel.kw' v-ref:crt-temp></component>
+					</div>
+					<button name="test" type="button" value="val" @click='save()'>save</button>
+					<button name="test" type="button" value="val" @click='remove()'>delete</button>
+					<button name="test" type="button" value="val" @click='submit()'>submit</button>
+				</div>
+
+				<div v-show='panel_view=="temp"'>
+					<button name="test" type="button" value="val" @click='add("def_com_contain")'>contain</button>
+					<button name="test" type="button" value="val" @click='add("def_com_table")'>table</button>
+				</div>
+
+		</div>
+			
+			
+		
+		
+		</div>
+
+<script type="text/javascript">
+	Vue.component('navTree',{
+		template:'#nav-tree',
+		props:['kw']
+	})
+	Vue.component('navNode',{
+		template:'#nav-node',
+		props:['kw']
+	})
+</script>
+
+<template id='nav-tree'>
+	<div>
+		<ul>
+			<nav-node :kw='kw'></nav-node>
+		</ul>
+	</div>
+</template>
+
+<template id='nav-node'>
+	<li><span v-text='kw.temp' @click.stop='kw.click= !kw.click'></span>
+		<ul>
+			<nav-node v-for='child in kw.childs' :kw='child'></nav-node>
+		</ul>
+	</li>
+	
+</template>
+
+	</body>
+	
+</html>

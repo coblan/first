@@ -128,6 +128,7 @@ WS4REDIS_EXPIRE = 3600
 WS4REDIS_PREFIX = 'ws'
 WSGI_APPLICATION = 'ws4redis.django_runserver.application'
 WS4REDIS_HEARTBEAT = '--heartbeat--'
+WS4REDIS_EXPIRE=-1
 
 INDEX_PER_PAGE=5
 

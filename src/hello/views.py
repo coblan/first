@@ -6,9 +6,11 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 import os
 import time
+from core.port import jsonpost
+import ajax
+import time
 # Create your views here.
-from ws4redis.publisher import RedisPublisher
-from ws4redis.redis_store import RedisMessage
+
 
 
 
@@ -24,15 +26,12 @@ def hello(request):
 
 def talk(request):
     if request.method=='GET':
-        return render(request,'hello/talk.html',context={'site_url':settings.SITE_URL})
-    else:
-        msg=request.body
-        redis_publisher = RedisPublisher(facility='talk', broadcast=True)
-        message = RedisMessage(msg)
         
-        # and somewhere else
-        redis_publisher.publish_message(message)        
-        return HttpResponse('ok')
+        return render(request,'hello/talk.html',context={'site_url':settings.SITE_URL,'id':int(time.time()*1000)})
+    else:
+        return jsonpost(request, ajax.get_globe())
+                
+        #return HttpResponse('ok')
 
 
 @csrf_exempt

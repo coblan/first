@@ -1,0 +1,164 @@
+<script type="text/javascript">
+	temp_meta={}
+	
+	temp_meta.def_com_contain={
+						istyle:{
+						width:'100%',
+						height:'100px',
+						backgroundColor:'grey',
+						},
+					edit_temp:'edit-contain',
+					temp:'com-contain',
+					childs:[],
+					click:false,
+				}
+				
+	Vue.component('comContain',{
+		template:'#com-contain',
+		props:{
+			kw:{
+				default:function (){
+					return {
+						def_com_contain
+					}
+				}
+			},
+		},
+		watch:{
+			'kw.click':function () {
+				this.$dispatch('edit',this)
+			}
+		},
+		methods:{
+			edit:function () {
+				this.$dispatch('edit',this)
+			},
+			add_element:function (kw) {
+				//var kw = {
+				//		istyle:{
+				//		width:'100%',
+				//		height:'100px',
+				//		backgroundColor:'grey',
+				//		},
+				//	edit_temp:'edit-contain',
+				//	temp:'com-contain',
+				//	childs:[],
+				//}
+				this.kw.childs.push(kw)
+				//this.content='com-contain'
+			},
+			detach:function () {
+				this.$parent.content='blank'
+			}
+		},
+		components:{
+			blank:{
+				template:'<div></div>'
+			}
+		}
+	})
+
+	Vue.component('editContain',{
+		template:'#edit-contain',
+		props:['kw'],
+		data:function () {
+			return {
+				istyle:JSON.stringify(this.kw.istyle)
+			}
+		},
+		methods:{
+			save:function () {
+				var obj =JSON.parse(this.istyle)
+				//Vue.set(this.kw,'istyle',obj)
+				update_vue_obj(this.kw.istyle,obj)
+			},
+			
+		},
+		watch:{
+			'kw':function () {
+				this.istyle=JSON.stringify(this.kw.istyle)
+			}
+		}
+		//computed: {
+		//	istyle:{
+		//		get:function () {
+		//			return JSON.stringify(this.kw.istyle);
+		//		},
+		//		set:function (v) {
+		//			var obj =JSON.parse(v)
+		//			update_vue_obj(this.kw,obj)
+		//		}
+		//	}
+		//}
+	})
+</script>
+
+<template id='com-contain'>
+	<div :style='kw.istyle' class='com-contain' @click.stop='edit()'>
+		<!--<div @click='edit()'>edit</div>-->
+		<component :is="child.temp" v-for='child in kw.childs' :kw='child' track-by='$index'></component>
+	</div>
+</template>
+
+<template id='edit-contain'>
+	<div>
+		<textarea rows="3" cols="20" v-model='istyle'/>
+		</textarea>
+	</div>
+</template>
+
+
+<script type="text/javascript">
+	temp_meta.def_com_table={
+		heads:[{name:'name',label:'name'},
+				{name:'age',label:'Age'}],
+		rows:[{name:'heyulin',age:'18'}],
+		temp:'com-table',
+		edit_temp:'edit-table',
+		click:false,
+	}
+	Vue.component('comTable',{
+		template:'#com-table',
+		props:['kw'],
+		watch:{
+			'kw.click':function () {
+				this.$dispatch('edit',this)
+			}
+		},
+		})
+	Vue.component('editTable',{
+		template:'#edit-table',
+		props:['kw'],
+		data:function() {
+			return {
+				model:JSON.stringify(this.kw)
+			}
+		},
+		
+		methods:{
+			//model:function () {
+			//	return JSON.stringify(this.kw);
+			//}
+			save:function () {
+				var obj =JSON.parse(this.model)
+				update_vue_obj(this.kw,obj)
+			}
+		}
+	})
+</script>
+
+
+<template id='com-table'>
+	<table>
+		<tr><th v-for="head in kw.heads"><span v-text='head.label'></span></th></tr>
+		<tr v-for='row in kw.rows'><td v-for='head in kw.heads'><span v-text='row[head.name]'></span></td></tr>
+		
+	</table>
+</template>
+
+<template id='edit-table'>
+	<div>
+		<textarea rows="3" cols="20" v-model='model'/>
+		</textarea>
+	</div>
+</template>
