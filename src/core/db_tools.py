@@ -56,7 +56,13 @@ def to_dict(instance,filt_attr=None,include=None,exclude=None):
     return out
 
 
-
+class DateProc(object):
+    def to_dict(self,inst,name):
+        value = getattr(inst,name)
+        if value:
+            return value.strftime('%Y-%m-%d')
+        else:
+            return ''  
 
 class DatetimeProc(object):
     def to_dict(self,inst,name):
@@ -212,6 +218,7 @@ def model_form_save(form,models,success=None,**kw):
 
 
 field_map={
+    models.DateField:DateProc,
     models.DateTimeField:DatetimeProc,
     models.ForeignKey : ForeignProc
 }
