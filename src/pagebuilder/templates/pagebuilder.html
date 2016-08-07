@@ -10,20 +10,27 @@
 		<!--<script src="//cdn.bootcss.com/vue/1.0.24/vue.min.js"></script>-->
 		<script src="http://cdn.bootcss.com/vue/1.0.24/vue.js"></script>
 		<script src="/static/js/coblan.js"></script>
-		
+		<script src="/static/js/fields.pack.js"></script>
 
+		<script type="text/javascript">
+			use_color()
+			field({template:field_str('horizon')})
+		</script>
+		
+<!--{% include 'fields.html' %}-->
 {% include 'components.html' %}
-{% include 'fields.html' %}
+
 
 <script type="text/javascript">
 	$(function () {
 		new Vue({
 			el:'#content',
 			data:{
-				crt_panel:{},
+				//crt_panel:{},
 				kw:'',
 				panel_view:'edit',
-				temp_meta:temp_meta
+				edit_kw:{}
+				//temp_meta:temp_meta
 			},
 			compiled:function () {
 				var self = this
@@ -35,19 +42,14 @@
 				})
 			},
 			events:{
-				edit:function (panel) {
-					this.crt_panel=panel
+				focus:function (data) {
+					this.edit_kw=data.child_kw
 					if(this.crt_dom){
 						$(this.crt_dom).removeClass('crt_dom')
 					}
-					this.crt_dom=panel.$el
+					this.crt_dom=data.dom
 					$(this.crt_dom).addClass('crt_dom')
-					//Vue.set(this,'kw',kw)
-					//this.crt_contain=kw
-					//for(i in kw){
-					//	Vue.set(this.kw,i,kw[i])
-					//}
-					
+
 				}
 			},
 			methods:{
@@ -55,8 +57,9 @@
 					this.$refs.crtTemp.save()
 				},
 				add:function (temp) {
-					var data = JSON.parse(JSON.stringify(temp_meta[temp]));
-					this.crt_panel.add_element(data)
+					this.edit_kw.childs.push({temp:'com-contain'})
+					//var data = JSON.parse(JSON.stringify(temp_meta[temp]));
+					//this.crt_panel.add_element(data)
 				},
 				remove:function () {
 					this.crt_panel.detach()
@@ -82,15 +85,18 @@
 		border: 4px solid red;
 	}
 	.navtree{
-		width:200px;
-		float: left;
+		/*width:200px;
+		float: left;*/
 	}
 </style>
 </head>
 	<body>
-		<div id='content'>
-		<nav-tree :kw='kw' class='navtree'></nav-tree>
-		<com-contain v-ref:total-contain :kw='kw'></com-contain>
+		<div id='content' class='container-fluid'>
+		<nav-tree :kw='kw' class='navtree col-md-3'></nav-tree>
+		<div class='col-md-9' id='main-area'>
+			<com-contain v-ref:total-contain :kw.sync='kw' ></com-contain>
+		</div>
+		
 
 		<div id='edit_panel' style='background-color: #f5f5f5;overflow: auto;width:100%;height:100%;padding: 20px;'>
 			
@@ -103,7 +109,7 @@
 
 				<div v-show='panel_view=="edit"'>
 					<div>
-						<component :is="crt_panel.kw.edit_temp" :kw='crt_panel.kw' v-ref:crt-temp></component>
+						<component :is="edit_kw.edit_temp" :kw.sync='edit_kw' v-ref:crt-temp></component>
 					</div>
 					<button name="test" type="button" value="val" @click='save()'>save</button>
 					<button name="test" type="button" value="val" @click='remove()'>delete</button>
@@ -142,7 +148,7 @@
 </template>
 
 <template id='nav-node'>
-	<li><span v-text='kw.temp' @click.stop='kw.click= !kw.click'></span>
+	<li><span v-text='kw.temp' @click.stop='kw.toggle= !kw.toggle'></span>
 		<ul>
 			<nav-node v-for='child in kw.childs' :kw='child'></nav-node>
 		</ul>
