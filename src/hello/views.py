@@ -47,3 +47,8 @@ def upload_image_demo(request):
                 f.write(chunk)
         url = '/media/upload_image_demo/%s'%name
         return HttpResponse(json.dumps({'url':url}),content_type="application/json")
+    
+    
+    
+def normal_try(request):
+    return render(request,'hello/normal_try.html')
