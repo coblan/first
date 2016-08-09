@@ -1,52 +1,109 @@
 <script type="text/javascript">
 	temp_meta={}
 	
-	temp_meta.def_com_contain={
-						istyle:{
-						width:'100%',
-						height:'100px',
-						backgroundColor:'grey',
-						},
-					edit_temp:'edit-contain',
-					temp:'com-contain',
-					childs:[],
-					click:false,
-				}
-				
-	Vue.component('comContain',{
-		template:'#com-contain',
+	var common={
 		props:{
 			kw:{
-				default:function (){
-					return {
-						def_com_contain
+				coerce:function (kw){
+					if(!kw)return kw
+
+					var this_temp_meta=temp_meta[kw.temp]
+					//var default_kw = temp_meta[kw.temp]
+					if(this_temp_meta && this_temp_meta.justify){
+						return temp_meta[kw.temp].justify(kw)
+					}else{
+						return kw
 					}
 				}
 			},
 		},
+		methods:{
+			focus:function () {
+				var data={
+					dom:this.$el,
+					child_kw:this.kw,
+				}
+				this.$dispatch('focus',data)
+			},
+		},
 		watch:{
-			'kw.click':function () {
-				this.$dispatch('edit',this)
+			'kw.toggle':function () {
+				this.focus()
 			}
 		},
+		
+	}
+	temp_meta['com-contain']={
+		kw:{
+			istyle:{
+				width:'100%',
+				height:'100px',
+				backgroundColor:'grey',
+				margin:'auto',
+				},
+			edit_temp:'edit-contain',
+			temp:'com-contain',
+			childs:[],
+			toggle:false,
+		},
+		justify:function (kw) {
+			
+			if(!kw.istyle){
+				Vue.set(kw,'istyle',{})
+			}
+			if(!kw.childs){
+				Vue.set(kw,'childs',[])
+			}
+			var default_style=this.kw.istyle
+			for(var x in default_style){
+				if(!kw.istyle[x]){
+					Vue.set(kw.istyle,x, default_style[x])
+				}
+			}
+			Vue.set(kw,'toggle',true)
+			//if(!kw.temp){
+			//	kw.temp=this.temp
+			//}
+			if(!kw.edit_temp){
+				Vue.set(kw,'edit_temp',this.kw.edit_temp)
+			}
+			return kw
+		}
+}
+
+	Vue.component('comContain',{
+		template:'#com-contain',
+		mixins:[common],
+		//props:['kw'],
+		//data:function () {
+		//	return {
+		//		default_style:{
+		//				width:'100%',
+		//				height:'100px',
+		//				backgroundColor:'grey',
+		//				margin:'auto',
+		//			},
+		//		edit_temp:'edit-contain',
+		//		temp:'com-contain',
+		//	}
+		//},
+
 		methods:{
-			edit:function () {
-				this.$dispatch('edit',this)
-			},
-			add_element:function (kw) {
-				//var kw = {
-				//		istyle:{
-				//		width:'100%',
-				//		height:'100px',
-				//		backgroundColor:'grey',
-				//		},
-				//	edit_temp:'edit-contain',
-				//	temp:'com-contain',
-				//	childs:[],
-				//}
-				this.kw.childs.push(kw)
-				//this.content='com-contain'
-			},
+
+			//add_element:function (kw) {
+			//	//var kw = {
+			//	//		istyle:{
+			//	//		width:'100%',
+			//	//		height:'100px',
+			//	//		backgroundColor:'grey',
+			//	//		},
+			//	//	edit_temp:'edit-contain',
+			//	//	temp:'com-contain',
+			//	//	childs:[],
+			//	//}
+			//	this.kw.childs.push(kw)
+			//	//this.content='com-contain'
+			//},
 			detach:function () {
 				this.$parent.content='blank'
 			}
@@ -63,7 +120,8 @@
 		props:['kw'],
 		data:function () {
 			return {
-				istyle:JSON.stringify(this.kw.istyle)
+				istyle:JSON.stringify(this.kw.istyle),
+				
 			}
 		},
 		methods:{
@@ -75,8 +133,23 @@
 			
 		},
 		watch:{
-			'kw':function () {
-				this.istyle=JSON.stringify(this.kw.istyle)
+			'kw.istyle':{
+				deep: true,
+				handler:function () {
+					this.istyle=JSON.stringify(this.kw.istyle)
+				}
+			},
+		},
+		computed:{
+			meta:function () {
+				return {
+					//kw:this.kw,
+					row:this.kw.istyle,
+					heads:[{name:'width',type:'text',label:'宽度'},
+							{name:'height',type:'text',label:'高度'},
+							{name:'backgroundColor',type:'color',label:'背景'}],
+					errors:{}
+				}
 			}
 		}
 		//computed: {
@@ -94,9 +167,9 @@
 </script>
 
 <template id='com-contain'>
-	<div :style='kw.istyle' class='com-contain' @click.stop='edit()'>
+	<div :style='kw.istyle' class='com-contain' @click.stop='focus()'>
 		<!--<div @click='edit()'>edit</div>-->
-		<component :is="child.temp" v-for='child in kw.childs' :kw='child' track-by='$index'></component>
+		<component :is="child.temp" v-for='child in kw.childs' :kw.sync='child' track-by='$index'></component>
 	</div>
 </template>
 
@@ -104,27 +177,40 @@
 	<div>
 		<textarea rows="3" cols="20" v-model='istyle'/>
 		</textarea>
+		<div class="form-horizontal">
+			<field name='width' :kw.sync='meta'></field>
+			<field name='height' :kw.sync='meta'></field>
+			<field name='backgroundColor' :kw.sync='meta'></field>
+		</div>
 	</div>
 </template>
 
 
 <script type="text/javascript">
-	temp_meta.def_com_table={
-		heads:[{name:'name',label:'name'},
+	temp_meta['com-table']={
+		kw:{
+			heads:[{name:'name',label:'name'},
 				{name:'age',label:'Age'}],
-		rows:[{name:'heyulin',age:'18'}],
-		temp:'com-table',
-		edit_temp:'edit-table',
-		click:false,
+			rows:[{name:'heyulin',age:'18'}],
+			temp:'com-table',
+			edit_temp:'edit-table',
+			toggle:false,
+		},
+		justify:function (kw) {
+			Vue.set(kw,'toggle',true)
+			return kw
+		}
+		
 	}
 	Vue.component('comTable',{
 		template:'#com-table',
-		props:['kw'],
-		watch:{
-			'kw.click':function () {
-				this.$dispatch('edit',this)
-			}
-		},
+		mixins:[common]
+		//props:['kw'],
+		//watch:{
+		//	'kw.click':function () {
+		//		this.$dispatch('edit',this)
+		//	}
+		//},
 		})
 	Vue.component('editTable',{
 		template:'#edit-table',
