@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from core.port import jsonpost
 from django.core.urlresolvers import reverse
@@ -6,6 +6,7 @@ from ajax import get_globe
 import json
 from core.db_tools import form_to_head
 from forms import AuthForm
+from django.contrib import auth 
 
 def login(request):
     if request.method=='GET':
@@ -31,6 +32,11 @@ def regist_user(request):
     elif request.method=='POST':
         return jsonpost(request,get_globe()) 
 
+
+def logout(request):
+    next = request.GET.get('next','/')
+    auth.logout(request)
+    return redirect(next) 
 
 def change_pswd(request):
     if request.method=='GET':

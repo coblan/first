@@ -1,0 +1,64 @@
+
+<script type="text/javascript">
+	menu=[{name:'first',icon:'<span class="glyphicon glyphicon-search" aria-hidden="true"></span>',label:'xxx',}]
+	menus=[
+		{name:'xxx',label:'aaa',show:true,items:menu}
+	]
+	sub_menu=[{name:'xxx',label:'aaa',link:'bbb'}]
+	Vue.component('menu-left',{
+		template:'#menu-left',
+		data:function () {
+			return {
+				is_full_label:true,
+				menus:menus,
+				sub_menu:sub_menu,
+			}
+		}
+		
+})
+</script>
+
+<style type="text/css" media="screen" id="test">
+	.menu-left{
+		position: fixed;
+	}
+	.menu-left ul{
+		padding: 0px;
+		background-color: #585858;
+		color: white;
+	}
+	._menu_row{
+		padding: 20px;
+		list-style-type: none;
+	}
+	#_sub_menu{
+		
+	}
+</style>
+<template id='menu-left'>
+	<div class='menu-left'>
+		<ul>
+			<li @click='is_full_label= !is_full_label'>expand</li>
+			<li v-for='menu in menus' >
+				<div @click='menu.show= !menu.show' class='_menu_row'>
+					<span class="glyphicon glyphicon-triangle-right" aria-hidden="true" v-show='!menu.show'></span>
+					<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true" v-show='menu.show'></span>
+					<span v-text='menu.label' v-show='is_full_label'></span>
+				</div>
+				
+				<ul v-show='menu.show'>
+					<li v-for='item in menu.items' class='_menu_row'>
+						<span v-html='item.icon'></span>
+						<span v-text='item.label' v-show='is_full_label'></span>
+					</li>
+					
+				</ul>
+			</li>
+		</ul>
+		<ul id='_sub_menu'>
+			<li v-for='item in sub_menu'>
+				<a :href="item.link" v-text='item.label'></a>
+			</li>
+		</ul>
+	</div>
+</template>
