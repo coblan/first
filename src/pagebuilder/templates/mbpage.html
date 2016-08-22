@@ -9,17 +9,61 @@
 		<script src="//cdn.bootcss.com/vue/1.0.24/vue.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<script type="text/javascript">
+			
+			menu=[
+				{icon:'<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>',label:'内容',active:true},
+				{icon:'<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>',label:'设置'}
+			]
+			sub_menu=[{label:'菜单',link:'xxxx',},
+					{label:'页面',link:'jjj',active:true}]
+					
 			$(function () {
 				new Vue({
-					el:'#content'
+					el:'#content',
+					data:{
+						menus:[{label:'页面制作',show:true,actions:menu}],
+						sub_menu:sub_menu
+					},
+					compiled:function () {
+						$('#-spot-menu').height($(window).height())
+						$(window).resize(function () {
+							$('#-spot-menu').height($(window).height())
+						})
+					},
+					methods:{
+						menu_width:function (width) {
+							$('#_content').css('margin-left',width)
+						}
+					}
 				})
 			})
 		</script>
+		<style type="text/css" media="screen" id="test">
+			#-spot-menu{
+				position: fixed;
+			}
+		</style>
 	</head>
 	<body>
 		{% include 'mb_component.html' %}
 		<div id='content'>
-			<menu-left></menu-left>
+			<spot-menu id='-spot-menu' 
+				@width-change='menu_width'
+				:menus='menus'
+				:sub_menu='sub_menu'></spot-menu>
+			<div id='_content' >
+				<table class="table table-hover">
+					<thead>
+						<tr><td>sssg</td></tr>
+					</thead>
+				<tbody>
+					<tr><td>sssg</td></tr>
+				</tbody>
+				
+				</table>
+				<button name="test" type="button" value="val">add</button>
+				<select name="" id=""></select>
+			</div>
 		</div>
 		
 	</body>
