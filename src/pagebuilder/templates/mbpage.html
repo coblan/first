@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -8,6 +9,8 @@
 		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
 		<script src="//cdn.bootcss.com/vue/1.0.24/vue.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<script src="{% static 'js/fields.pack.js' %}"></script>
+		
 		<script type="text/javascript">
 			
 			menu=[
@@ -16,13 +19,21 @@
 			]
 			sub_menu=[{label:'菜单',link:'xxxx',},
 					{label:'页面',link:'jjj',active:true}]
-					
+			heads={{ heads | safe }}
+			rows={{rows | safe }}
 			$(function () {
 				new Vue({
 					el:'#content',
 					data:{
 						menus:[{label:'页面制作',show:true,actions:menu}],
-						sub_menu:sub_menu
+						sub_menu:sub_menu,
+						heads:heads,
+						rows:rows,
+						kw:{
+							errors:{},
+							heads:heads,
+							row:{}
+						}
 					},
 					compiled:function () {
 						$('#-spot-menu').height($(window).height())
@@ -33,6 +44,31 @@
 					methods:{
 						menu_width:function (width) {
 							$('#_content').css('margin-left',width)
+						},
+						add_page:function () {
+							var self=this;
+							var post_data=[{fun:'add_mobile_page'}]
+							$.post('',JSON.stringify(post_data),function (data) {
+								update_vue_obj(self.kw.row,data.add_mobile_page)
+							})
+						},
+						submit:function () {
+							var self=this;
+							var post_data=[{fun:'save',row:self.kw.row}]
+							$.post('',JSON.stringify(post_data),function (data) {
+								
+							})
+						},
+						map:function (name,row) {
+							if(name=='name'){
+								//return '<temp-com @click="here()">'+row[name]+'</temp-com>'
+								return {com:'temp-com',kw:row[name]}
+							}else{
+								return row[name]
+							}
+						},
+						here:function () {
+							alert('here')
 						}
 					}
 				})
@@ -42,42 +78,51 @@
 			#-spot-menu{
 				position: fixed;
 			}
+			.edit-panel{
+				width:500px;
+				margin: auto;
+			}
 		</style>
 	</head>
 	<body>
+
 		{% include 'mb_component.html' %}
+		{% include 'com_table.html' %}
 		<div id='content'>
 			<spot-menu id='-spot-menu' 
 				@width-change='menu_width'
 				:menus='menus'
-				:sub_menu='sub_menu'></spot-menu>
+				:sub_menu='sub_menu'>
+			</spot-menu>
 			<div id='_content' >
 				<div style='padding: 20px;'>
-					<table class="table table-hover">
-						<thead>
-							<tr>
-								<td style='width:50px'><input type="checkbox" name="test" value=""/></td>
-								<td>标识名</td>
-								<td>其他</td>
-							</tr>
-						</thead>
-					<tbody>
-						<tr>
-							<td><input type="checkbox" name="test" value="" /></td>
-							<td>ss</td>
-							<td>sssg</td>
-						</tr>
-						<tr><td><input type="checkbox" name="test" value="" /></td>
-							<td>ss</td>
-							<td>sssg</td></tr>
-					</tbody>
-					</table>
+					<button name="test" type="button" value="val" @click='add_page()'>添加页面</button>
+					<sort-table :heads='heads' :rows='rows' :map='map'></sort-table>
 				</div>
 	
 				<button name="test" type="button" value="val">add</button>
 				<select name="" id=""></select>
+
+				<div class='edit-panel'>
+					<field v-for='head in heads' :name='head.name' :kw='kw'></field>
+					<button name="test" type="button" value="val" @click='submit()'>save</button>
+				</div>
 			</div>
 		</div>
-		
+<script type="text/javascript">
+	Vue.component('temp-com',{
+		template:'#temp-com',
+		props:['kw'],
+		methods:{
+			here:function () {
+				alert(this.kw)
+			}
+		}
+	})
+</script>
+<template id='temp-com'>
+	<span @click='here()' v-text='kw'></span>
+</template>
+
 	</body>
 </html>

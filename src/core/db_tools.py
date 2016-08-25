@@ -148,6 +148,13 @@ def form_to_head(form):
 
 
 def save_model_form(row, form_scope=None, Form=None):
+    """
+    
+    do two things:
+    1. find matched form to row.Form search scope represent by 'form_scrop'.
+    2. use form validate row then save it to model.if validate fail ,Error message will be returned.
+    
+    """
     if Form:
         model=Form.Meta.model
     else:
@@ -181,17 +188,20 @@ def save_model_form(row, form_scope=None, Form=None):
     #return model_form_save(form,models)
 
 
-def model_form_save(form,models,success=None,**kw):
+def save_model_form_manual(form,row,success=None,**kw):
     """
+    Less chance to use this function,because normally we use auto version.Little working to maintain the code,
+    be careful,checking it before use.
+    
     保存 ModelForm。这个函数不如save_model智能。需要手动传入form。如果前端页面有_class信息，最好使用使用自动化的save_model函数
     
     @form : 普通的django form
-    @models: dict: 代表是所有field的值
+    @row: dict: 代表是所有field的值
     
     @success: callback(obj) : 
     
     """
-    model_dict= models # kw.pop('models')
+    model_dict= row # kw.pop('models')
     model_dict.update(kw)
     iform = form(model_dict)
 

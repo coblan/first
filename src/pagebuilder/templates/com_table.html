@@ -1,0 +1,55 @@
+<script type="text/javascript">
+	var __heads=[{name:'xxx',label:'label1'},
+				{name:'jb',label:'jb'}]
+	var __rows=[{xxx:"jjy",jb:'hahaer'}]
+	Vue.component('sort-table',{
+		template:'#sort-table',
+		props:{
+			heads:{
+				default:function () {
+					return __heads
+				} 
+			},
+			rows:{
+				default:function () {
+					return __rows;
+				}
+			},
+			has_check:{
+				default:false
+			},
+			map:{
+				default:function () {
+					return function (name,row) {
+						return row[name];
+						}
+				}
+			}
+		}
+	})
+</script>
+<template id='sort-table'>
+	<div>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<td style='width:50px' v-if='has_check'>
+						<input type="checkbox" name="test" value=""/>
+					</td>
+					<td v-for='head in heads'><span v-text='head.label'></span></td>
+				</tr>
+			</thead>
+			<tbody>
+			<tr v-for='row in rows'>
+				<td v-if='has_check'><input type="checkbox" name="test" value="" /></td>
+				<td v-for='head in heads'>
+					<component v-if='catch = map(head.name,row),catch.com' :is='catch.com' :kw='catch.kw'></component>
+					<span v-else v-html='catch'></span>
+				</td>
+
+			</tr>
+		</tbody>
+		</table>
+	</div>
+</template>
+
