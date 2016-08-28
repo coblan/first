@@ -32,8 +32,12 @@
 						kw:{
 							errors:{},
 							heads:heads,
-							row:{}
-						}
+							row:{},
+						},
+						selected:{},
+						options:[{name:'raw_html',label:'raw html'},
+								{name:'editor',label:'CK Editor'}],
+						items:[]
 					},
 					compiled:function () {
 						$('#-spot-menu').height($(window).height())
@@ -62,13 +66,20 @@
 						map:function (name,row) {
 							if(name=='name'){
 								//return '<temp-com @click="here()">'+row[name]+'</temp-com>'
-								return {com:'temp-com',kw:row[name]}
+								return {com:'temp-com',kw:row}
 							}else{
 								return row[name]
 							}
 						},
-						here:function () {
-							alert('here')
+						add_panel:function (comName) {
+							var new_item={com:comName}
+							this.items.push(new_item)
+						}
+					},
+					events:{
+						'pageSelect':function (kw) {
+							//alert(kw)
+							this.kw.row=kw
 						}
 					}
 				})
@@ -81,6 +92,10 @@
 			.edit-panel{
 				width:500px;
 				margin: auto;
+			}
+			.clickable{
+				cursor: pointer;
+				color: #1128FD;
 			}
 		</style>
 	</head>
@@ -100,12 +115,19 @@
 					<sort-table :heads='heads' :rows='rows' :map='map'></sort-table>
 				</div>
 	
-				<button name="test" type="button" value="val">add</button>
-				<select name="" id=""></select>
+				<button name="test" type="button" @click='add_panel(selected)'>Add</button>
+				<select name="" id="" v-model='selected'>
+					<option v-for='option in options' :value="option.name" v-text='option.label'>
+					</option>
+				</select>
 
 				<div class='edit-panel'>
-					<field v-for='head in heads' :name='head.name' :kw='kw'></field>
 					<button name="test" type="button" value="val" @click='submit()'>save</button>
+					<div class='item-panel'>
+						<field name='name' :kw='kw'></field>
+						<field name='label' :kw='kw'></field>
+					</div>
+					<component v-for='item in items' :is='item.com'></component>
 				</div>
 			</div>
 		</div>
@@ -115,14 +137,41 @@
 		props:['kw'],
 		methods:{
 			here:function () {
-				alert(this.kw)
+				this.$dispatch('pageSelect',this.kw)
 			}
 		}
 	})
 </script>
 <template id='temp-com'>
-	<span @click='here()' v-text='kw'></span>
+	<span @click='here()' v-text='kw.name' class='clickable'></span>
 </template>
 
 	</body>
 </html>
+
+<script type="text/javascript">
+	Vue.component('raw_html',{
+		template:'#raw_html',
+		
+	})
+</script>
+<template id='raw_html'>
+	<div class='item-panel'>
+		<textarea name="test" rows="10" cols="10">
+			
+		</textarea>
+	</div>
+</template>
+
+<script type="text/javascript">
+	Vue.component('editor',{
+		template:'#editor'
+	})
+</script>
+<template id='raw_html'>
+	<div class='item-panel'>
+		<textarea name="test" rows="10" cols="10">
+			
+		</textarea>
+	</div>
+</template>

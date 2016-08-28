@@ -40,15 +40,14 @@
 				</tr>
 			</thead>
 			<tbody>
-			<tr v-for='row in rows'>
-				<td v-if='has_check'><input type="checkbox" name="test" value="" /></td>
-				<td v-for='head in heads'>
-					<component v-if='catch = map(head.name,row),catch.com' :is='catch.com' :kw='catch.kw'></component>
-					<span v-else v-html='catch'></span>
-				</td>
-
-			</tr>
-		</tbody>
+				<tr v-for='row in rows'>
+					<td v-if='has_check'><input type="checkbox" name="test" value="" /></td>
+					<td v-for='head in heads'>
+						<component v-if='catch = map(head.name,row),catch.com' :is='catch.com' :kw='catch.kw'></component>
+						<span v-else v-html='catch'></span>
+					</td>
+				</tr>
+			</tbody>
 		</table>
 	</div>
 </template>
