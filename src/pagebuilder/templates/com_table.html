@@ -43,8 +43,8 @@
 				<tr v-for='row in rows'>
 					<td v-if='has_check'><input type="checkbox" name="test" value="" /></td>
 					<td v-for='head in heads'>
-						<component v-if='catch = map(head.name,row),catch.com' :is='catch.com' :kw='catch.kw'></component>
-						<span v-else v-html='catch'></span>
+						<component v-if='icatch = map(head.name,row),icatch.com' :is='icatch.com' :kw='icatch.kw'></component>
+						<span v-else v-html='icatch'></span>
 					</td>
 				</tr>
 			</tbody>
