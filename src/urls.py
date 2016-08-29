@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from pagebuilder import views
 #import index
 
 urlpatterns = [
@@ -29,8 +30,8 @@ urlpatterns = [
     
     url(r'^build/','pagebuilder.views.build'),
     url(r'^pagebuilder/','pagebuilder.views.pagebuild'),
-    url(r'^upload_image_demo/$','hello.views.upload_image_demo'),
-    url(r'^try/$','hello.views.normal_try')
+    url(r'^mbpage/$',views.mobile_page),
+    url(r'^upload_image_demo/$','hello.views.upload_image_demo')
 ]
 
 

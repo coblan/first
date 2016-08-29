@@ -1,5 +1,5 @@
 from models import ArtComment,ArticleModel
-from core.db_tools import to_dict,model_form_save,save_model_form
+from core.db_tools import to_dict,save_model_form
 #from forms import CommentForm
 import forms
 

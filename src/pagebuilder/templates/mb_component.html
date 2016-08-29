@@ -1,0 +1,182 @@
+
+<script type="text/javascript">
+	/*
+	
+	修改子菜单的宽度
+	#_spot_sub_menu{
+		width:150px;
+	}
+
+	event:
+	1. 'width-change' :args: width
+	*/
+	
+	_menu=[{name:'first',icon:'<span class="glyphicon glyphicon-search" aria-hidden="true"></span>',label:'xxx',active:true},
+	{name:'secode',icon:'<span class="glyphicon glyphicon-sunglasses" aria-hidden="true"></span>',label:'xxx',}]
+	_menus=[
+		{name:'xxx',label:'aaa',show:true,actions:_menu},
+		{name:'bb',label:'aaa',show:true,actions:_menu},
+	]
+	_sub_menu=[{name:'xxx',label:'aaa',link:'bbb'},
+			{name:'xxx',label:'bb',link:'bbb'},
+			{name:'xxx',label:'cc',link:'bbb',active:true},
+			{name:'xxx',label:'dd',link:'bbb'}]
+	
+
+	Vue.component('spot-menu',{
+		template:'#spot-menu',
+		props:{
+			is_full_label:{
+				default:true
+			},
+			menus:{
+				default:function () {
+					return  _menus
+				}
+			},
+			sub_menu:{
+				default:function () {
+					return _sub_menu
+				} 
+			},
+			menu_width:{
+				default:'55px'
+			},
+		},
+		methods:{
+			toggle_expand:function () {
+				if(this.menu_width=='55px'){
+					this.menu_width='200px'
+				}else{
+					this.menu_width='55px'
+				}
+				this.$dispatch('width-change',this.get_width())
+			},
+			get_width:function () {
+				var ww= $(this.$el).find('#_spot_sub_menu').width()
+				if(this.sub_menu.length!=0){
+					return parseInt(this.menu_width) + parseInt(ww)+'px'
+				}else{
+					return this.menu_width
+				}
+				
+			},
+			get_active_label:function () {
+				for(var x=0;x<this.menus.length;x++){
+					var menu = this.menus[x]
+					for(var y=0;y<menu.actions.length;y++){
+						var action = menu.actions[y]
+						if (action.active){
+							return action.label
+						}
+					}
+				}
+			}
+		},
+		compiled:function () {
+			var self=this
+			Vue.nextTick(function () {
+				$(self.$el).css('width',self.get_width())
+				self.$dispatch('width-change',self.get_width())
+			})
+		}
+		
+})
+</script>
+
+<style type="text/css" media="screen" id="test">
+	.spot-menu{
+		position: relative;
+	}
+	.spot-menu ul{
+		padding: 0px;
+	}
+	#_spot_main_menu{
+		position: absolute;
+		top:0px;
+		left:0px;
+		white-space: nowrap;
+		padding: 0px;
+		background-color: #585858;
+		color: white;
+		height:100%;
+	}
+	#_spot_main_menu ._spot_menu_row{
+		padding: 10px 20px 10px 20px;
+		list-style-type: none;
+		overflow: hidden;
+		color: #DDDDDD;
+		cursor: pointer;
+	}
+	#_spot_main_menu ._spot_menu_row:hover{
+		color: white;
+	}
+	#_spot_main_menu .active{
+		background-color: #A7ABD6;
+		color: white;
+	}
+	#_shrink_btn{
+		text-align: center;
+		color: #DDDDDD;
+		padding: 5px 20px 5px 20px;
+	}
+	._spot_menu_lable{
+		margin-left:20px;
+	}
+	#_spot_sub_menu{
+		width:200px;
+		white-space: nowrap;
+		position: absolute;
+		top:0px;
+		background-color: #E3E3E3;
+		overflow: auto;
+		height:100%;
+		padding: 0px;
+	}
+	#_spot_sub_menu .active{
+		background-color: white;
+	}
+	#_spot_sub_menu ._spot_menu_row{
+		padding: 10px 0px 10px 30px;
+		list-style-type: none;
+	}
+	._spot_active_label{
+		padding:5px 0px 5px 20px;
+	}
+	div._spot_menu_row .glyphicon{
+		transform:scale(0.5,0.5)
+	}
+</style>
+<template id='spot-menu' >
+	<div class='spot-menu' :style='{width:get_width()}'>
+		<ul id='_spot_main_menu' :style='{width:menu_width}'>
+			<li @click='toggle_expand()' id='_shrink_btn'>
+				<span class="glyphicon glyphicon-resize-horizontal"</span>
+			</li>
+			
+			<li v-for='menu in menus'>
+				<div @click='menu.show= !menu.show' class='_spot_menu_row'>
+					<span class="glyphicon glyphicon-triangle-right" aria-hidden="true" v-show='!menu.show'></span>
+					<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true" v-show='menu.show'></span>
+					<span v-text='menu.label' class='_spot_menu_lable'></span>
+				</div>
+				
+				<ul v-show='menu.show'>
+					<li v-for='item in menu.actions' :class='["_spot_menu_row",{"active":item.active}]'>
+						<span v-html='item.icon' :title='item.label'></span>
+						<span v-text='item.label' class='_spot_menu_lable'></span>
+					</li>
+				</ul>
+			</li>
+		</ul>
+		
+		<ul id='_spot_sub_menu' :style='{left:menu_width}' v-show='sub_menu.length!=0'>
+			<h3 v-text='get_active_label()' class='_spot_active_label'></h3>
+			<li v-for='item in sub_menu' :class='["_spot_menu_row",{"active":item.active}]'>
+				<a :href="item.link" v-text='item.label'></a>
+			</li>
+		</ul>
+
+
+	</div>
+</template>

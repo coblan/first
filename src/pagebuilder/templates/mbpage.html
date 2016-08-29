@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+	<head>
+		<meta charset='utf-8' />
+		<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+		<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<script src="//cdn.bootcss.com/vue/1.0.24/vue.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<script src="{% static 'js/fields.pack.js' %}"></script>
+		
+		<script type="text/javascript">
+			
+			menu=[
+				{icon:'<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>',label:'内容',active:true},
+				{icon:'<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>',label:'设置'}
+			]
+			sub_menu=[{label:'菜单',link:'xxxx',},
+					{label:'页面',link:'jjj',active:true}]
+			heads={{ heads | safe }}
+			rows={{rows | safe }}
+			$(function () {
+				new Vue({
+					el:'#content',
+					data:{
+						menus:[{label:'页面制作',show:true,actions:menu}],
+						sub_menu:sub_menu,
+						heads:heads,
+						rows:rows,
+						kw:{
+							errors:{},
+							heads:heads,
+							row:{},
+						},
+						selected:{},
+						options:[{name:'raw_html',label:'raw html'},
+								{name:'editor',label:'CK Editor'}],
+						items:[]
+					},
+					compiled:function () {
+						$('#-spot-menu').height($(window).height())
+						$(window).resize(function () {
+							$('#-spot-menu').height($(window).height())
+						})
+					},
+					methods:{
+						menu_width:function (width) {
+							$('#_content').css('margin-left',width)
+						},
+						add_page:function () {
+							var self=this;
+							var post_data=[{fun:'add_mobile_page'}]
+							$.post('',JSON.stringify(post_data),function (data) {
+								update_vue_obj(self.kw.row,data.add_mobile_page)
+							})
+						},
+						submit:function () {
+							var self=this;
+							var post_data=[{fun:'save',row:self.kw.row}]
+							$.post('',JSON.stringify(post_data),function (data) {
+								
+							})
+						},
+						map:function (name,row) {
+							if(name=='name'){
+								//return '<temp-com @click="here()">'+row[name]+'</temp-com>'
+								return {com:'temp-com',kw:row}
+							}else{
+								return row[name]
+							}
+						},
+						add_panel:function (comName) {
+							var new_item={com:comName}
+							this.items.push(new_item)
+						}
+					},
+					events:{
+						'pageSelect':function (kw) {
+							//alert(kw)
+							this.kw.row=kw
+						}
+					}
+				})
+			})
+		</script>
+		<style type="text/css" media="screen" id="test">
+			#-spot-menu{
+				position: fixed;
+			}
+			.edit-panel{
+				width:500px;
+				margin: auto;
+			}
+			.clickable{
+				cursor: pointer;
+				color: #1128FD;
+			}
+		</style>
+	</head>
+	<body>
+
+		{% include 'mb_component.html' %}
+		{% include 'com_table.html' %}
+		<div id='content'>
+			<spot-menu id='-spot-menu' 
+				@width-change='menu_width'
+				:menus='menus'
+				:sub_menu='sub_menu'>
+			</spot-menu>
+			<div id='_content' >
+				<div style='padding: 20px;'>
+					<button name="test" type="button" value="val" @click='add_page()'>添加页面</button>
+					<sort-table :heads='heads' :rows='rows' :map='map'></sort-table>
+				</div>
+	
+				<button name="test" type="button" @click='add_panel(selected)'>Add</button>
+				<select name="" id="" v-model='selected'>
+					<option v-for='option in options' :value="option.name" v-text='option.label'>
+					</option>
+				</select>
+
+				<div class='edit-panel'>
+					<button name="test" type="button" value="val" @click='submit()'>save</button>
+					<div class='item-panel'>
+						<field name='name' :kw='kw'></field>
+						<field name='label' :kw='kw'></field>
+					</div>
+					<component v-for='item in items' :is='item.com'></component>
+				</div>
+			</div>
+		</div>
+<script type="text/javascript">
+	Vue.component('temp-com',{
+		template:'#temp-com',
+		props:['kw'],
+		methods:{
+			here:function () {
+				this.$dispatch('pageSelect',this.kw)
+			}
+		}
+	})
+</script>
+<template id='temp-com'>
+	<span @click='here()' v-text='kw.name' class='clickable'></span>
+</template>
+
+	</body>
+</html>
+
+<script type="text/javascript">
+	Vue.component('raw_html',{
+		template:'#raw_html',
+		
+	})
+</script>
+<template id='raw_html'>
+	<div class='item-panel'>
+		<textarea name="test" rows="10" cols="10">
+			
+		</textarea>
+	</div>
+</template>
+
+<script type="text/javascript">
+	Vue.component('editor',{
+		template:'#editor'
+	})
+</script>
+<template id='raw_html'>
+	<div class='item-panel'>
+		<textarea name="test" rows="10" cols="10">
+			
+		</textarea>
+	</div>
+</template>

@@ -49,10 +49,63 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.field = field;
 	exports.merge = merge;
 
 	var _color = __webpack_require__(1);
+
+	var _ajax_fun = __webpack_require__(2);
+
+	var _file = __webpack_require__(3);
+
+	var f = _interopRequireWildcard(_file);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	//import '../css/hello.scss'
+
+	(0, _ajax_fun.hook_ajax_msg)();
+	/*
+	基本内容
+	==============
+	1. field_base
+	    基类，几乎有所逻辑都在里面。如果需要特殊的field，可以继承field_base，然后修改template
+
+	2. field
+	    本页面，实现了基本的field功能。
+
+	参数结构
+	==============
+	field_base的参数都是采用的关键字参数，结构如下：
+	使用的 kw 结构
+	 kw={
+	     errors:{},
+	     row:{
+	         username:'',
+	         password:'',
+	         pas2:'',
+	    },
+	     heads:[
+	     {name:'username',label:'用户名',type:'text',required:true,autofocus:true},
+	     ]
+	  }
+	 <field name='username' :kw='kw' ></field>
+
+	 如果需要水平排列的field，
+	 <field name='username' :kw='kw' :set="{label_cls:'col-md-2',input_cls:'col-md-10'}"></field>
+
+	 */
+
+	/*
+	*配合自家的jsonpost使用，效果最好
+	*/
+
+	/*
+	自动处理form.errors
+	$.post('',JSON.stringify(post_data),function (data) {
+		is_valid(data.do_login,self.meta.errors,function () {
+			location=next;
+	})
+	*/
 
 	function is_valid(form_fun_rt, errors_obj, callback) {
 	    if (form_fun_rt) {
@@ -67,190 +120,128 @@
 	            callback();
 	        }
 	    }
-	} /*
-	  * 正常field:
-	  * field()
-	  * 水平field:
-	  * field({template:field_str('horizon'),name:'horizon-field'})
-	  * */
-
-	/*
-	*配合自家的jsonpost使用，效果最好
-	*/
-
-	/*
-	自动处理form.errors
-	$.post('',JSON.stringify(post_data),function (data) {
-		is_valid(data.do_login,self.meta.errors,function () {
-			location=next;
-	})
-	*/
-
-	var normal_str = '\n<div for=\'field\' class="form-group" :class=\'{"error":error_data(name)}\'>\n\t<label :for="\'id_\'+name" v-text="head.label"><span class="req_star" v-if=\'head.required\'> *</span>\n\t</label>\n\t<component :is=\'head.type\'\n\t\tv-model=\'row[name]\'\n\t\t:name=\'name\'\n\t\t:id="\'id_\'+name"\n\t\t:placeholder=\'head.placeholder\'\n\t\t:autofocus=\'head.autofocus\'\n\t\t:maxlength=\'head.maxlength\'>\n\t</component>\n\t<slot> </slot>\n\t<div v-text=\'error_data(name)\' class=\'error\'></div>\n\n</div>\n';
-
-	function field_str() {
-	    var orient = arguments.length <= 0 || arguments[0] === undefined ? 'normal' : arguments[0];
-	    var label_cls = arguments.length <= 1 || arguments[1] === undefined ? 'col-md-3' : arguments[1];
-	    var input_cls = arguments.length <= 2 || arguments[2] === undefined ? 'col-md-9' : arguments[2];
-
-	    if (orient == 'normal') {
-	        return normal_str;
-	    } else {
-	        return '\n<div for=\'field\' class="form-group" :class=\'{"error":error_data(name)}\'>\n\t<label :for="\'id_\'+name" v-text="head.label" class="' + label_cls + '  control-label"><span class="req_star" v-if=\'head.required\'> *</span>\n\t</label>\n\t<div class="' + input_cls + '">\n        <component :is=\'head.type\'\n            :val.sync=\'row[name]\'\n            :name=\'name\'\n            :id="\'id_\'+name"\n            :placeholder=\'head.placeholder\'\n            :autofocus=\'head.autofocus\'\n            :maxlength=\'head.maxlength\'>\n        </component>\n\t</div>\n\t<slot> </slot>\n\t<div v-text=\'error_data(name)\' class=\'error\'></div>\n\n</div>\n';
-	    }
 	}
 
-	function field() {
-	    var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	var field_base = {
+	    props: {
+	        name: {
+	            required: true
+	        },
+	        kw: {
+	            required: true
+	        },
+	        set: {
+	            default: function _default() {
+	                return {};
+	            }
+	        }
+	    },
+	    computed: {
+	        row: function row() {
+	            return this.kw.row;
+	        },
+	        errors: function errors() {
+	            return this.kw.errors;
+	        },
+	        head: function head() {
+	            var heads = this.kw.heads;
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
 
-	    var _ref$template = _ref.template;
-	    var template = _ref$template === undefined ? field_str() : _ref$template;
-	    var _ref$name = _ref.name;
-	    var name = _ref$name === undefined ? 'field' : _ref$name;
+	            try {
+	                for (var _iterator = heads[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var head = _step.value;
 
-	    /*
-	     使用的meta结构
-	     meta={
-	     errors:{},
-	     row:{
-	     username:'',
-	     password:'',
-	     pas2:'',
-	     },
-	     heads:[
-	     {name:'username',label:'用户名',type:'text',required:true,autofocus:true},
-	     ]
-	     }
-	       <field name='username' :meta='meta'></field>
-	       */
-	    Vue.component(name, {
-	        template: template,
-	        props: ['name', 'kw'],
-	        //data: function () {
-	        //    var heads = this.meta.heads
-	        //    //var head=''
-	        //    for (var head  of heads) {
-	        //        if (head.name == this.name) {
-	        //            //head = x
-	        //            break
-	        //        }
-	        //    }
-	        //    return {
-	        //        head: head,
-	        //        row: this.meta.row,
-	        //        errors: this.meta.errors,
-	        //    }
-	        //},
-	        computed: {
-	            row: function row() {
-	                return this.kw.row;
-	            },
-	            errors: function errors() {
-	                return this.kw.errors;
-	            },
-	            head: function head() {
-	                var heads = this.kw.heads;
-	                //var head=''
-	                var _iteratorNormalCompletion = true;
-	                var _didIteratorError = false;
-	                var _iteratorError = undefined;
-
+	                    if (head.name == this.name) {
+	                        return head;
+	                    }
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
 	                try {
-	                    for (var _iterator = heads[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                        var head = _step.value;
-
-	                        if (head.name == this.name) {
-	                            //head = x
-	                            return head;
-	                        }
+	                    if (!_iteratorNormalCompletion && _iterator.return) {
+	                        _iterator.return();
 	                    }
-	                } catch (err) {
-	                    _didIteratorError = true;
-	                    _iteratorError = err;
 	                } finally {
-	                    try {
-	                        if (!_iteratorNormalCompletion && _iterator.return) {
-	                            _iterator.return();
-	                        }
-	                    } finally {
-	                        if (_didIteratorError) {
-	                            throw _iteratorError;
-	                        }
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
 	                    }
-	                }
-	            }
-	        },
-	        methods: {
-	            error_data: function error_data(name) {
-	                if (this.errors[name]) {
-	                    return this.errors[name];
-	                } else {
-	                    return '';
-	                }
-	            }
-	        },
-	        components: {
-	            text: {
-	                props: ['name', 'val'],
-	                template: '<input type="text" class="form-control" v-model="val">'
-	            },
-	            password: {
-	                props: ['name', 'val'],
-	                template: '<input type="password" class="form-control" v-model="val">'
-	            },
-	            area: {
-	                props: ['name', 'val'],
-	                template: '<textarea class="form-control" rows="3" v-model="val"></textarea>'
-	            },
-	            color: {
-	                props: ['name', 'val'],
-	                //data:function(){
-	                //    return {
-	                //        val:''
-	                //    }
-	                //},
-	                template: '<input type="text" v-model="val">',
-	                //computed:{
-	                //    val:function(){
-	                //        if($(this.$el).val()){
-	                //            return $(this.$el).val()
-	                //        }else{
-	                //            return '#000'
-	                //        }
-	                //    }
-	                //},
-	                watch: {
-	                    'val': function val() {
-	                        this.sync_to_spec();
-	                    }
-	                },
-	                methods: {
-	                    sync_to_spec: function sync_to_spec() {
-	                        var self = this;
-	                        Vue.nextTick(function () {
-	                            $(self.$el).spectrum({
-	                                color: this.val,
-	                                showInitial: true,
-	                                showInput: true,
-	                                preferredFormat: "name"
-	                            });
-	                        });
-	                    }
-	                },
-	                compiled: function compiled() {
-	                    this.sync_to_spec();
 	                }
 	            }
 	        }
-	    });
-	}
+	    },
+	    methods: {
+	        error_data: function error_data(name) {
+	            if (this.errors[name]) {
+	                return this.errors[name];
+	            } else {
+	                return '';
+	            }
+	        }
+	    },
+	    components: {
+	        text: {
+	            props: ['name', 'model', 'kw'],
+
+	            template: '<input type="text" class="form-control" v-model="model" :id="\'id_\'+name"\n                        :placeholder="kw.placeholder" :autofocus="kw.autofocus" :maxlength=\'kw.maxlength\'>'
+	        },
+	        password: {
+	            props: ['name', 'model', 'kw'],
+	            template: '<input type="password" :id="\'id_\'+name" class="form-control" v-model="model" :placeholder="kw.placeholder">'
+	        },
+	        area: {
+	            props: ['name', 'model', 'kw'],
+	            template: '<textarea class="form-control" rows="3" :id="\'id_\'+name" v-model="model" :placeholder="kw.placeholder"></textarea>'
+	        },
+	        color: {
+	            props: ['name', 'model', 'kw'],
+	            template: '<input type="text" v-model="model" :id="\'id_\'+name">',
+	            watch: {
+	                'model': function model() {
+	                    this.sync_to_spec();
+	                }
+	            },
+	            methods: {
+	                sync_to_spec: function sync_to_spec() {
+	                    var self = this;
+	                    Vue.nextTick(function () {
+	                        $(self.$el).spectrum({
+	                            color: this.model,
+	                            showInitial: true,
+	                            showInput: true,
+	                            preferredFormat: "name"
+	                        });
+	                    });
+	                }
+	            },
+	            compiled: function compiled() {
+	                this.sync_to_spec();
+	            }
+	        },
+	        logo: {
+	            props: ['name', 'model', 'kw'],
+	            template: '<logo-input :up_url="kw.up_url" :web_url.sync="model" :id="\'id_\'+name"></logo-input>'
+	        }
+	    }
+
+	};
+
+	Vue.component('field', {
+	    mixins: [field_base],
+
+	    template: '\n\t<div for=\'field\' class="form-group field" :class=\'{"error":error_data(name)}\'>\n\t<label :for="\'id_\'+name" v-text="head.label" :class=\'set.label_cls\'  control-label"><span class="req_star" v-if=\'head.required\'> *</span>\n\t</label>\n\t<div :class="set.input_cls">\n        <component :is=\'head.type\'\n            :model.sync=\'row[name]\'\n            :name=\'name\'\n            :kw=\'head\'>\n        </component>\n\t</div>\n\t<slot> </slot>\n\t<div v-text=\'error_data(name)\' class=\'error\'></div>\n    </div>\n'
+
+	});
 
 	function update_vue_obj(vue_obj, obj) {
-	    for (var _x5 in vue_obj) {
-	        Vue.delete(vue_obj, _x5);
+	    for (var _x in vue_obj) {
+	        Vue.delete(vue_obj, _x);
 	    }
-	    for (var _x6 in obj) {
-	        Vue.set(vue_obj, _x6, obj[_x6]);
+	    for (var _x2 in obj) {
+	        Vue.set(vue_obj, _x2, obj[_x2]);
 	    }
 	}
 
@@ -307,9 +298,10 @@
 	        }
 	    }
 	}
+	window.update_vue_obj = update_vue_obj;
 	window.use_color = _color.use_color;
-	window.field_str = field_str;
-	window.field = field;
+	window.show_upload = _ajax_fun.show_upload;
+	window.hide_upload = _ajax_fun.hide_upload;
 	window.merge = merge;
 
 /***/ },
@@ -328,6 +320,139 @@
 	        document.write("<script src=\"http://cdn.bootcss.com/spectrum/1.8.0/spectrum.min.js\"></script>");
 	        document.write("<link href=\"http://cdn.bootcss.com/spectrum/1.8.0/spectrum.min.css\" rel=\"stylesheet\">");
 	    }
+	}
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.hook_ajax_msg = hook_ajax_msg;
+	exports.show_upload = show_upload;
+	exports.hide_upload = hide_upload;
+	/**
+	 * Created by zhangrong on 2016/8/6.
+	 */
+
+	function hook_ajax_msg() {
+		if (window.hook_ajax_msg_mark) {
+			return;
+		}
+		window.hook_ajax_msg_mark = true;
+		$(window).bind('beforeunload', function () {
+			window.iclosed = true;
+		});
+
+		$(document).ajaxSuccess(function (event, data) {
+			var rt = data.responseJSON;
+			if (rt && rt.msg) {
+				alert(rt.msg);
+			}
+		}).ajaxError(function (event, jqxhr, settings, thrownError) {
+			if (!window.iclosed) {
+				if (jqxhr.status != 0) {
+					alert('server has error');
+				} else {
+					alert('maybe server offline');
+				}
+			}
+		});
+	}
+
+	function show_upload() {
+		$('#load_wrap').show();
+	}
+	function hide_upload() {
+		$('#load_wrap').hide();
+	}
+
+	if (!window.__font_awesome) {
+		window.__font_awesome = true;
+		document.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">');
+	}
+
+	if (!window.__uploading_mark) {
+		window.__uploading_mark = true;
+		document.write('\n\t\t<style>\n\t\t.popup{\n\t\t\tposition: fixed;\n\t\t\ttop: 0;\n\t\t\tleft: 0;\n\t\t\tright: 0;\n\t\t\tbottom: 0;\n\t\t\tdisplay:none;\n\t\t}\n\t\t#_upload_inn{\n\t\t\tbackground: rgba(88, 88, 88, 0.2);\n\t\t\tborder-radius: 5px;\n\t\t\twidth:180px;\n\t\t\theight:120px;\n\t\t\t/*padding:30px 80px ;*/\n\t\t}\n\t\t.imiddle{\n\t    position: absolute;\n        top: 50%;\n        left: 50%;\n        transform: translate(-50%, -50%);\n        text-align: center;\n\t\t/*display: table;*/\n        z-index: 1000;\n    \t}\n    \t#_upload_mark{\n    \t\tfloat: left;\n\n    \t}\n\t\t</style>');
+		$(function () {
+			$('body').append('<div class="popup" id="load_wrap"><div id=\'_upload_inn\' class="imiddle">\n\t\t<div  id="_upload_mark" class="imiddle"><i class="fa fa-spinner fa-spin fa-3x"></i></div></div></div>');
+		});
+	}
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Vue.component('file-input', {
+	    template: "<input model='filebody' type='file' @change='changed'>",
+	    props: {
+	        up_url: {
+	            type: String,
+	            required: true
+	        },
+	        //url:{
+	        //    type: String,
+	        //    twoWay:true
+	        //},
+	        ready: {}
+	    },
+	    methods: {
+	        changed: function changed(changeEvent) {
+	            var file = changeEvent.target.files[0];
+	            if (!file) return;
+	            this.fd = new FormData();
+	            this.fd.append('file', file);
+	            this.ready = true;
+	            this.upload();
+	        },
+	        upload: function upload() {
+	            var self = this;
+	            $.ajax({
+	                url: this.up_url,
+	                type: 'post',
+	                data: this.fd,
+	                contentType: false,
+	                cache: false,
+	                success: function success(data) {
+	                    if (data.url) {
+	                        self.$dispatch('rt_url', data.url);
+	                    }
+
+	                    //alert(data);
+	                    //self.url=data.url;
+	                    //self.$emit('url.changed',data.url)
+	                },
+	                //error:function (data) {
+	                //	alert(data.responseText)
+	                //},
+	                processData: false
+	            });
+	        }
+	    }
+	});
+
+	Vue.component('logo-input', {
+	    props: ['up_url', 'web_url', 'id'],
+	    template: '\n          <div class=\'up_wrap logo-input\'>\n            <file-input :id=\'id\'\n                accept=\'image/gif,image/jpeg,image/png\'\n                :up_url=\'up_url\'\n                @rt_url= \'get_web_url\'>\n            </file-input>\n            <div style="padding: 40px">\n                <a class=\'choose\'>Choose</a>\n            </div>\n            <div v-if=\'web_url\' class="closeDiv">\n            <div class="close" @click=\'clear()\'>X</div>\n            <img :src="web_url" alt="" class="logoImg">\n            </div>\n            </div>\n        ',
+	    methods: {
+	        get_web_url: function get_web_url(e) {
+	            this.web_url = e;
+	        },
+	        clear: function clear() {
+	            this.web_url = '';
+	            $('#' + this.id).val('');
+	        }
+	    }
+	});
+
+	if (!window._logo_input_css) {
+	    document.write('\n\n<style type="text/css" media="screen" >\n.up_wrap{\n    position: relative;\n    text-align: center;\n    border: 2px dashed #ccc;\n    background: #FDFDFD;\n    width:300px;\n}\n.logo-input input[type="file"]{\n    opacity: 0;\n    position: absolute;\n    top: 40px;\n    left: 40px;\n    display: block;\n    cursor: pointer;\n}\n.closeDiv{\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    top: 0;\n    left: 0;\n    background-color: #ffffff;\n}\n.choose{\n    display: inline-block;\n    text-decoration: none;\n    padding: 5px;\n    border: 1px solid #0092F2;\n    border-radius: 4px;\n    font-size: 14px;\n    color: #0092F2;\n    cursor: pointer;\n}\n.choose:hover,.choose:active{\n    text-decoration: none;\n    color: #0092F2;\n}\n.close{\n    position: absolute;\n    top: 5px;\n    right: 10px;\n    cursor: pointer;\n    font-size: 14px;\n    color: #242424;\n}\n.logoImg{\n    max-height: 100px !important;\n    vertical-align: middle;\n    margin-top: 5px;\n}\n.req_star{\n    color: red;\n    font-size: 200%;\n}\n</style>\n\n      ');
 	}
 
 /***/ }

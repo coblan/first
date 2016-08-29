@@ -1,5 +1,8 @@
-from models import PageModel
+
+from core.db_tools import to_dict,save_model_form
+from models import PageModel,MobilePage
 from core.db_tools import to_dict
+import forms
 
 def get_globle():
     return globals()
@@ -17,3 +20,11 @@ def get_page(name):
         return to_dict(row)
     except PageModel.DoesNotExit:
         return {}
+
+
+def add_mobile_page():
+    return to_dict(MobilePage())
+
+
+def save(row):
+    return save_model_form(row, forms.get_globle())
