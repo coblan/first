@@ -4,6 +4,7 @@ from django.db import models
 from django.apps import apps
 from django import forms
 import json
+from datetime import datetime
 
 
 def get_or_none(model, **kw):
@@ -26,7 +27,7 @@ def to_dict(instance,filt_attr=None,include=None,exclude=None):
     
     注意，返回的字典，是可以json化的才行。
     """
-    fields=instance._meta.fields
+    fields=instance._meta.get_fields()
     if include:
         fields=filter(lambda field:field.name in include,fields)
     if exclude:
@@ -36,7 +37,8 @@ def to_dict(instance,filt_attr=None,include=None,exclude=None):
     else:
         out={}
     for field in fields:
-        if field.name in out:
+        if field.name in out or\
+           isinstance(field,models.ManyToManyRel):
             continue
         else:
             if field_map.get(field.__class__):
@@ -56,13 +58,7 @@ def to_dict(instance,filt_attr=None,include=None,exclude=None):
     return out
 
 
-class DateProc(object):
-    def to_dict(self,inst,name):
-        value = getattr(inst,name)
-        if value:
-            return value.strftime('%Y-%m-%d')
-        else:
-            return ''  
+
 
 class DatetimeProc(object):
     def to_dict(self,inst,name):
@@ -71,13 +67,29 @@ class DatetimeProc(object):
             return value.strftime('%Y-%m-%d %H:%M:%S')
         else:
             return ''
+    
+    def from_dict(self,value,field):
+        return datetime.strptime(value,'%Y-%m-%d %H:%M:%S')
         
 class ForeignProc(object):
     def to_dict(self,inst,name):
         foreign=getattr(inst,name)
         if foreign:
             return foreign.pk
+        
+    def from_dict(self,value,field):
+        model=field.rel.to
+        return model.objects.get(pk=value)
 
+class ManyProc(object):
+    def to_dict(self,inst,name):
+        out =[]
+        for item in getattr(getattr(inst,name),'all')():
+            out.append(item.pk)
+        return out
+    
+    def from_dict(self,value,field):
+        return value
     
 
 def from_dict(dc,model=None,pre_proc=None):
@@ -96,34 +108,46 @@ def from_dict(dc,model=None,pre_proc=None):
         processed=pre_proc(dc,model)
     for k in processed:
         dc.pop(k)         # 去除被pre_proc处理过的值， (因为处理过的值，不应再被 _convert_foreign处理)
-    fpk_to_fobj(dc,model)
-    dc.update(processed)   # 把pre_proc的值合并回去 ，(因为下面要给 instance赋值)
+        
+    fields = model._meta.get_fields()
+    for field in fields:
+        value= dc.get(field.name,None)
+        if value:
+            if field_map.get(field.__class__):
+                processed[field.name] = field_map.get(field.__class__)().from_dict(value,field) 
+            else:
+                processed[field.name]=value
+
+            
+     #       
+    # fpk_to_fobj(dc,model)
+    # dc.update(processed)   # 把pre_proc的值合并回去 ，(因为下面要给 instance赋值)
     pk=dc.get('pk')
     if pk:
         instance=model.objects.get(pk=pk) 
-        for k,v in dc.items():
+        for k,v in processed.items():
             setattr(instance,k,v)       
         return instance            
     else:
-        instance=model.objects.create(**dc)
+        instance=model.objects.create(**processed)
         return instance
     
-def fpk_to_fobj(dc,model):
-    """
-    convert foreign key to foreign object. foreign key field name is in dc . according to model
-    """
-    fields=model._meta.fields
-    for field in fields:
-        if field.name in dc and isinstance(field,models.ForeignKey)\
-           and not isinstance(dc[field.name],field.rel.to):
-            dc[field.name]=_deserilize_foreignkey(field, dc[field.name])    
+# def fpk_to_fobj(dc,model):
+    # """
+    # convert foreign key to foreign object. foreign key field name is in dc . according to model
+    # """
+    # fields=model._meta.fields
+    # for field in fields:
+        # if field.name in dc and isinstance(field,models.ForeignKey)\
+           # and not isinstance(dc[field.name],field.rel.to):
+            # dc[field.name]=_deserilize_foreignkey(field, dc[field.name])    
 
-def _deserilize_foreignkey(field,pk):
-    if pk is not None:
-        model=field.rel.to
-        return model.objects.get(pk=pk)
-    else:
-        return None
+# def _deserilize_foreignkey(field,pk):
+    # if pk is not None:
+        # model=field.rel.to
+        # return model.objects.get(pk=pk)
+    # else:
+        # return None
 
 #def _field_name_to_filed(fields,instance):
     #out = []
@@ -152,68 +176,38 @@ def form_to_head(form):
         out.append(dc)
     return out
 
-
-def save_model_form(row, form_scope=None, Form=None):
-    """
-    
-    do two things:
-    1. find matched form to row.Form search scope represent by 'form_scrop'.
-    2. use form validate row then save it to model.if validate fail ,Error message will be returned.
-    
-    """
-    if Form:
-        model=Form.Meta.model
+def save_model(row,scope):
+    if '_form' in row:
+        form = scope.get(row.get('_form'))
     else:
         model=apps.get_model(row['_class'])
-        for k,v in form_scope.items():
+        for k,v in scope.items():
             if isinstance(v,type) and issubclass(v,forms.ModelForm):
-                if v.Meta.model==model:
-                    Form = v
-                    break 
-    if not Form:
-        raise UserWarning,'not valid form class in form_scope'
-    form =Form(row)
-    if form.is_valid():
-        obj = from_dict(form.cleaned_data,model)
-        obj.save()
-        return {'status':'success'}
-    else:
-        return {'errors':form.errors}
-    
-
-#def save_model(models,scope):
-    #if '_form' in models:
-        #form = scope.get(models.get('_form'))
-    #else:
-        #model=apps.get_model(models['_class'])
-        #for k,v in scope.items():
-            #if isinstance(v,forms.ModelForm):
-                #if v.Meta.model==model:
-                    #form = v
-                    #break
-    #return model_form_save(form,models)
+                if hasattr(v,'Meta') and v.Meta.model==model:
+                    form = v
+                    break
+    return model_form_save(form,row)
 
 
-def save_model_form_manual(form,row,success=None,**kw):
+def model_form_save(form,models,success=None,**kw):
     """
-    Less chance to use this function,because normally we use auto version.Little working to maintain the code,
-    be careful,checking it before use.
-    
     保存 ModelForm。这个函数不如save_model智能。需要手动传入form。如果前端页面有_class信息，最好使用使用自动化的save_model函数
     
     @form : 普通的django form
-    @row: dict: 代表是所有field的值
+    @models: dict: 代表是所有field的值
     
     @success: callback(obj) : 
+    @kw : 可以传入user 等  /// 可以没有用处，等等调整它.
     
     """
-    model_dict= row # kw.pop('models')
+    model_dict= models # kw.pop('models')
     model_dict.update(kw)
     iform = form(model_dict)
 
     if iform.is_valid():
         model = form.Meta.model
-        obj = from_dict(iform.cleaned_data,model)
+        model_dict.update(iform.cleaned_data)
+        obj = from_dict(model_dict,model)
         if success:
             return success(obj)
         else:
@@ -228,7 +222,7 @@ def save_model_form_manual(form,row,success=None,**kw):
 
 
 field_map={
-    models.DateField:DateProc,
     models.DateTimeField:DatetimeProc,
-    models.ForeignKey : ForeignProc
+    models.ForeignKey : ForeignProc,
+    models.ManyToManyField:ManyProc
 }

@@ -1,5 +1,5 @@
 
-from core.db_tools import to_dict,save_model_form
+from core.db_tools import to_dict,save_model
 from models import PageModel,MobilePage
 from core.db_tools import to_dict
 import forms
@@ -27,4 +27,4 @@ def add_mobile_page():
 
 
 def save(row):
-    return save_model_form(row, forms.get_globle())
+    return save_model(row, forms.get_globle())

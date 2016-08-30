@@ -58,6 +58,8 @@
 						},
 						submit:function () {
 							var self=this;
+							this.$broadcast('sync_data')
+							this.kw.row.content=JSON.stringify(this.items);
 							var post_data=[{fun:'save',row:self.kw.row}]
 							$.post('',JSON.stringify(post_data),function (data) {
 								
@@ -80,6 +82,7 @@
 						'pageSelect':function (kw) {
 							//alert(kw)
 							this.kw.row=kw
+							this.items=JSON.parse(this.kw.row.content);
 						}
 					}
 				})

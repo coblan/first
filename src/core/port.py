@@ -66,6 +66,9 @@ class RouterAjax(object):
         return HttpResponse(json.dumps(self.rt), content_type="application/json")            
             
     def run_dict(self):
+        """beacuse dict has no order, Call order is a little tedius,
+        so use run_list replace this function"""
+        
         self.orders=self.commands.pop('order',[])
         if self.rt_except:
             try:
@@ -73,8 +76,6 @@ class RouterAjax(object):
                 self.proc_no_order()
             except (UserWarning,TypeError,KeyError) as e:
                 self.msgs.append(repr(e))
-            #except KeyError as e:
-                #self.msgs.append('no function %s'%k)
         else:
             self.proc_order()
             self.proc_no_order()
