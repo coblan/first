@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+	<head>
+		<meta charset='utf-8' />
+		<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+		<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<script src="//cdn.bootcss.com/vue/1.0.24/vue.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<script src="{% static 'js/fields.pack.js' %}"></script>
+		
+		<script type="text/javascript">
+			window.use_ckeditor()
+			menu=[
+				{icon:'<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>',label:'内容',name:'content'},
+				{icon:'<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>',label:'设置',name:'setting'}
+			]
+			sub_menu=[{label:'菜单',link:'{% url "mbpage" "menu" %}',name:'menu'},
+					{label:'页面',link:'{% url "mbpage" "page" %}',name:'page'}]
+
+			menu_active='{{menu_active}}'
+			submenu_active='{{submenu_active}}'
+			for(x in menu){
+				if(menu[x].name==menu_active){
+					menu[x].active=true
+				}
+			}
+			for(x in sub_menu){
+				if(sub_menu[x].name==submenu_active){
+					sub_menu[x].active=true
+				}
+			}
+			
+			$(function () {
+				setTimeout(function () {
+					$('body').show()
+				},0)
+				new Vue({
+					el:'#common-base',
+					data:{
+						menus:[{label:'页面制作',show:true,actions:menu}],
+						sub_menu:sub_menu,
+					},
+					ready:function () {
+						$('#-spot-menu').height($(window).height())
+						$(window).resize(function () {
+							$('#-spot-menu').height($(window).height())
+						})
+						
+					},
+					methods:{
+						menu_width:function (width) {
+							$('#_content').css('margin-left',width)
+						},
+						add_page:function () {
+							var self=this;
+							var post_data=[{fun:'add_mobile_page'}]
+							$.post('',JSON.stringify(post_data),function (data) {
+								var content = data.add_mobile_page.content
+								if (content){
+									data.add_mobile_page.content=JSON.parse(content);
+								}else{
+									data.add_mobile_page.content=[];
+								}
+								self.crt_page = data.add_mobile_page
+							})
+						},
+						submit:function () {
+							var self=this;
+							this.$broadcast('sync_data')
+							var temp = JSON.parse(JSON.stringify(this.crt_page))
+							temp.content= JSON.stringify(temp.content);
+							var post_data=[{fun:'save',row:temp}]
+							$.post('',JSON.stringify(post_data),function (data) {
+								
+							})
+						},
+						map:function (name,row) {
+							if(name=='name'){
+								return {com:'temp-com',kw:row}
+							}else{
+								return row[name]
+							}
+						},
+					
+					},
+				})
+				
+			})
+		</script>
+		<style type="text/css" media="screen" id="test">
+			#-spot-menu{
+				position: fixed;
+			}
+			.clickable{
+				cursor: pointer;
+				color: #1128FD;
+			}
+		</style>
+	</head>
+	<body style='display: none;'>
+		{% include 'mobile/mb_component.html' %}
+	
+		<div id='common-base'>
+			<spot-menu id='-spot-menu' 
+				@width-change='menu_width'
+				:menus='menus'
+				:sub_menu='sub_menu'>
+			</spot-menu>
+		</div>
+		
+		<div id='_content' >
+			{% block content %}
+			{% endblock %}
+		</div>
+</body>
+</html>

@@ -1,0 +1,221 @@
+{% extends 'mobile/base.html' %}
+{% block content %}
+<script type="text/javascript">
+	use_ckeditor()
+	heads={{ heads | safe }}
+	pages={{ pages | safe }}
+	for(x in pages){
+		var row = pages[x]
+		if(row.content){
+			row.content=JSON.parse(row.content);
+		}else{
+			row.content=[]
+		}
+	}
+	$(function () {
+		new Vue({
+			el:'#content',
+			data:{
+				menus:[{label:'页面制作',show:true,actions:menu}],
+				sub_menu:sub_menu,
+				heads:['name','label'],
+				pages:pages,
+				crt_page:{},
+			},
+
+			methods:{
+				add_page:function () {
+					var self=this;
+					var post_data=[{fun:'add_mobile_page'}]
+					$.post('',JSON.stringify(post_data),function (data) {
+						var content = data.add_mobile_page.content
+						if (content){
+							data.add_mobile_page.content=JSON.parse(content);
+						}else{
+							data.add_mobile_page.content=[];
+						}
+						self.crt_page = data.add_mobile_page
+					})
+				},
+				submit:function () {
+					var self=this;
+					this.$broadcast('sync_data')
+					var temp = JSON.parse(JSON.stringify(this.crt_page))
+					temp.content= JSON.stringify(temp.content);
+					var post_data=[{fun:'save',row:temp}]
+					$.post('',JSON.stringify(post_data),function (data) {
+						
+					})
+				},
+				map:function (name,row) {
+					if(name=='name'){
+						return {com:'temp-com',kw:row}
+					}else{
+						return row[name]
+					}
+				},
+			
+			},
+		})
+	})
+</script>
+		<style type="text/css" media="screen" id="test">
+			.edit-panel{
+				width:500px;
+				margin: auto;
+			}
+			.clickable{
+				cursor: pointer;
+				color: #1128FD;
+			}
+		</style>
+
+	<div id='content'>
+			<div style='padding: 20px;'>
+				<button name="test" type="button" value="val" @click='add_page()'>添加页面</button>
+				
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<td v-for='head in heads'>
+								<span v-text='head.label'></span>
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for='page in pages'>
+							<td v-text='page.name' @click='crt_page=page' class='clickable'></td>
+							<td v-text='page.label'></td>
+						</tr>
+					</tbody>
+				</table>
+			
+			</div>
+
+			<button name="test" type="button" value="val" @click='submit()'>save</button>
+			<edit-panel :page='crt_page'></edit-panel>
+	
+	</div>
+	
+<script type="text/javascript">
+	Vue.component('temp-com',{
+		template:'#temp-com',
+		props:['kw'],
+		methods:{
+			here:function () {
+				this.$dispatch('pageSelect',this.kw)
+			}
+		}
+	})
+</script>
+<template id='temp-com'>
+	<span @click='here()' v-text='kw.name' class='clickable'></span>
+</template>
+
+<script type="text/javascript">
+	Vue.component('raw_html',{
+		template:'#raw_html',
+		props:{
+			kw:{
+				coerce:function (kw) {
+					if(!kw.model){
+						kw.model=''
+					}
+					return kw
+				}
+			}
+		}
+		
+	})
+</script>
+<template id='raw_html'>
+	<div class='item-panel'>
+		<textarea name="test" rows="10" cols="10" v-model='kw.model'></textarea>
+	</div>
+</template>
+
+<script type="text/javascript">
+	Vue.component('editor',{
+		template:'#editor',
+		props:{
+			kw:{
+				coerce:function (kw) {
+					if(!kw.model){
+						kw.model=''
+					}
+					return kw
+				}
+			}
+		}
+	})
+</script>
+<template id='editor'>
+	<div class='item-panel'>
+		<ckeditor :model.sync='kw.model'></ckeditor>
+	</div>
+</template>
+
+<script type="text/javascript">
+	Vue.component('edit-panel',{
+		template:'#edit-panel',
+		props:{
+			page:{
+				default:function () {
+					return {
+						name:'',
+						label:'',
+						items:[]
+					}
+				}
+			}
+		},
+		data:function () {
+			return {
+				selected:{},
+				options:[{name:'raw_html',label:'raw html'},
+						{name:'editor',label:'CK Editor'}],
+			}
+		},
+		methods:{
+			add_panel:function (comName) {
+					var new_item={com:comName,kw:{}}
+					this.page.content.push(new_item)
+				}
+		},
+		computed:{
+			kw:function () {
+				return {
+					errors:{},
+					heads:heads,
+					row:this.page,
+				}
+			}
+		}
+	})
+</script>
+<template id='edit-panel'>
+	<div>
+		<button name="test" type="button" @click='add_panel(selected)'>Add Panel</button>
+		<select name="" id="" v-model='selected'>
+			<option v-for='option in options' :value="option.name" v-text='option.label'>
+			</option>
+		</select>
+
+		<div class='edit-panel'>
+			
+			<div class='item-panel'>
+				<field name='name' :kw='kw'></field>
+				<field name='label' :kw='kw'></field>
+			</div>
+			<component v-for='item in page.content' :is='item.com' :kw='item.kw'></component>
+		</div>
+	</div>
+</template>
+
+
+
+
+
+{% endblock %}
+		
+		
