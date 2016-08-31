@@ -19,7 +19,7 @@ def pagebuild(request):
 def mobile_page(request):
     if request.method=='GET':
         context = {'heads':json.dumps(form_to_head( MobilePageForm()) ),
-                   'rows':json.dumps([to_dict(x) for x in MobilePage.objects.all()])
+                   'pages':json.dumps([to_dict(x) for x in MobilePage.objects.all()])
                    }
         return render(request,'mbpage.html',context=context)
     else:
