@@ -2,6 +2,7 @@
 {% block content %}
 <script type="text/javascript">
 	use_ckeditor()
+	filters={{filters | safe }}
 	heads={{ heads | safe }}
 	pages={{ pages | safe }}
 	for(x in pages){
@@ -18,9 +19,12 @@
 			data:{
 				menus:[{label:'页面制作',show:true,actions:menu}],
 				sub_menu:sub_menu,
-				heads:['name','label'],
+				heads:heads.filter(function (head) {
+					return head.name !='content'
+				}),
 				pages:pages,
 				crt_page:{},
+				filters:filters,
 			},
 
 			methods:{
@@ -48,14 +52,37 @@
 					})
 				},
 				map:function (name,row) {
+					
 					if(name=='name'){
 						return {com:'temp-com',kw:row}
 					}else{
 						return row[name]
 					}
 				},
+				search:function () {
+					var search_str=''
+					for(x in filters){
+						var filter = filters[x]
+						if(filter.value){
+							search_str+= filter.name+'='+filter.value+'&'
+						}
+					}
+					if(search_str){
+						location.search = search_str
+					}else{
+						location=location.pathname
+					}
+				}
 			
 			},
+			events:{
+				'page-selected':function (page) {
+					this.crt_page=page
+				},
+				'sort':function (name) {
+					location.search='_sort='+name
+				}
+			}
 		})
 	})
 </script>
@@ -73,37 +100,32 @@
 	<div id='content'>
 			<div style='padding: 20px;'>
 				<button name="test" type="button" value="val" @click='add_page()'>添加页面</button>
+
+				<select name="" id="" v-for='filter in filters' v-model='filter.value'>
+					<option value="" v-text='filter.label'></option>
+					<option value="" >----</option>
+					<option  v-for='option in filter.options' :value="option.name" v-text='option.label'></option>
+				</select>
+				<button name="test" type="button" value="val" @click='search()'>search</button>
 				
-				<table class="table table-hover">
-					<thead>
-						<tr>
-							<td v-for='head in heads'>
-								<span v-text='head.label'></span>
-							</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr v-for='page in pages'>
-							<td v-text='page.name' @click='crt_page=page' class='clickable'></td>
-							<td v-text='page.label'></td>
-						</tr>
-					</tbody>
-				</table>
-			
+				<sort-table :heads='heads' :rows='pages' :map='map'></sort-table>
+
 			</div>
 
 			<button name="test" type="button" value="val" @click='submit()'>save</button>
 			<edit-panel :page='crt_page'></edit-panel>
 	
 	</div>
-	
+
+{% include 'com_table.html' %}
+
 <script type="text/javascript">
 	Vue.component('temp-com',{
 		template:'#temp-com',
 		props:['kw'],
 		methods:{
 			here:function () {
-				this.$dispatch('pageSelect',this.kw)
+				this.$dispatch('page-selected',this.kw)
 			}
 		}
 	})

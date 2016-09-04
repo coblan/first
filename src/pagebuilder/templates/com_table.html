@@ -25,6 +25,11 @@
 						}
 				}
 			}
+		},
+		methods:{
+			click_col:function (name) {
+				this.$dispatch('sort',name)
+			}
 		}
 	})
 </script>
@@ -36,7 +41,14 @@
 					<td style='width:50px' v-if='has_check'>
 						<input type="checkbox" name="test" value=""/>
 					</td>
-					<td v-for='head in heads'><span v-text='head.label'></span></td>
+					<td v-for='head in heads'>
+						
+						<span v-if='head.sortable' v-text='head.label' class='clickable' @click='click_col(head.name)'></span>
+						<span v-else v-text='head.label'></span>
+						<span v-if='head.priority'>
+							<span v-text='head.priority'></span>
+						</span>
+					</td>
 				</tr>
 			</thead>
 			<tbody>

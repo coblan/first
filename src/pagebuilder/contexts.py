@@ -3,6 +3,7 @@ from core.db_tools import form_to_head,to_dict
 from models import MobilePage
 from forms import MobilePageForm
 import json
+from tables import PageTable
 
 def get_cls(step):
     name = 'MB%s%s'%(step[0].capitalize(),step[1:].lower())
@@ -12,6 +13,7 @@ class Object(object):
     pass
 
 class MBBase(object):
+    abstract=True
     template=''
     def __init__(self):
         self.ctx=Object()
@@ -33,9 +35,19 @@ class MBPage(MBBase):
     
     def build(self,request):
         MBBase.build(self,request)
-        self.ctx.heads = json.dumps(form_to_head( MobilePageForm())) 
-        self.ctx.pages = json.dumps([to_dict(x) for x in MobilePage.objects.all()] )
+        
+        #self.ctx.heads = json.dumps(form_to_head( MobilePageForm())) 
+        #self.ctx.pages = json.dumps([to_dict(x) for x in MobilePage.objects.all()] )
+        
+        table = PageTable.parse_request(request)
+        self.ctx.heads=json.dumps(table.get_heads())
+        self.ctx.pages = json.dumps(table.get_rows())
+        self.ctx.filters = json.dumps(table.get_filters())
 
 class MBMenu(MBBase):
     template = 'mobile/mbmenu.html'
+
+
+class MBGroup(MBBase):
+    template = 'mobile/mbgroup.html'
           
