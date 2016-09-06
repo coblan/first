@@ -1,4 +1,11 @@
 # -*-encoding:utf-8 -*-
+"""
+sync webcode with first
+
+Usage:
+    python sync_webcode.py
+    
+"""
 import sys
 import os
 sys.path.append(r'D:\coblan\py2')

@@ -12,4 +12,4 @@ class PageModel(models.Model):
 class MobilePage(models.Model):
     name = models.CharField('name',max_length=300,blank=True)
     label = models.CharField('label',max_length=400,blank=True)
-    content=models.TextField(verbose_name='content',blank=True)
+    content=models.TextField(verbose_name='content of',blank=True)

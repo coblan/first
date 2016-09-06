@@ -15,6 +15,11 @@
 					return [];
 				}
 			},
+			sort:{
+				default:function () {
+					return []
+				}
+			},
 			has_check:{
 				default:false
 			},
@@ -27,12 +32,42 @@
 			}
 		},
 		methods:{
-			click_col:function (name) {
-				this.$dispatch('sort',name)
+			in_sort:function (name) {
+				return this.sort.indexOf(name)!=-1
+			},
+			get_sort_pos:function (name) {
+				if(name.startsWith('-')){
+					name=name.substr(1)
+				}
+				var index = this.sort.indexOf(name)
+				if (index!=-1){
+					return index
+				}else{
+					return this.sort.indexOf("-"+name)
+				}
+			},
+			sort_col:function (name) {
+				var pos =this.get_sort_pos(name)
+				if(pos==-1){
+					this.sort.push(name)
+				}else{
+					this.sort[pos]=name
+				}
+				this.$dispatch('hash-changed')
+			},
+			rm_sort:function (name) {
+				var pos =this.get_sort_pos(name)
+				if(pos!=-1){
+					this.sort.splice(pos,1)
+				}
+				this.$dispatch('hash-changed')
 			}
 		}
 	})
 </script>
+<style type="text/css" media="screen" id="test">
+	
+</style>
 <template id='sort-table'>
 	<div>
 		<table class="table table-hover">
@@ -43,10 +78,16 @@
 					</td>
 					<td v-for='head in heads'>
 						
-						<span v-if='head.sortable' v-text='head.label' class='clickable' @click='click_col(head.name)'></span>
+						<span v-if='head.sortable' v-text='head.label' class='clickable' @click='sort_col(head.name)'></span>
 						<span v-else v-text='head.label'></span>
-						<span v-if='head.priority'>
-							<span v-text='head.priority'></span>
+						<span v-if='icatch=get_sort_pos(head.name),icatch!=-1'>
+							<span v-text='icatch'></span>
+							<span class="glyphicon glyphicon-chevron-up" v-if='in_sort(head.name)' 
+								class='clickable' @click='sort_col("-"+head.name)'></span>
+							<span v-if='in_sort("-"+head.name)' class="glyphicon  glyphicon-chevron-down" 
+								class='clickable' @click='sort_col(head.name)'></span>
+							<span v-if='in_sort(head.name)||in_sort("-"+head.name)' class="glyphicon glyphicon-remove" 
+								class='clickable' @click='rm_sort(head.name)'></span>
 						</span>
 					</td>
 				</tr>
