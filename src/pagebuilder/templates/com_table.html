@@ -77,7 +77,6 @@
 						<input type="checkbox" name="test" value=""/>
 					</td>
 					<td v-for='head in heads'>
-						
 						<span v-if='head.sortable' v-text='head.label' class='clickable' @click='sort_col(head.name)'></span>
 						<span v-else v-text='head.label'></span>
 						<span v-if='icatch=get_sort_pos(head.name),icatch!=-1'>

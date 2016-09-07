@@ -79,15 +79,9 @@
 					return sort_str
 				},
 				search:function () {
-					//var search_str = this.get_search_str()
-					//if(search_str){
-					//	location.search = search_str
-					//}else{
-					//	location=location.pathname
-					//}
-					this.re_hash()
+					this.re_arg()
 				},
-				re_hash:function () {
+				re_arg:function () {
 					var search_str=this.get_search_str()
 					var sort_str = this.get_sort_str()
 					location.search='_sort='+sort_str+'&'+search_str
@@ -100,19 +94,7 @@
 					this.crt_page=page
 				},
 				'hash-changed':function () {
-					
-					//if(name.startsWith('-')){
-					//	rev_name=name.substr(1)
-					//}else{
-					//	rev_name='-'+name
-					//}
-					//var index = sort.indexOf(rev_name)
-					//if(index==-1){
-					//	sort.push(name)
-					//}else{
-					//	sort[index]=name
-					//}
-					this.re_hash()
+					this.re_arg()
 				}
 			}
 		})
@@ -145,7 +127,7 @@
 			</div>
 
 			<button name="test" type="button" value="val" @click='submit()'>save</button>
-			<edit-panel :page='crt_page'></edit-panel>
+			<!--<edit-panel :page='crt_page'></edit-panel>-->
 	
 	</div>
 

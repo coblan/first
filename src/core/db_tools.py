@@ -176,6 +176,17 @@ def form_to_head(form):
         out.append(dc)
     return out
 
+def model_to_head(model,include=[],exclude=[]):
+    out = []
+    for field in model._meta.fields:
+        dc = {'name':field.name,'label':field._verbose_name,}
+        out.append(dc)
+    if include:
+        out=[x for x in out if x.get('name') in include]
+    else:
+        out=[x for x in out if x.get('name') not in exclude]
+    return out
+
 def save_model(row,scope):
     if '_form' in row:
         form = scope.get(row.get('_form'))
