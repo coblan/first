@@ -105,3 +105,20 @@
 	</div>
 </template>
 
+
+<script type="text/javascript">
+	Vue.component('page-num',{
+		template:'#page-num',
+		props:['nums'],
+		
+	})
+</script>
+<template id='page-num'>
+	<ul class="pagination">
+
+        <li>
+         <span v-for='num in nums' v-text='num' :class='{"clickable":parseInt(num)}'></span>
+        </li>
+
+      </ul>
+</template>

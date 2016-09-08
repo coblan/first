@@ -2,7 +2,24 @@ from core.db_tools import to_dict,model_to_head
 from models import MobilePage
 #from forms import MobilePageForm
 
+
+from django.core.paginator import Paginator
+
+
+def get_page_nums(page_range,page):
+    page=int(page)
+    page_count = len(page_range)
+    k=3
+    a=-1
+    while a < 1:
+        a=page-k
+        k-=1
+    page_nums = range(a,min(page_count,page+(5-k))+1)
+    return page_nums
+
+
 class Table(object):
+    per_page=30
     def __init__(self,page=1,sort=[],filter={}):
         self.page=page
         self.sort=sort
@@ -21,10 +38,13 @@ class Table(object):
         pass
     def get_sort(self):
         return self.sort
+    
     def get_rows(self):
         pass
+    
     def get_page(self):
         pass
+    
     def get_options(self):
         pass
     
@@ -51,7 +71,16 @@ class ModelTable(Table):
     def get_rows(self):
         query = self.out_filter(self.model.objects.all())
         query = self.inn_filter(query)
-        return [to_dict(x) for x in query]   
+        
+        pg = Paginator(query,self.per_page)
+        ls=[]
+
+        page_nums = get_page_nums(pg.page_range,self.page)
+        self.__page_nums = page_nums
+        return [to_dict(x) for x in pg.page(self.page)]   
+    
+    def get_page_nums(self):
+        return self.__page_nums
     
     def inn_filter(self,query):
         return query
@@ -88,7 +117,7 @@ class PageTable(ModelTable):
     model = MobilePage
     sortable=['name','label']
     include= ['name','label']
-    def get_page(self):
-        pass
+    per_page=2
+
     
     

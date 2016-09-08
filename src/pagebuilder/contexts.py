@@ -42,6 +42,7 @@ class MBPage(MBBase):
         table = PageTable.parse_request(request)
         self.ctx.heads=json.dumps(table.get_heads())
         self.ctx.pages = json.dumps(table.get_rows())
+        self.ctx.page_nums = json.dumps(table.get_page_nums())
         self.ctx.filters = json.dumps(table.get_options())
         self.ctx.sort=json.dumps(table.get_sort())
 
@@ -51,4 +52,19 @@ class MBMenu(MBBase):
 
 class MBGroup(MBBase):
     template = 'mobile/mbgroup.html'
+
+
+class MBEditpage(MBBase): 
+    template = 'mobile/mbeditpage.html'
+    
+    def build(self, request):
+        self.ctx.heads = json.dumps(form_to_head( MobilePageForm())) 
+        
+        id = request.GET.get('page_id')
+        if id:
+            page = MobilePage.objects.get(pk=id)
+            self.ctx.row = json.dumps(to_dict( page ))
+        else:
+            self.ctx.row = json.dumps(to_dict(MobilePage()))
+        
           
