@@ -3,6 +3,7 @@
 
 	<head>
 		<meta charset='utf-8' />
+		<meta name="viewport" content="width=device-width">
 		<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
 		<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -25,7 +26,6 @@
 					send:function () {
 						var post_data=[{fun:'publish_msg',msg:JSON.stringify({name:this.name,content:this.crt_msg})}]
 						$.post('?fun=publish_msg',JSON.stringify(post_data))
-						//this.msgs.push(msg)
 						this.crt_msg=''
 					}
 				},
@@ -124,15 +124,27 @@
 	<style type="text/css" media="screen" id="test">
 		#talk{
 			width:600px;
+			/*display: flex;*/
 		}
 		#msg_div{
 			height:400px;
 			overflow: auto;
 		}
 		.small_input{
-			width:300px;
-			display: inline-block;
+			width:200px;
 		}
+		#edit .input-wrap{
+			margin-right: 140px;
+		}
+		#edit .btn{
+			width:130px;
+			float: right;
+		}
+	@media ( max-width: 736px) {
+		#talk{
+			width:100%;
+		}
+	}
 	</style>
 	</head>
 	<body>
@@ -153,8 +165,14 @@
 		<label for="yourname">名字</label>
 		<input type="text" id="yourname" v-model='name' class="form-control small_input"/><br>
 		<label for="content">内容</label>
-		<input class="form-control small_input" type="text" id="content"  v-model='crt_msg'/>
-		<button name="test" type="button"  @click='send()' class="btn btn-success">send message</button><br>
+		<div id='edit'>
+			<button name="test" type="button"  @click='send()' class="btn btn-success">send message</button>
+			<div class='input-wrap'>
+				<input class="form-control" type="text"  v-model='crt_msg' @keyup.enter='send()'/>
+			</div>
+			
+		</div>
+		
 		<label >状态</label>
 		<span v-text='status'></span>
 		<div>
