@@ -45,6 +45,7 @@ class MBPage(MBBase):
         self.ctx.page_nums = json.dumps(table.get_page_nums())
         self.ctx.filters = json.dumps(table.get_options())
         self.ctx.sort=json.dumps(table.get_sort())
+        self.ctx.q = table.q
 
 class MBMenu(MBBase):
     template = 'mobile/mbmenu.html'

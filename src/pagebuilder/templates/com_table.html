@@ -1,4 +1,4 @@
-<script type="text/javascript">
+<!--<script type="text/javascript">
 	var __heads=[{name:'xxx',label:'label1'},
 				{name:'jb',label:'jb'}]
 	var __rows=[{xxx:"jjy",jb:'hahaer'}]
@@ -102,10 +102,10 @@
 			</tbody>
 		</table>
 	</div>
-</template>
+</template>-->
 
 
-<script type="text/javascript">
+<!--<script type="text/javascript">
 	Vue.component('page-num',{
 		template:'#page-num',
 		props:['nums'],
@@ -120,11 +120,11 @@
 	})
 </script>
 <template id='page-num'>
-	<ul class="pagination">
+	<ul class="pagination page-num">
 
-        <li v-for='num in nums' track-by="$index" :class='{"clickable": !isNaN(parseInt(num)),"disabled":isNaN(parseInt(num)),"active":num.endsWith("a")}' @click='goto_page(num)'>
+        <li v-for='num in nums' track-by="$index" :class='{"clickable": !isNaN(parseInt(num)),"active":num.endsWith("a")}' @click='goto_page(num)'>
          <span v-text='!isNaN(parseInt(num))? parseInt(num):num' ></span>
         </li>
 
       </ul>
-</template>
+</template>-->

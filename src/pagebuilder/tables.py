@@ -1,5 +1,6 @@
 from core.db_tools import to_dict,model_to_head
 from models import MobilePage
+from django.db.models import Q
 #from forms import MobilePageForm
 
 
@@ -9,7 +10,7 @@ from django.core.paginator import Paginator
 def get_page_nums(page_range,page):
     """
     generate Pagenations numbers ,Current page number will be spcially process,sufix digit weith "_a" .
-    First page and last page will be spcially process, if it can't be shown by normal logic.
+    First page and last page will be spcially process, if it can't be shown by normal logic,make sure user can click first and last page
     
     """
     page=int(page)
@@ -35,19 +36,22 @@ def get_page_nums(page_range,page):
 
 class Table(object):
     per_page=30
-    def __init__(self,page=1,sort=[],filter={}):
+    def __init__(self,page=1,sort=[],filter={},q=''):
         self.page=page
         self.sort=sort
         self.arg_filter=filter 
+        self.q = q
         
     @classmethod
     def parse_request(cls,request):
         kw = request.GET.dict()
         page = kw.pop('_page','1')
         sort = kw.pop('_sort','').split(',')
+        q=kw.pop('_q','')
         sort=filter(lambda x: x!='',sort)
         arg_filter = kw
-        return cls(page,sort,arg_filter)
+        
+        return cls(page,sort,arg_filter,q)
     
     def get_heads(self):
         pass
@@ -89,8 +93,9 @@ class ModelTable(Table):
     sortable=[]
     include=[]
     per_page=30
-    def __init__(self,page=1,sort=[],filter={}):
-        super(ModelTable,self).__init__(page,sort,filter)
+    search_fields=[]
+    def __init__(self,page=1,sort=[],filter={},q=''):
+        super(ModelTable,self).__init__(page,sort,filter,q)
         field_names = [x.name for x in self.model._meta.fields]
         self.arg_filter={}
         for k,v in filter.items():
@@ -122,6 +127,16 @@ class ModelTable(Table):
         return query
     
     def out_filter(self,query):
+        if self.search_fields and self.q:
+            exp = None
+            for field in self.search_fields:
+                kw ={}
+                kw['%s__icontains'%field] =self.q
+                if exp is None:
+                    exp = Q(**kw)
+                else:
+                    exp = exp | Q(**kw)
+            query= query.filter(exp)
         return query.filter(**self.arg_filter).order_by(*self.sort)
        
     def get_options(self):
@@ -153,6 +168,7 @@ class PageTable(ModelTable):
     model = MobilePage
     sortable=['name','label']
     include= ['name','label']
+    search_fields=['name']
     per_page=2
 
     

@@ -1,7 +1,10 @@
 {% extends 'mobile/base.html' %}
+{% load static %}
 {% block content %}
+<script src="{% static 'js/table.pack.js'%}"></script>
 <script type="text/javascript">
 	filters={{filters | safe }}
+	q='{{q | safe |default:""}}'
 	sort={{sort | safe }}
 	heads={{ heads | safe }}
 	pages={{ pages | safe }}
@@ -15,9 +18,14 @@
 			row.content=[]
 		}
 	}
+
+
+	
+	
 	$(function () {
 		new Vue({
 			el:'#content',
+			mixins:[build_table_args],
 			data:{
 				menus:[{label:'页面制作',show:true,actions:menu}],
 				sub_menu:sub_menu,
@@ -29,6 +37,7 @@
 				filters:filters,
 				sort:sort,
 				page_nums:page_nums,
+				q:q
 			},
 
 			methods:{
@@ -63,31 +72,7 @@
 						return row[name]
 					}
 				},
-				get_search_str:function () {
-					var search_str=''
-					for(x in filters){
-						var filter = filters[x]
-						if(filter.value){
-							search_str+= filter.name+'='+filter.value+'&'
-						}
-					}
-					return search_str
-				},
-				get_sort_str:function () {
-					var sort_str=''
-					for(x in sort){
-						sort_str+=sort[x]+','
-					}
-					return sort_str
-				},
-				search:function () {
-					this.re_arg()
-				},
-				re_arg:function () {
-					var search_str=this.get_search_str()
-					var sort_str = this.get_sort_str()
-					location.search='_sort='+sort_str+'&'+search_str
-				},
+
 				
 			
 			},
@@ -95,15 +80,10 @@
 				'page-selected':function (page) {
 					this.crt_page=page
 				},
-				'hash-changed':function () {
-					this.re_arg()
-				},
-				'goto_page':function (num) {
-					var search_str=this.get_search_str()
-					var sort_str = this.get_sort_str()
-					
-					location.search='_sort='+sort_str+'&'+search_str+'_page='+num
-				}
+				//'sort-changed':function () {
+				//	this.re_arg()
+				//},
+			
 			}
 		})
 	})
@@ -122,7 +102,9 @@
 	<div id='content'>
 			<div style='padding: 20px;'>
 				<button name="test" type="button" value="val" @click='add_page()'>添加页面</button>
-
+				
+				<input type="text" name="test" v-model='q'/>
+				
 				<select name="" id="" v-for='filter in filters' v-model='filter.value'>
 					<option value="" v-text='filter.label'></option>
 					<option value="" >----</option>
@@ -136,10 +118,9 @@
 
 			<button name="test" type="button" value="val" @click='submit()'>save</button>
 			<!--<edit-panel :page='crt_page'></edit-panel>-->
-			<page-num :nums='page_nums'></page-num>
+			<paginator :nums='page_nums'></paginator>
 	</div>
 
-{% include 'com_table.html' %}
 
 <script type="text/javascript">
 	Vue.component('temp-com',{
