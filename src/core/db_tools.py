@@ -38,7 +38,7 @@ def to_dict(instance,filt_attr=None,include=None,exclude=None):
         out={}
     for field in fields:
         if field.name in out or\
-           isinstance(field,models.ManyToManyRel):
+           isinstance(field,(models.ManyToManyRel,models.ManyToOneRel)):
             continue
         else:
             if field_map.get(field.__class__):
