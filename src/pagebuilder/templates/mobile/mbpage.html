@@ -33,17 +33,18 @@
 
 			methods:{
 				add_page:function () {
-					var self=this;
-					var post_data=[{fun:'add_mobile_page'}]
-					$.post('',JSON.stringify(post_data),function (data) {
-						var content = data.add_mobile_page.content
-						if (content){
-							data.add_mobile_page.content=JSON.parse(content);
-						}else{
-							data.add_mobile_page.content=[];
-						}
-						self.crt_page = data.add_mobile_page
-					})
+					location = "{% url 'mbpage' 'editpage' %}"
+					//var self=this;
+					//var post_data=[{fun:'add_mobile_page'}]
+					//$.post('',JSON.stringify(post_data),function (data) {
+					//	var content = data.add_mobile_page.content
+					//	if (content){
+					//		data.add_mobile_page.content=JSON.parse(content);
+					//	}else{
+					//		data.add_mobile_page.content=[];
+					//	}
+					//	self.crt_page = data.add_mobile_page
+					//})
 				},
 				submit:function () {
 					var self=this;
@@ -96,6 +97,12 @@
 				},
 				'hash-changed':function () {
 					this.re_arg()
+				},
+				'goto_page':function (num) {
+					var search_str=this.get_search_str()
+					var sort_str = this.get_sort_str()
+					
+					location.search='_sort='+sort_str+'&'+search_str+'_page='+num
 				}
 			}
 		})

@@ -99,7 +99,6 @@
 						<span v-else v-html='icatch'></span>
 					</td>
 				</tr>
-				<slot></slot>
 			</tbody>
 		</table>
 	</div>
@@ -110,14 +109,21 @@
 	Vue.component('page-num',{
 		template:'#page-num',
 		props:['nums'],
-		
+		methods:{
+			goto_page:function (num) {
+				if (!isNaN(parseInt(num)) && !num.endsWith('a')){
+					this.$dispatch('goto_page',num)
+				}
+				
+			}
+		}
 	})
 </script>
 <template id='page-num'>
 	<ul class="pagination">
 
-        <li>
-         <span v-for='num in nums' v-text='num' :class='{"clickable":parseInt(num)}'></span>
+        <li v-for='num in nums' track-by="$index" :class='{"clickable": !isNaN(parseInt(num)),"disabled":isNaN(parseInt(num)),"active":num.endsWith("a")}' @click='goto_page(num)'>
+         <span v-text='!isNaN(parseInt(num))? parseInt(num):num' ></span>
         </li>
 
       </ul>

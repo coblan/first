@@ -7,6 +7,11 @@ from django.core.paginator import Paginator
 
 
 def get_page_nums(page_range,page):
+    """
+    generate Pagenations numbers ,Current page number will be spcially process,sufix digit weith "_a" .
+    First page and last page will be spcially process, if it can't be shown by normal logic.
+    
+    """
     page=int(page)
     page_count = len(page_range)
     k=3
@@ -15,6 +20,16 @@ def get_page_nums(page_range,page):
         a=page-k
         k-=1
     page_nums = range(a,min(page_count,page+(5-k))+1)
+    if page_nums[0] != 1:
+        page_nums=[1,'...']+ page_nums
+    if page_nums[-1] != page_count:
+        page_nums = page_nums +['...',page_count]
+    for i in range(len(page_nums)):
+        num = page_nums[i]
+        if str(num) == str(page):
+            page_nums[i]='%s_a'%num
+            break
+    page_nums=[str(x) for x in page_nums]
     return page_nums
 
 
@@ -49,10 +64,31 @@ class Table(object):
         pass
     
 class ModelTable(Table):
-    #form=''
+    """
+    
+    Getter Method:
+    ===============
+    get_heads(self):
+        return [{name:'xxx',label:'xxx',sortable:true}]
+        
+    get_rows(self):
+        return [{}]
+    
+    get_page_nums(self):
+        return ['1','2_a','3']
+        this method should be called after **get_rows**.
+    
+    over-load Method:
+    =================
+    inn_filter(self,query):
+        process inn filter logic . Get gid of ,Ex: user-ware ,group-ware data.
+        these data will be used for sort and filter in front-end
+        
+    """
     model=''
     sortable=[]
     include=[]
+    per_page=30
     def __init__(self,page=1,sort=[],filter={}):
         super(ModelTable,self).__init__(page,sort,filter)
         field_names = [x.name for x in self.model._meta.fields]
