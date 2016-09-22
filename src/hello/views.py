@@ -49,6 +49,28 @@ def upload_image_demo(request):
         return HttpResponse(json.dumps({'url':url}),content_type="application/json")
     
     
-    
+
+def test_download(request):
+    # url = request.GET.get('url')
+    # resolution = request.GET.get('resolution')
+    # mt = re.search('([^/-]+)-?(\d+x\d+)?(.jpg)',url,re.I)
+    # if resolution:
+        # name = mt.group(1)+'-'+str(resolution)+mt.group(3)
+    # else:
+        # name = mt.group(1)+mt.group(3)
+    # url = url[:mt.start(1)]+name
+    # rt = requests.get(url)
+    # if rt.status_code!=200:
+        # name = mt.group(1)+mt.group(3)
+        # url = url[:mt.start(1)]+name 
+        # rt = requests.get(url)
+    # rs = HttpResponse(rt.content)
+    with open(r'd:/try/bigfile/user_uploaded.tar.gz') as f:
+        rs = HttpResponse(f.read())
+    rs['Content-type'] = 'application/octet-stream'  # 'text/plain'
+    # rs['Content-type'] = 'image/jpeg'
+    rs['Content-Disposition'] = 'attachment; filename="{name}"'.format(name=name)
+    return rs    
+
 def normal_try(request):
     return render(request,'hello/normal_try.html')
