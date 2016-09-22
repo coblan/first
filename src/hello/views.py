@@ -42,12 +42,17 @@ def upload_image_demo(request):
         file=request.FILES.get('file')
         name = u'{time}_{name}'.format(time=str(int(time.time())),name=file.name)
         path =  os.path.join(settings.MEDIA_ROOT,'upload_image_demo',name)
+        
+        
         with open(path,'wb') as f:
             for chunk in file.chunks():
                 f.write(chunk)
+                
         url = '/media/upload_image_demo/%s'%name
         rt = HttpResponse(json.dumps({'url':url}),content_type="application/json")
         rt['Access-Control-Allow-Origin']='*'
+        rt['Content-Length'] = 24321
+        rt['Content-Encoding']='Utf-8'
         return rt
     
     
