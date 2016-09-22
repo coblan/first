@@ -36,7 +36,7 @@ def talk(request):
 
 @csrf_exempt
 def upload_image_demo(request):
-    if request.method=='GET':
+    if request.method=='PUT':
         return render(request,'hello/update_image_demo.html')
     else:
         file=request.FILES.get('file')
