@@ -1,0 +1,209 @@
+<!doctype html>
+<html>
+    <meta charset="utf-8">
+        <title>Deposits and Withdrawals</title>
+        <script type="text/javascript" src='http://apps.bdimg.com/libs/jquery/1.9.1/jquery.min.js'></script>
+        <script src="http://cdn.bootcss.com/vue/1.0.24/vue.js"></script>
+		<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+	
+        <script type="text/javascript">
+			Vue.config.devtools = true
+		$(function () {
+
+			new Vue({
+	        	el:'#there',
+	        	data:{
+		        	file_name:'',
+	        	},
+				methods:{
+					show_upload:function(){
+						
+					},
+					pre_view:function () {
+						this.$refs.f1.read(function (data) {
+							$('#haha')[0].src = data
+						})
+					},
+					fack_click:function () {
+						$('#jjyy').click()
+					},
+					upload:function () {
+						this.$refs.f1.upload('/upload_image_demo/')
+						
+					}
+				}
+        	})
+
+		})
+
+        
+        </script>
+    </head>
+    <body>
+        <h1 id='tt'>Top 3 Transactions</h1>
+		<div id='there'>
+			<file-input v-ref:f1 id='jjyy' v-model='file_name'></file-input>
+			<div><img src="" alt="" id='haha'></div>
+			<button name="test" type="button" value="val" @click='pre_view()'>Button Text</button>
+			<button name="test" type="button" value="val" @click='fack_click()'>dji</button>
+			<button name="test" type="button" value="val" @click='upload()' :disabled='file_name?false:true'>upload</button>
+		</div>
+		
+
+<script type="text/javascript">
+//(function addXhrProgressEvent($) {
+//    var originalXhr = $.ajaxSettings.xhr;
+//    $.ajaxSetup({
+//        //progress: function() { console.log("standard progress callback"); },
+//        //xhr: function() {
+//        //    var req = originalXhr(), that = this;
+//        //    if (req) {
+//        //        if (typeof req.addEventListener == "function") {
+//        //            req.addEventListener("progress", function(evt) {
+//        //                that.progress(evt);
+//        //            },false);
+//        //        }
+//        //    }
+//        //    return req;
+//        //}
+
+//		 xhr: function() {
+//            var req = originalXhr(), that = this;
+//            if (req) {
+//                if (typeof req.addEventListener == "function") {
+//                    req.upload.onprogress=function (evt) {
+//	                    if (evt.lengthComputable) {
+//				            console.log("Loaded " + parseInt( (evt.loaded / evt.total * 100), 10) + "%");
+//				        } else {
+//				            console.log("Length not computable.");
+//				        }
+//                    }
+//                }
+//            }
+//            return req;
+//        }
+
+        
+//    });
+//})(jQuery);
+
+
+function upload(file,up_url){  
+        var xhr = new XMLHttpRequest();  
+  
+        var fd = new FormData();  
+  
+        fd.append("file", file);  
+  
+        //监听事件  
+        xhr.upload.addEventListener("progress", uploadProgress, false);  
+  
+        //发送文件和表单自定义参数  
+        xhr.open("POST", up_url,false);  
+  
+        xhr.send(fd);  
+    }  
+  
+    function uploadProgress(evt){  
+        if (evt.lengthComputable) {                    
+            //evt.loaded：文件上传的大小   evt.total：文件总的大小                      
+            var percentComplete = Math.round((evt.loaded) * 100 / evt.total);   
+            console.console.log(percentComplete);   
+            //加载进度条，同时显示信息            
+            //$("#percent").html(percentComplete + '%')  
+            //$("#progressNumber").css("width",""+percentComplete+"px");               
+        }  
+    }  
+
+Vue.component('file-input',{
+    template:"<input type='file' @change='_changed'>",
+    props:{
+        //ready:{
+	       // twoWay:true
+        //}
+    },
+    methods:{
+        _changed:function (changeEvent) {
+            var file=changeEvent.target.files[0];
+            if(!file)
+                return
+            this.file=file
+            
+            //this.ready=true;
+        },
+        read:function (callback) {
+        	var reader = new FileReader();
+        	reader.onloadend = function () {
+		        // 图片的 base64 格式, 可以直接当成 img 的 src 属性值
+		        var dataURL = reader.result;
+		        //var img = new Image();
+		        //img.src = dataURL;
+		        // 插入到 DOM 中预览
+		        //$('#haha')[0].src=dataURL
+		        callback(dataURL) 
+		    };
+
+		    reader.readAsDataURL(this.file); // 读出 base64
+        },
+        upload:function (up_url) {
+            var self =this;
+            //upload(this.file,up_url)
+            this.fd = new FormData();
+            this.fd.append('file', this.file);
+            $.ajax({
+                url:up_url,
+                type:'post',
+                data:this.fd,
+                contentType: false,
+                //cache: false,
+                success:function (data) {
+                    self.$dispatch('response',data)
+                    
+                },
+                processData:false,
+                
+                //error:function (data) {
+                //	alert(data.responseText)
+                //},
+	            //progress: function(evt) {
+			    //    if (evt.lengthComputable) {
+				   //     //self.$dispatch('progress',parseInt( (evt.loaded / evt.total * 100), 10))
+			    //        console.log("Loaded " + parseInt( (evt.loaded / evt.total * 100), 10) + "%");
+			    //    }
+			    //    else {
+			    //        console.log("Length not computable.");
+			    //    }
+		    	//}
+		    	
+	    	 //  xhrFields: {
+			    //    onprogress: function (e) {
+			    //        if (e.lengthComputable) {
+			    //            console.log('Loaded '+ (e.loaded / e.total * 100) + '%');
+			    //        } else {
+			    //            console.log('Length not computable.');
+			    //        }
+			    //    },
+			    //}
+		       xhr: function() {
+			        var xhr = new window.XMLHttpRequest();
+			        xhr.upload.addEventListener("progress", function(evt) {
+			            if (evt.lengthComputable) {
+			                var percentComplete = evt.loaded / evt.total;
+			                console.log('进度', percentComplete);
+			            }
+			        }, false);
+
+			        return xhr;
+			    }
+
+			    
+            })
+        },
+       
+    	}
+	})
+        </script>
+    </body>
+</html>
