@@ -35,5 +35,6 @@ nosetests.xml
 .project
 .pydevproject
 /src/settings/__init__.py
-/media/image
 /media
+/run
+/log
