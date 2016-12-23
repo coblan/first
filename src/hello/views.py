@@ -88,3 +88,11 @@ def test_download(request):
 
 def normal_try(request):
     return render(request,'hello/normal_try.html')
+
+
+def test_ajax_error(request):
+    dc={
+        'status':'success',
+        'msg':'dogssss'
+    }
+    return HttpResponse(json.dumps(dc),content_type="application/json")    
