@@ -1,7 +1,7 @@
 from base import *
 
 DEBUG=False
-ALLOWED_HOSTS=['enjoyst.com','www.enjoyst.com']
+ALLOWED_HOSTS=['enjoyst.com','www.enjoyst.com','115.29.99.226']
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
