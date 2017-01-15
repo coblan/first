@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app="share">
+
+	<head>
+		<meta charset='utf-8' />
+		<meta name="viewport" content="width=device-width">
+		<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+		<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <script src="http://cdn.bootcss.com/vue/2.1.8/vue.js"></script>
+
+<script type="text/javascript">
+		id='{{id}}'
+		$(function () {
+			vm=new Vue({
+				el:'#talk',
+				data:{
+					new_root_name:'',
+
+				},
+				methods:{
+					creat_root:function(){
+						$.get()
+					},
+					send:function () {
+						var post_data=[{fun:'publish_msg',msg:JSON.stringify({name:this.name,content:this.crt_msg})}]
+						$.post('?fun=publish_msg',JSON.stringify(post_data))
+						this.crt_msg=''
+					}
+				},
+				watch: {
+					'name':function () {
+						if(this.change_name_clock){
+							clearTimeout(this.change_name_clock);
+						}
+						this.change_name_clock =setTimeout(notify_refresh_user, 3000);
+					}
+				}
+			})
+		})
+		function notify_refresh_user() {
+			var post_data=[{fun:'notify_refresh_user',id:id,name:vm.name}]
+			$.post('?fun=notify_refresh_user',JSON.stringify(post_data))
+			
+		}
+		
+	</script>
+
+
+
+	<style type="text/css" media="screen" id="test">
+		#talk{
+			width:600px;
+			/*display: flex;*/
+		}
+		#msg_div{
+			height:400px;
+			overflow: auto;
+		}
+		.small_input{
+			width:200px;
+		}
+		#edit .input-wrap{
+			margin-right: 140px;
+		}
+		#edit .btn{
+			width:130px;
+			float: right;
+		}
+	@media ( max-width: 736px) {
+		#talk{
+			width:100%;
+		}
+	}
+	</style>
+	</head>
+	<body>
+	<div id='talk'>
+
+		<button @click='creat_root()'>创建聊天室</button>
+		<input type="" name="" v-model='new_root_name'>
+		<div>
+			
+			<button>进入聊天室</button>
+		</div>
+	</div>
+
+	</body>
+</html>

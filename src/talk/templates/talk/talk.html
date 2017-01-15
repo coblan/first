@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app="share">
+
+	<head>
+		<meta charset='utf-8' />
+		<meta name="viewport" content="width=device-width">
+		<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+		<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <script src="http://cdn.bootcss.com/vue/2.1.8/vue.js"></script>
+
+<script type="text/javascript">
+
+		var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+
+		function generateMixed(n) {
+		     var res = "";
+		     for(var i = 0; i < n ; i ++) {
+		         var id = Math.ceil(Math.random()*35);
+		         res += chars[id];
+		     }
+		     return res;
+		}
+
+		room='{{room}}'
+		ajax_url="{% url 'talk_ajax' %}"
+		$(function () {
+			vm=new Vue({
+				el:'#talk',
+				data:{
+					msgs:[],
+					users:[],
+					crt_msg:'',
+					name:'your name',
+					status:'',
+					error_count:0,
+					user_id:generateMixed(20)
+				},
+				mounted:function(){
+					this.get()
+				},
+				methods:{
+					send:function () {
+						var self = this
+						var post_data=[{fun:'pub_msg',msg:this.crt_msg,room:room,user_name:this.name}]
+						$.post(ajax_url+'?fun=publish_msg',JSON.stringify(post_data),function(resp){
+							// alert(JSON.stringify(resp)) 
+						})
+						this.crt_msg=''
+					},
+					reconnect:function(){
+						this.get()
+					},
+					get:function (){
+						var self=this
+						this.error_count=0
+						var len=this.msgs.length
+						var crt_time=len?this.msgs[len-1].time:''
+						var post_data=[{fun:'get_msg',room:room,time_str:crt_time,user_name:this.name,user_id:this.user_id,user_names:this.users},]
+						$.post(ajax_url,JSON.stringify(post_data),function(resp){
+							// alert(JSON.stringify(resp)) 
+							self.status='已连接'
+							var rt = resp.get_msg
+							if (rt.status=='success'){
+								self.msgs=self.msgs.concat(rt.chats)
+								self.users=rt.user_names
+
+								 Vue.nextTick(function () {
+								    	$('#msg_div').scrollTop($("#msg_div")[0].scrollHeight)
+								    })
+								setTimeout(self.get,1000)
+							}
+							
+						}).error(function(error){
+							// alert(JSON.stringify(error))
+							self.status='未连接'
+							self.error_count+=1
+							if (self.error_count <10){
+								setTimeout(function(){
+									self.status='正在重新连接'
+									self.get()
+								},1000*10)
+							}else{
+								self.status='不能连接到服务器'
+							}
+							
+						})
+					},
+				},
+				watch: {
+					'name':function () {
+						var post_data=[{fun:'set_name',room:room,user_id:this.user_id,user_name:this.name}]
+						$.post(ajax_url,JSON.stringify(post_data),function(resp){
+							
+						})
+					}
+				}
+			})
+		})
+
+	</script>
+
+
+	
+	<style type="text/css" media="screen" id="test">
+		#talk{
+			width:600px;
+			/*display: flex;*/
+		}
+		#msg_div{
+			height:400px;
+			overflow: auto;
+		}
+		.small_input{
+			width:200px;
+		}
+		#edit .input-wrap{
+			margin-right: 140px;
+		}
+		#edit .btn{
+			width:130px;
+			float: right;
+		}
+	@media ( max-width: 736px) {
+		#talk{
+			width:100%;
+		}
+	}
+	</style>
+	</head>
+	<body>
+	<div id="talk" class="test">
+		<div id='msg_div'>
+			<ul>
+				<li v-for='msg in msgs' track-by="$index">
+					<b v-text='msg.name'></b>
+					<div><span class="test" v-text='msg.content'></span></div>
+					
+				</li>
+			</ul>
+		</div>
+
+		<!-- <div>
+			<button @click='get()'>Get</button>
+		</div> -->
+		<label for="yourname">名字</label>
+		<input type="text" id="yourname" v-model='name' class="form-control small_input"/><br>
+		<label for="content">内容</label>
+		<div id='edit'>
+			<button name="test" type="button"  @click='send()' class="btn btn-success">send message</button>
+			<div class='input-wrap'>
+				<input class="form-control" type="text"  v-model='crt_msg' @keyup.enter='send()'/>
+			</div>
+			
+		</div>
+		
+		<label >状态</label>
+		<span v-text='status'></span>
+		<div>
+			<span>在线人员姓名</span>
+			<ul>
+				<li v-for='user in users'>
+					<span v-text='user'></span>
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+	</body>
+</html>

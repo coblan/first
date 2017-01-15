@@ -17,6 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from pagebuilder import views
 from hello import views as hello_view
+
 #import index
 
 urlpatterns = [
@@ -35,7 +36,8 @@ urlpatterns = [
     url(r'^mbpage/(?P<step>.*)/$',views.mobile_page,name='mbpage'),
     url(r'^upload_image_demo/$','hello.views.upload_image_demo'),
     url(r'ajax_error',hello_view.test_ajax_error),
-    url(r'norm_try/?$',hello_view.normal_try)
+    url(r'norm_try/?$',hello_view.normal_try),
+    url(r'chat/',include('talk.urls')),
 ]
 
 
