@@ -28,8 +28,8 @@ def talk(request):
     if request.method=='GET':
         
         return render(request,'hello/talk.html',context={'site_url':settings.SITE_URL,'id':int(time.time()*1000)})
-    else:
-        return jsonpost(request, ajax.get_globe())
+    #else:
+        #return jsonpost(request, ajax.get_globe())
                 
         #return HttpResponse('ok')
 
