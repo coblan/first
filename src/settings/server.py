@@ -1,6 +1,6 @@
 from base import *
 
-DEBUG=True
+DEBUG=False
 ALLOWED_HOSTS=['enjoyst.com','www.enjoyst.com','115.29.99.226']
 
 ADMINS = (
