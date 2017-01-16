@@ -37,7 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'ws4redis',
+    'ws4redis',
     'authuser',
     'hello',
     'share',
@@ -70,7 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                #'ws4redis.context_processors.default',
+                'ws4redis.context_processors.default',
             ],
         },
     },
@@ -116,20 +116,20 @@ MEDIA_URL = '/media/'
 
 
 # WebSocket Url
-#WEBSOCKET_URL = '/ws/'
+WEBSOCKET_URL = '/ws/'
 
 # WebSocket Redis
-#WS4REDIS_CONNECTION = {
-    #'host': '127.0.0.1',
-    #'port': 6379,
-    #'db': 10,
-#}
+WS4REDIS_CONNECTION = {
+    'host': '127.0.0.1',
+    'port': 6379,
+    'db': 10,
+}
 
-#WS4REDIS_EXPIRE = 3600
-#WS4REDIS_PREFIX = 'ws'
-#WSGI_APPLICATION = 'ws4redis.django_runserver.application'
-#WS4REDIS_HEARTBEAT = '--heartbeat--'
-#WS4REDIS_EXPIRE=-1
+WS4REDIS_EXPIRE = 3600
+WS4REDIS_PREFIX = 'ws'
+WSGI_APPLICATION = 'ws4redis.django_runserver.application'
+WS4REDIS_HEARTBEAT = '--heartbeat--'
+WS4REDIS_EXPIRE=-1
 
 INDEX_PER_PAGE=5
 
