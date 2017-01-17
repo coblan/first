@@ -45,6 +45,8 @@ def get_msg(room,time_str,user_name,user_id,user_names):
     redis_conn.sadd('room__%s.user_list'%room,user_id)
     
     dc=has_new_msg(room,utc_last,user_names)
+    if not dc:
+        dc={}
     if 'chats' not in dc:
         dc['chats']=[]
     else:
