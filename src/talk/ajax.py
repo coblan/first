@@ -80,7 +80,7 @@ def get_user_names(room):
     for user_id in user_ids:
         user_name=redis_conn.get('room__%s.user_id.%s'%(room,user_id))
         if user_name:
-            user_names.append(user_name)
+            user_names.append(user_name.decode('utf-8'))
         else:
             redis_conn.srem('room__%s.user_list'%room,user_id)
     return sorted(user_names)
