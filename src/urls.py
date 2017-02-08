@@ -17,7 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from pagebuilder import views
 from hello import views as hello_view
-
+from helpers.director import urls as director_urls
 #import index
 
 urlpatterns = [
@@ -30,6 +30,8 @@ urlpatterns = [
     url(r'^$','hello.views.hello'),
     url(r'^talk/','hello.views.talk'),
     
+    url(r'hello_ajax/?$',hello_view.hello_ajax),
+    
     url(r'^build/','pagebuilder.views.build'),
     url(r'^pagebuilder/','pagebuilder.views.pagebuild'),
     url(r'^mbpage/$',views.mobile_page),
@@ -38,6 +40,8 @@ urlpatterns = [
     url(r'ajax_error',hello_view.test_ajax_error),
     url(r'norm_try/?$',hello_view.normal_try),
     url(r'chat/',include('talk.urls')),
+    
+    url(r'^d/',include(director_urls)),
 ]
 
 

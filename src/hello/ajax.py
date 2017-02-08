@@ -4,6 +4,8 @@ import json
 from ws4redis.publisher import RedisPublisher
 from ws4redis.redis_store import RedisMessage
 
+import pages
+
 def get_globe():
     return globals()
 
@@ -19,3 +21,11 @@ def notify_refresh_user(id,name):
     message = RedisMessage(json.dumps({'op':'notify_refresh_user','id':id,'name':name}))
     redis_publisher.publish_message(message)    
     return {'status':'success'}    
+
+def page_heads(cls_name):
+    PageCls=pages.get_globe().get(cls_name)
+    if PageCls:
+        page_obj =PageCls()
+        return page_obj.get_heads()
+    else:
+        raise UserWarning,'not matched page class : %s'%cls_name

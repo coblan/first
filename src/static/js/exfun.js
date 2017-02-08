@@ -166,8 +166,13 @@ ex={
 		}
 		return out
 	},
-	isfun:function function_name(func) {
-		return typeof func == 'function'
+	any:function(array,func) {
+		for(var x=0;x<array.length;x++){
+			if(func(array[x])){
+				return true
+			}
+		}
+		return false
 	},
 	remove:function (array,func_or_obj) {
 		var index_ls=[]
@@ -181,9 +186,18 @@ ex={
 		}else{
 			var obj=func_or_obj
 			for(var i=0;i<array.length;i++){
-				if(array[i]==obj){
+				var match=true
+				for(var key in obj){
+					if(obj[key]!=array[i][key]){
+						match=false
+					}
+				}
+				if(match){
 					index_ls.push(i)
 				}
+				//if(array[i]==obj){
+				//	index_ls.push(i)
+				//}
 			}
 		}
 		var rm_item=[]
@@ -237,8 +251,44 @@ ex={
 	is_fun:function (v) {
 		return typeof v === "function"
 	},
+	get:function(url,callback){
+		//replace $.get
+		var self=this
+		var wrap_callback=function (resp) {
+			if (resp.msg) {
+				self.show_msg(resp.msg)
+			}
+			if (resp.status && typeof resp.status == 'string' && resp.status != 'success') {
+				hide_upload(300)
+				return
+			} else {
+				callback(resp)
+			}
+		}
+		return $.get(url,wrap_callback)
+	},
+	post:function(url,data,callback){
+		var self=this
+		var wrap_callback=function (resp) {
+			if (resp.msg) {
+				self.show_msg(resp.msg)
+			}
+			if (resp.status && typeof resp.status == 'string' && resp.status != 'success') {
+				hide_upload(300) // sometime
+				return
+			} else {
+				callback(resp)
+			}
+		}
+		return $.post(url,data,wrap_callback)
+	},
+	show_msg:function(msg){
+		alert(msg)
+	}
+
 
 }
+
 function parseSearch(queryString) {
 	var queryString = queryString || location.search
 	if(queryString.startsWith('?')){
@@ -281,6 +331,9 @@ if (!String.prototype.startsWith) {
       position = position || 0;
       return this.substr(position, searchString.length) === searchString;
   };
+  String.prototype.endsWith = function(str){
+	return (this.match(str+"$")==str)
+	};
 }
 
 Array.prototype.each = function(fn) 

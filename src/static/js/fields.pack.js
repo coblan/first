@@ -65,8 +65,13 @@
 
 	var multi = _interopRequireWildcard(_multi_sel);
 
+	var _inputs = __webpack_require__(5);
+
+	var inputs = _interopRequireWildcard(_inputs);
+
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+	(0, _ajax_fun.hook_ajax_msg)();
 	/*
 	基本内容
 	==============
@@ -112,7 +117,7 @@
 
 	//import {use_color} from '../dosome/color.js'
 	//import {load_js,load_css} from '../dosome/pkg.js'
-	(0, _ajax_fun.hook_ajax_msg)();
+
 	(0, _ajax_fun.hook_ajax_csrf)();
 
 	function is_valid(form_fun_rt, errors_obj, callback) {
@@ -183,12 +188,12 @@
 		components: {
 			linetext: {
 				props: ['name', 'row', 'kw'],
-				template: '<div>\n            \t\t\t<span v-text=\'row[name]\' v-if=\'kw.readonly\'></span>\n            \t\t\t<input v-else type="text" class="form-control" v-model="row[name]" :id="\'id_\'+name"\n                        \t:placeholder="kw.placeholder" :autofocus="kw.autofocus" :maxlength=\'kw.maxlength\'>\n                       </div>'
+				template: '<div>\n            \t\t\t<span v-if=\'kw.readonly\' v-text=\'row[name]\'></span>\n            \t\t\t<input v-else type="text" class="form-control" v-model="row[name]" :id="\'id_\'+name"\n                        \t:placeholder="kw.placeholder" :autofocus="kw.autofocus" :maxlength=\'kw.maxlength\'>\n                       </div>'
 			},
 			number: {
 				props: ['name', 'row', 'kw'],
 
-				template: '<input type="number" class="form-control" v-model="row[name]" :id="\'id_\'+name"\n                        :placeholder="kw.placeholder" :autofocus="kw.autofocus" :readonly=\'kw.readonly\'>'
+				template: '<div><span v-if=\'kw.readonly\' v-text=\'row[name]\'></span>\n            \t\t<input v-else type="number" class="form-control" v-model="row[name]" :id="\'id_\'+name"\n                        :placeholder="kw.placeholder" :autofocus="kw.autofocus"></div>'
 			},
 			password: {
 				props: ['name', 'row', 'kw'],
@@ -196,7 +201,7 @@
 			},
 			blocktext: {
 				props: ['name', 'row', 'kw'],
-				template: '<textarea class="form-control" rows="3" :id="\'id_\'+name" v-model="row[name]" :placeholder="kw.placeholder" :readonly=\'kw.readonly\'></textarea>'
+				template: '<div>\n            <span v-if=\'kw.readonly\' v-text=\'row[name]\'></span>\n            <textarea v-else class="form-control" rows="3" :id="\'id_\'+name" v-model="row[name]" :placeholder="kw.placeholder" :readonly=\'kw.readonly\'></textarea>\n            </div>'
 			},
 			color: {
 				props: ['name', 'row', 'kw'],
@@ -211,16 +216,29 @@
 								showInput: true,
 								preferredFormat: "name",
 								change: function change(color) {
+									self.src_color = color.toHexString();
 									self.row[self.name] = color.toHexString();
 								}
 							});
 						});
 					}
 				},
+				watch: {
+					input_value: function input_value(value) {
+						if (this.src_color != value) {
+							this.init_and_listen();
+						}
+					}
+				},
+				computed: {
+					input_value: function input_value() {
+						return this.row[this.name];
+					}
+				},
 				mounted: function mounted() {
 					var self = this;
-					ex.load_css('http://cdn.bootcss.com/spectrum/1.8.0/spectrum.min.css');
-					ex.load_js('http://cdn.bootcss.com/spectrum/1.8.0/spectrum.min.js', function () {
+					ex.load_css('//cdn.bootcss.com/spectrum/1.8.0/spectrum.min.css');
+					ex.load_js('//cdn.bootcss.com/spectrum/1.8.0/spectrum.min.js', function () {
 						self.init_and_listen();
 					});
 				}
@@ -236,8 +254,8 @@
 						model: this.row[this.name]
 					};
 				},
-				template: '<select v-model=\'row[name]\'  :id="\'id_\'+name" :readonly=\'kw.readonly\' class="form-control">\n            \t<option :value=\'null\'>----</option>\n            \t<option v-for=\'opt in kw.options\' :value=\'opt.value\' v-text=\'opt.label\'></option>\n            </select>',
-				// 添加，修改，删除的按钮代码，暂时不用。
+				template: '<div>\n            <span v-if=\'kw.readonly\' v-text=\'get_label(kw.options,row[name])\'></span>\n            <select v-else v-model=\'row[name]\'  :id="\'id_\'+name"  class="form-control">\n            \t<option v-for=\'opt in kw.options\' :value=\'opt.value\' v-text=\'opt.label\'></option>\n            </select>\n            </div>',
+				// 添加，修改，删除的按钮代码，暂时不用。<option :value='null'>----</option>
 				//`<div><select v-model='model'  :id="'id_'+name" :readonly='kw.readonly'>
 				//	<option :value='null'>----</option>
 				//	<option v-for='opt in kw.options' :value='opt.value' v-text='opt.label'></option>
@@ -246,67 +264,81 @@
 				//<span v-if='kw.change_url' @click='edit()'><img src='http://res.enjoyst.com/image/edit.png' /></span>
 				//<span v-if='kw.del_url' @click='del_row()'><img src='http://res.enjoyst.com/image/delete.png' /></a>
 				//</div>`,
-				methods: {
-					add: function add() {
-						var self = this;
-						window.open(this.kw.add_url + 'edit/?_pop=1', location.pathname, 'height=500,width=800,resizable=yes,scrollbars=yes,top=200,left=300');
-						window.on_subwin_close = function (row) {
-							var post_data = [{ fun: 'get_rows_info', rows: [row] }];
-							$.post('', JSON.stringify(post_data), function (data) {
-								var rows = data.get_rows_info;
-								for (var i = 0; i < rows.length; i++) {
-									var row = rows[i];
-									self.kw.options.push({ value: row.pk, label: row.label });
-									self.model = row.pk;
-									break;
-								}
-							});
-							window.on_subwin_close = null;
-						};
-					},
-					edit: function edit() {
-						if (this.model) {
-							var self = this;
-							window.open(this.kw.add_url + 'edit/' + this.model + '?_pop=1', location.pathname, 'height=500,width=800,resizable=yes,scrollbars=yes,top=200,left=300');
-							window.on_subwin_close = function (row) {
-								var post_data = [{ fun: 'get_rows_info', rows: [row] }];
-								$.post('', JSON.stringify(post_data), function (data) {
-									var rows = data.get_rows_info;
-									for (var i = 0; i < rows.length; i++) {
-										var row = rows[i];
-										for (var j = 0; j < self.kw.options.length; j++) {
-											var option = self.kw.options[j];
-											if (row.pk == option.value) {
-												option.label = row.label;
-											}
-										}
-									}
-								});
-								window.on_subwin_close = null;
-							};
-						}
-					},
-					del_row: function del_row() {
-						if (this.model) {
-							var self = this;
-							var rows = [{ pk: this.model, _class: this.kw._class }];
-							window.open(this.kw.del_url + '?rows=' + btoa(JSON.stringify(rows)) + '&_pop=1', location.pathname, 'height=500,width=800,resizable=yes,scrollbars=yes,top=200,left=300');
-							window.on_subwin_close = function (rows) {
-								for (var i = 0; i < rows.length; i++) {
-									var row = rows[i];
-									if (row._class == self.kw._class) {
-										for (var j = 0; j < self.kw.options.length; j++) {
-											var option = self.kw.options[j];
-											if (option.value == row.pk) {
-												self.kw.options.splice(j, 1);
-											}
-										}
-									}
-								}
-								window.on_subwin_close = null;
-							};
-						}
+				mounted: function mounted() {
+					if (this.kw.default && !this.row[this.name]) {
+						Vue.set(this.row, this.name, this.kw.default);
+						//this.row[this.name]=this.kw.default
 					}
+				},
+				methods: {
+					//get_label:function(options,value){
+					//	var option = ex.findone(options,{value:value})
+					//	if(!option){
+					//		return '---'
+					//	}else{
+					//		return option.label
+					//	}
+					//},
+					//add:function () {
+					//   var self=this
+					//	window.open(this.kw.add_url+'edit/?_pop=1',location.pathname,'height=500,width=800,resizable=yes,scrollbars=yes,top=200,left=300')
+					//	window.on_subwin_close=function (row) {
+					//   		var post_data=[{fun:'get_rows_info',rows:[row]}]
+					//           $.post('',JSON.stringify(post_data),function (data) {
+					//           	var rows = data.get_rows_info
+					//           	for(var i =0;i<rows.length;i++){
+					//            	var row=rows[i]
+					//            	self.kw.options.push({value:row.pk,label:row.label})
+					//            	self.model=row.pk
+					//            	break
+					//           	}
+					//           })
+					//           window.on_subwin_close=null
+					//   }
+					//},
+					//edit:function () {
+					//   if(this.model){
+					//       var self=this
+					//       window.open(this.kw.add_url+'edit/'+this.model+'?_pop=1',location.pathname,'height=500,width=800,resizable=yes,scrollbars=yes,top=200,left=300')
+					//       window.on_subwin_close=function (row) {
+					//           var post_data=[{fun:'get_rows_info',rows:[row]}]
+					//           $.post('',JSON.stringify(post_data),function (data) {
+					//           	var rows = data.get_rows_info
+					//           	for(var i =0;i<rows.length;i++){
+					//            	var row=rows[i]
+					//            	for(var j=0;j<self.kw.options.length;j++){
+					//	            	var option=self.kw.options[j]
+					//	            	if(row.pk==option.value){
+					//		            	option.label=row.label
+					//	            	}
+					//            	}
+					//           	}
+					//           })
+					//           window.on_subwin_close=null
+					//       }
+					//   }
+					//},
+					//del_row:function () {
+					//   if (this.model){
+					//       var self=this
+					//       var rows=[{pk:this.model,_class:this.kw._class}]
+					//       window.open(this.kw.del_url+'?rows='+btoa(JSON.stringify(rows))+'&_pop=1',location.pathname,'height=500,width=800,resizable=yes,scrollbars=yes,top=200,left=300')
+					//       window.on_subwin_close=function (rows) {
+					//           for(var i=0;i<rows.length;i++){
+					//            var row=rows[i]
+					//            if(row._class==self.kw._class){
+					//	            for(var j=0;j<self.kw.options.length;j++){
+					//		            var option=self.kw.options[j]
+					//		            if(option.value==row.pk){
+					//			            self.kw.options.splice(j,1)
+					//		            }
+					//	            }
+					//            }
+					//           }
+					//          	window.on_subwin_close=null
+					//       }
+					//   }
+					//}
 				}
 			},
 			tow_col: {
@@ -325,6 +357,14 @@
 			bool: {
 				props: ['name', 'row', 'kw'],
 				template: '<div class="checkbox">\n\t\t\t\t\t    <label><input type="checkbox" :id="\'id_\'+name" v-model=\'row[name]\' :disabled="kw.readonly">\n\t\t\t\t\t    \t<span v-text=\'kw.label\'></span>\n\t\t\t\t\t    </label>\n\t\t\t\t\t  </div>'
+			},
+			date: {
+				props: ['name', 'row', 'kw'],
+				template: '<div><span v-if=\'kw.readonly\' v-text=\'row[name]\'></span>\n            \t\t\t<date class="form-control" v-model="row[name]" :id="\'id_\'+name"\n                        \t:placeholder="kw.placeholder"></date>\n                       </div>'
+			},
+			datetime: {
+				props: ['name', 'row', 'kw'],
+				template: '<div><span v-if=\'kw.readonly\' v-text=\'row[name]\'></span>\n            \t\t\t<datetime class="form-control" v-model="row[name]" :id="\'id_\'+name"\n                        \t:placeholder="kw.placeholder"></datetime>\n                       </div>'
 			}
 		}
 
@@ -395,26 +435,67 @@
 	/*
 	新增一个wrap函数，用户封装调用函数
 	*/
-	function proc_msg(func) {
-		function _inn(data) {
-			if (data.status && data.status != 'success') {
-				if (data.msg) {
-					alert(data.msg);
-				}
-			} else {
-				func(data);
-			}
-		}
-		return _inn;
-	}
-	window.proc_msg = proc_msg;
+	//function proc_msg(func) {
+	//	function _inn(data) {
+	//		if(data.status && data.status!='success'){
+	//			if(data.msg){
+	//				alert(data.msg)
+	//			}
+	//		}else{
+	//			func(data)
+	//		}
+	//	}
+	//	return _inn
+	//}
 
-	function def_proc_port_msg(data, event) {
-		var rt = data.responseJSON;
-		if (rt && rt.msg) {
-			alert(rt.msg);
-		}
-	}
+	//function has_error(data) {
+	//	if(data.status && data.status!='success'){
+	//		if(data.msg){
+	//			alert(data.msg)
+	//		}
+	//		return true
+	//	}else{
+	//		return false
+	//	}
+	//}
+
+
+	//var org_get=$.get
+	//$.get=function (url,callback) {
+	//	var wrap_callback=function (resp) {
+	//		if(resp.msg){
+	//			alert(resp.msg)
+	//		}
+	//		if(resp.status && resp.status!='success'){
+	//			return
+	//		}else{
+	//			callback(resp)
+	//		}
+	//	}
+	//	org_get(url,wrap_callback)
+	//}
+	//var org_post=$.post
+	//$.post=function (url,data,callback) {
+	//	var wrap_callback=function (resp) {
+	//		if(resp.msg){
+	//			alert(resp.msg)
+	//		}
+	//		if(resp.status && resp.status!='success'){
+	//			return
+	//		}else{
+	//			callback(resp)
+	//		}
+	//	}
+	//	org_post(url,data,wrap_callback) 
+	//}
+
+
+	//function def_proc_port_msg(data,event) {
+	//	var rt = data.responseJSON
+	//        if(rt && rt.msg){
+	//            alert(rt.msg)
+	//        }
+	//}
 
 	function def_proc_error(jqxhr) {
 		if (!window.iclosed) {
@@ -426,7 +507,7 @@
 		}
 	}
 
-	window.__proc_port_error = def_proc_port_msg;
+	//window.__proc_port_error=def_proc_port_msg
 	window.__proc_ajax_error = def_proc_error;
 
 	function hook_ajax_msg(proc_port_error, proc_ajax_error) {
@@ -507,7 +588,7 @@
 
 	if (!window.__uploading_mark) {
 		window.__uploading_mark = true;
-		document.write('\n\t\t<style>\n\t\t.popup{\n\t\t\tposition: fixed;\n\t\t\ttop: 0;\n\t\t\tleft: 0;\n\t\t\tright: 0;\n\t\t\tbottom: 0;\n\t\t\tdisplay:none;\n\t\t\tz-index: 9000;\n\t\t}\n\t\t#_upload_inn{\n\t\t\tbackground: rgba(88, 88, 88, 0.2);\n\t\t\tborder-radius: 5px;\n\t\t\twidth:180px;\n\t\t\theight:120px;\n\t\t\tz-index: 9500;\n\t\t\t/*padding:30px 80px ;*/\n\t\t}\n\t\t.imiddle{\n\t\t    position: absolute;\n\t        top: 50%;\n\t        left: 50%;\n\t        transform: translate(-50%, -50%);\n\t        -ms-transform:translate(-50%, -50%); \t/* IE 9 */\n\t\t\t-moz-transform:translate(-50%, -50%); \t/* Firefox */\n\t\t\t-webkit-transform:translate(-50%, -50%); /* Safari \u548C Chrome */\n\t\t\t-o-transform:translate(-50%, -50%); \n\t\t\t\n\t        text-align: center;\n\t\t\t/*display: table;*/\n\t        z-index: 10000;\n    \t}\n    \t#_upload_mark{\n    \t\tfloat: left;\n\n    \t}\n\t\t</style>');
+		document.write('\n\t\t<style>\n\t\t.popup{\n\t\t\tposition: fixed;\n\t\t\ttop: 0;\n\t\t\tleft: 0;\n\t\t\tright: 0;\n\t\t\tbottom: 0;\n\t\t\tdisplay:none;\n\t\t\tz-index: 9000;\n\t\t}\n\t\t#_upload_inn{\n\t\t\tbackground: rgba(88, 88, 88, 0.2);\n\t\t\tborder-radius: 5px;\n\t\t\twidth:180px;\n\t\t\theight:120px;\n\t\t\tz-index: 9500;\n\t\t\t/*padding:30px 80px ;*/\n\t\t}\n\t\t.imiddle{\n\t\t    position: absolute;\n\t        top: 50%;\n\t        left: 50%;\n\t        transform: translate(-50%, -50%);\n\t        -ms-transform:translate(-50%, -50%); \t/* IE 9 */\n\t\t\t-moz-transform:translate(-50%, -50%); \t/* Firefox */\n\t\t\t-webkit-transform:translate(-50%, -50%); /* Safari 和 Chrome */\n\t\t\t-o-transform:translate(-50%, -50%); \n\t\t\t\n\t        text-align: center;\n\t\t\t/*display: table;*/\n\t        z-index: 10000;\n    \t}\n    \t#_upload_mark{\n    \t\tfloat: left;\n\n    \t}\n\t\t</style>');
 		$(function () {
 			$('body').append('<div class="popup" id="load_wrap"><div id=\'_upload_inn\' class="imiddle">\n\t\t<div  id="_upload_mark" class="imiddle"><i class="fa fa-spinner fa-spin fa-3x"></i></div></div></div>');
 		});
@@ -738,11 +819,6 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	exports.use_ckeditor = use_ckeditor;
-
 	//function import_ckeditor() {
 	//	document.write("<script src='/static/ckeditor/ckeditor.js'></script>")
 	//}
@@ -752,37 +828,86 @@
 	//	}
 	//module.exports=ckEditor
 
-	function use_ckeditor() {
-		document.write('<script src="http://cdn.bootcss.com/ckeditor/4.5.10/ckeditor.js"></script>');
-	}
+	//export function use_ckeditor() {
+	//	document.write('<script src="//cdn.bootcss.com/ckeditor/4.5.10/ckeditor.js"></script>')
+	//}
+
+
+	window.ck_complex = {
+		// Define changes to default configuration here.
+		// For complete reference see:
+		// http://docs.ckeditor.com/#!/api/CKEDITOR.config
+
+		// The toolbar groups arrangement, optimized for two toolbar rows.
+		toolbarGroups: [{ name: 'clipboard', groups: ['clipboard', 'undo'] }, { name: 'editing', groups: ['find', 'selection', 'spellchecker'] }, { name: 'links' }, { name: 'insert' }, { name: 'forms' }, { name: 'tools' }, { name: 'document', groups: ['mode', 'document', 'doctools'] }, { name: 'others' }, '/', { name: 'basicstyles', groups: ['basicstyles', 'cleanup'] }, { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'] }, { name: 'styles' }, { name: 'font' }, { name: 'colors' }, { name: 'about' }],
+
+		// Remove some buttons provided by the standard plugins, which are
+		// not needed in the Standard(s) toolbar.
+		removeButtons: 'Underline,Subscript,Superscript',
+
+		// Set the most common block elements.
+		format_tags: 'p;h1;h2;h3;pre',
+
+		// Simplify the dialog windows.
+		removeDialogTabs: 'image:advanced;link:advanced',
+		image_previewText: 'image preview',
+		imageUploadUrl: '/ckeditor/upload_image',
+		filebrowserImageUploadUrl: '/ckeditor/upload_image', // Will be replace by imageUploadUrl when upload_image
+		extraPlugins: 'justify,codesnippet,lineutils,mathjax,colorbutton,uploadimage,font', //autogrow,
+		mathJaxLib: '//cdn.mathjax.org/mathjax/2.6-latest/MathJax.js?config=TeX-AMS_HTML',
+		extraAllowedContent: 'img[class]',
+		//autoGrow_maxHeight : 800,
+		//autoGrow_onStartup:true,
+		//autoGrow_bottomSpace:100,
+		height: 800
+	};
 
 	Vue.component('ckeditor', {
-		template: '<div class=\'ckeditor\'>\n\t\t    \t<textarea class="form-control" class="form-control" name="ri" ></textarea>\n\t    \t</div>',
+		template: '<div class=\'ckeditor\'>\n\t\t    \t<textarea class="form-control" name="ri" ></textarea>\n\t    \t</div>',
 		props: {
-			model: {
-				twoWay: true
-			},
-			config: {
-				default: '',
-				coerce: function coerce(val) {
-					if (val == 'complex') {
-						return 'http://ocm6l2tt6.bkt.clouddn.com/config_complex.js';
-					} else {
-						return val;
-					}
-				}
+			value: {},
+			config: {},
+			set: {
+				default: 'complex'
+			}
+		},
+		created: function created() {
+			var self = this;
+			bus.$on('sync_data', function () {
+				self.$emit('input', self.editor.getData());
+			});
+		},
+		mounted: function mounted() {
+			var self = this;
+			self.input = $(this.$el).find('textarea')[0];
+			var config_obj = {
+				//'complex':'//res.enjoyst.com/js/ck/config_complex.js',
+				'complex': ck_complex
+			};
+			var config = {};
+			ex.assign(config, config_obj[self.set]);
+			ex.assign(config, self.config);
+			// 4.5.10   4.6.2
+			ex.load_js('//cdn.bootcss.com/ckeditor/4.6.2/ckeditor.js', function () {
+				CKEDITOR.timestamp = 'ABCDFDGff';
+				var editor = CKEDITOR.replace(self.input, config);
+				editor.setData(self.value);
+				self.editor = editor;
 
-			}
-		},
-		compiled: function compiled() {
-			var editor = CKEDITOR.replace($(this.$el).find('textarea')[0], { customConfig: this.config });
-			editor.setData(this.model);
-			this.editor = editor;
-		},
-		events: {
-			'sync_data': function sync_data() {
-				this.model = this.editor.getData();
-			}
+				//var is_changed=false
+				//editor.on( 'change', function( evt ) {
+				//	// getData() returns CKEditor's HTML content.
+				//	is_changed=true
+				//	//self.$emit('input',editor.getData())
+				//});
+				//
+				//setInterval(function(){
+				//	if(is_changed){
+				//		self.$emit('input',editor.getData())
+				//		is_changed=false
+				//	}
+				//},3000)
+			});
 		}
 	});
 
@@ -888,6 +1013,90 @@
 				}
 			}
 		}
+	});
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * Created by heyulin on 2017/1/24.
+	 */
+
+	Vue.component('date', {
+	    template: '<input type="text" class="form-control">',
+	    props: ['value', 'config'],
+	    mounted: function mounted() {
+	        var self = this;
+	        var def_conf = {
+	            language: "zh-CN",
+	            format: "yyyy-mm-dd",
+	            autoclose: true,
+	            todayHighlight: true
+	        };
+	        if (this.config) {
+	            ex.assign(def_conf, this.config);
+	        }
+	        self.input = $(this.$el);
+
+	        ex.load_css('//cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css');
+
+	        ex.load_js('//cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js', function () {
+	            ex.load_js('//cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js', function () {
+	                self.input.datepicker(def_conf).on('changeDate', function (e) {
+	                    self.$emit('input', self.input.val());
+	                });
+	            });
+	        });
+	    },
+	    watch: {
+	        value: function value(n) {
+	            this.input.val(n);
+	        }
+	    }
+	});
+
+	Vue.component('datetime', {
+	    data: function data() {
+	        return {
+	            input_value: ''
+	        };
+	    },
+	    template: '<input type="text" class="form-control" v-model="input_value">',
+	    props: ['value', 'config'],
+	    mounted: function mounted() {
+	        var self = this;
+	        var def_conf = {
+	            language: "zh-CN",
+	            format: "yyyy-mm-dd hh:ii",
+	            autoclose: true,
+	            todayHighlight: true
+	        };
+	        if (self.config) {
+	            ex.assign(def_conf, this.config);
+	        }
+	        self.input = $(this.$el);
+
+	        ex.load_css('//cdn.bootcss.com/smalot-bootstrap-datetimepicker/2.4.3/css/bootstrap-datetimepicker.min.css');
+	        ex.load_js('//cdn.bootcss.com/moment.js/2.17.1/moment.min.js');
+	        ex.load_js('//cdn.bootcss.com/smalot-bootstrap-datetimepicker/2.4.3/js/bootstrap-datetimepicker.min.js', function () {
+
+	            self.input.datetimepicker(def_conf).on('changeDate', function (e) {
+	                self.$emit('input', self.input.val());
+	            });
+	        });
+	    },
+
+	    watch: {
+	        value: function value(n) {
+	            this.input.val(n);
+	        },
+	        input_value: function input_value(n) {
+	            this.$emit('input', n);
+	        }
+	    }
 	});
 
 /***/ }

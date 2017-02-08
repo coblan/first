@@ -43,7 +43,8 @@ INSTALLED_APPS = (
     'share',
     'blog',
     'pagebuilder',
-    'talk'
+    'talk',
+    'helpers.director',
 )
 
 MIDDLEWARE_CLASSES = (

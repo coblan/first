@@ -96,3 +96,7 @@ def test_ajax_error(request):
         'msg':'dogssss'
     }
     return HttpResponse(json.dumps(dc),content_type="application/json")    
+
+
+def hello_ajax(request):
+    return jsonpost(request, ajax.get_globe())
