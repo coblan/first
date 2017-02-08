@@ -3,10 +3,11 @@ def get_globe():
     return globals()
 
 class FirstPage(object):
+    template='hello/first_page.html'
     def get_heads(self):
         return [
-            {'name':'slogan','label':'slogan','type':'blocktext',},
-            {'name':'img','label':'brand','type':'linetext',}
+            {'name':'slogan','label':'slogan','type':'richtext',},
+            {'name':'content','label':'content','type':'richtext',}
         ]
 
 

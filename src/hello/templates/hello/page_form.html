@@ -17,6 +17,7 @@
 
     errors={}
 
+    bus=new Vue()
     $(function () {
         new Vue({
             el:'#there',
@@ -71,6 +72,7 @@
                     })
                 },
                 submit:function () {
+                    bus.$emit('sync_data')
                     var self =this;
                     show_upload()
                     var search =ex.parseSearch() //parseSearch(location.search)
@@ -176,6 +178,10 @@
         color: red;
     }
 
+    .form-group.field{
+        display: flex;
+    }
+
     .form-group.field .control-label{
         vertical-align: top;
         position: relative;
@@ -187,23 +193,28 @@
 
         border-top: 1px solid #EEE;
     }
+
     .field-panel .field:first-child .control-label{
         border-top: 5px solid #FFF;
     }
     .form-group.field .field_input{
-        display: inline-block;
-        width:350px;
+        flex-grow:1;
+        /*display: inline-block;*/
+        /*width:350px;*/
         padding:5px 20px;
     }
 
     .form-group.field .field_input ._tow-col-sel{
-        width:750px;
+        /*width:750px;*/
     }
     ._tow-col-sel .sel {
         width: 350px;
     }
     .field.error .error{
         display: inline-block;
+    }
+    .form-group .field_input .ckeditor{
+        padding: 20px;
     }
 
 </style>

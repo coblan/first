@@ -7,18 +7,7 @@ from helpers.director.model_admin.render import model_page_dc,model_dc,TablePage
 from helpers.director.model_admin.fields import ModelFields
 
 import pages
-# from helpers.director.model_admin.render
 
-# class BaseSearch(RowSearch):
-    # names=['name']
-    # model=BasicInfo
-
-# class BaseFilter(RowFilter):
-    # names=['name','age']
-    # model=BasicInfo
-
-# class BaseSort(RowSort):
-    # names=['name','age']
 
 menus=[{'name':'hello','label':'home','url':lambda: reverse('model_table',kwargs={'name':'page'}),'icon':'<i class="fa fa-home" aria-hidden="true"></i>'},]
 
