@@ -7,7 +7,8 @@ class FirstPage(object):
     def get_heads(self):
         return [
             {'name':'slogan','label':'slogan','type':'richtext',},
-            {'name':'content','label':'content','type':'richtext',}
+            {'name':'content','label':'content','type':'richtext',},
+            {'name':'foot','label':'foot','type':'richtext',}
         ]
 
 
