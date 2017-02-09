@@ -103,13 +103,20 @@
 
 	
 	<style type="text/css" media="screen" id="test">
-		#talk{
-			width:600px;
+
+
+		#talk .wrap{
+			display: flex;
+			flex-direction:column;
+			max-width: 600px;
+			min-height:600px;
+			max-height: 100vh;
 			/*display: flex;*/
 		}
 		#msg_div{
-			height:400px;
-			overflow: auto;
+			max-height:600px;
+			overflow:auto;
+			flex: 1;
 		}
 		.small_input{
 			width:200px;
@@ -121,50 +128,55 @@
 			width:130px;
 			float: right;
 		}
-	@media ( max-width: 736px) {
-		#talk{
-			width:100%;
-		}
-	}
+	/*@media ( max-width: 736px) {*/
+		/*#talk{*/
+			/*width:100%;*/
+		/*}*/
+	/*}*/
 	</style>
 	</head>
 	<body>
-	<div id="talk" class="test">
-		<div id='msg_div'>
-			<ul>
-				<li v-for='msg in msgs' track-by="$index">
-					<b v-text='msg.name'></b>
-					<div><span class="test" v-text='msg.content'></span></div>
-					
-				</li>
-			</ul>
-		</div>
+		<div id="talk" class="test">
+			<div class="wrap">
+				<div id='msg_div'>
+					<ul>
+						<li v-for='msg in msgs' track-by="$index">
+							<b v-text='msg.name'></b>
+							<div><span class="test" v-text='msg.content'></span></div>
 
-		<!-- <div>
-			<button @click='get()'>Get</button>
-		</div> -->
-		<label for="yourname">名字</label>
-		<input type="text" id="yourname" v-model='name' class="form-control small_input"/><br>
-		<label for="content">内容</label>
-		<div id='edit'>
-			<button name="test" type="button"  @click='send()' class="btn btn-success">send message</button>
-			<div class='input-wrap'>
-				<input class="form-control" type="text"  v-model='crt_msg' @keyup.enter='send()'/>
+						</li>
+					</ul>
+				</div>
+
+				<!-- <div>
+                    <button @click='get()'>Get</button>
+                </div> -->
+				<label for="yourname">名字</label>
+				<input type="text" id="yourname" v-model='name' class="form-control small_input"/><br>
+				<label for="content">内容</label>
+				<div id='edit'>
+					<button name="test" type="button"  @click='send()' class="btn btn-success">send message</button>
+					<div class='input-wrap'>
+						<input class="form-control" type="text"  v-model='crt_msg' @keyup.enter='send()'/>
+					</div>
+
+				</div>
 			</div>
-			
+
+
+
+			<label >状态</label>
+			<span v-text='status'></span>
+			<div>
+				<span>在线人员姓名</span>
+				<ul>
+					<li v-for='user in users'>
+						<span v-text='user'></span>
+					</li>
+				</ul>
+			</div>
+
 		</div>
-		
-		<label >状态</label>
-		<span v-text='status'></span>
-		<div>
-			<span>在线人员姓名</span>
-			<ul>
-				<li v-for='user in users'>
-					<span v-text='user'></span>
-				</li>
-			</ul>
-		</div>
-	</div>
 	
 	</body>
 </html>
