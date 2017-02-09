@@ -110,7 +110,7 @@
 			flex-direction:column;
 			max-width: 600px;
 			/*min-height:600px;*/
-			max-height: 90vh;
+			height: 700px;
 		}
 		#msg_div{
 			min-height:200px;
@@ -164,7 +164,7 @@
 				<div id='edit'>
 					<button name="test" type="button"  @click='send()' class="btn btn-success">send message</button>
 					<div class='input-wrap'>
-						<input class="form-control" type="text"  v-model='crt_msg' @keyup.enter='send()'/>
+						<input class="form-control" id='content' type="text"  v-model='crt_msg' @keyup.enter='send()'/>
 					</div>
 
 				</div>
