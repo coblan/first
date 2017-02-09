@@ -19,6 +19,9 @@
 
 				},
 				methods:{
+					go_to:function(room_name){
+						location='/chat/room/'+room_name
+					},
 					creat_root:function(){
 						$.get()
 					},
@@ -77,12 +80,13 @@
 	<body>
 	<div id='talk'>
 
-		<button @click='creat_root()'>创建聊天室</button>
+		<!--<button @click='creat_root()'>创建聊天室</button>-->
+		<button @click="go_to(new_root_name)">进入聊天室</button>
 		<input type="" name="" v-model='new_root_name'>
-		<div>
-			
-			<button>进入聊天室</button>
-		</div>
+		<!--<div>-->
+			<!-- -->
+			<!--<button>进入聊天室</button>-->
+		<!--</div>-->
 	</div>
 
 	</body>
