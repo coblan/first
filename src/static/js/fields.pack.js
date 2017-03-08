@@ -71,6 +71,7 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+<<<<<<< HEAD
 	(0, _ajax_fun.hook_ajax_msg)();
 	/*
 	基本内容
@@ -105,6 +106,41 @@
 
 	/*
 	*配合jsonpost使用，效果最好
+=======
+	/*
+	基本内容
+	==============
+	1. field_base
+	    基类，几乎有所逻辑都在里面。如果需要特殊的field，可以继承field_base，然后修改template
+
+	2. field
+	    本页面，实现了基本的field功能。
+
+	参数结构
+	==============
+	field_base的参数都是采用的关键字参数，结构如下：
+	使用的 kw 结构
+	 kw={
+	     errors:{},
+	     row:{
+	         username:'',
+	         password:'',
+	         pas2:'',
+	    },
+	     heads:[
+	     {name:'username',label:'用户名',type:'text',required:true,autofocus:true},
+	     ]
+	  }
+	 <field name='username' :kw='kw' ></field>
+
+	 如果需要水平排列的field，
+	 <field name='username' :kw='kw' :set="{label_cls:'col-md-2',input_cls:'col-md-10'}"></field>
+
+	 */
+
+	/*
+	*配合自家的jsonpost使用，效果最好
+>>>>>>> bed9c449cb869d6caf8eff06ea7143c7f1aab9af
 	*/
 
 	/*

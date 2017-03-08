@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.contrib import admin
 from models import Page
 # Register your models here.
@@ -56,3 +57,8 @@ class PageFormPage(FormPage):
 
 model_dc[Page]={'fields':PageForm}
 model_page_dc['page']={'table':PageTablePage,'form':PageFormPage}
+=======
+from django.contrib import admin
+
+# Register your models here.
+>>>>>>> bed9c449cb869d6caf8eff06ea7143c7f1aab9af
