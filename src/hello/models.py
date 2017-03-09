@@ -10,3 +10,4 @@ class Page(models.Model):
     page_cls=models.CharField('page class',max_length=100,blank=True)
     text=models.TextField(verbose_name='content',blank=True)
     status=models.CharField('status',max_length=100,blank=True)
+

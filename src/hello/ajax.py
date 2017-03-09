@@ -29,3 +29,4 @@ def page_heads(cls_name):
         return page_obj.get_heads()
     else:
         raise UserWarning,'not matched page class : %s'%cls_name
+

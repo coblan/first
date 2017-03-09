@@ -56,3 +56,4 @@ class PageFormPage(FormPage):
 
 model_dc[Page]={'fields':PageForm}
 model_page_dc['page']={'table':PageTablePage,'form':PageFormPage}
+

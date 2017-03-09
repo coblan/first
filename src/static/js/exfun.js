@@ -20,8 +20,11 @@ ex={
 	searchfy:function (obj,pre) {
 		var outstr=pre||''
 		for(x in obj){
-			if(obj[x]!==''&&obj[x]!=null){
-				outstr+=x.toString()+'='+ obj[x].toString()+'&';
+			var value=obj[x]
+			if(value===true){value='1'}
+			if(value===false){value='0'}
+			if(value!==''&& value!=null){
+				outstr+=x.toString()+'='+ value.toString()+'&';
 			}
 		}
 		if(outstr.endsWith('&')){
@@ -32,13 +35,55 @@ ex={
 			return outstr
 		}
 	},
-		/*两种调用方式
-		 var template1="我是{0}，今年{1}了";
-		 var template2="我是{name}，今年{age}了";
-		 var result1=template1.format("loogn",22);
-		 var result2=template2.format({name:"loogn",age:22});
-		 两个结果都是"我是loogn，今年22了"
-		 */
+	appendSearch:function(url,obj){
+		if(!obj){
+			var obj=url
+			var url=location.href
+		}
+		if(url){
+			var url_obj = ex.parseURL(url)
+			var search = url_obj.params
+		}else{
+			url=location.href
+			var search=ex.parseSearch()
+		}
+		ex.assign(search,obj)
+		return url.replace(/(\?.*)|()$/,ex.searchfy(search,'?'))
+	},
+	parseURL: function(url) {
+		var a = document.createElement('a');
+		a.href = url;
+		return {
+			source: url,
+			protocol: a.protocol.replace(':',''),
+			host: a.hostname,
+			port: a.port,
+			search: a.search,
+			params: (function(){
+				var ret = {},
+					seg = a.search.replace(/^\?/,'').split('&'),
+					len = seg.length, i = 0, s;
+				for (;i<len;i++) {
+					if (!seg[i]) { continue; }
+					s = seg[i].split('=');
+					ret[s[0]] = s[1];
+				}
+				return ret;
+			})(),
+			file: (a.pathname.match(/\/([^\/?#]+)$/i) || [,''])[1],
+			hash: a.hash.replace('#',''),
+			pathname: a.pathname.replace(/^([^\/])/,'/$1'),
+			relative: (a.href.match(/tps?:\/\/[^\/]+(.+)/) || [,''])[1],
+			segments: a.pathname.replace(/^\//,'').split('/')
+		};
+	},
+/*两种调用方式
+ var template1="我是{0}，今年{1}了";
+ var template2="我是{name}，今年{age}了";
+ var result1=template1.format("loogn",22);
+ var result2=template2.format({name:"loogn",age:22});
+ 两个结果都是"我是loogn，今年22了"
+ */
 	template:function (string,args) {
 		var result = string;
 		if(args.length){
@@ -174,6 +219,10 @@ ex={
 		}
 		return false
 	},
+	extend:function(array1,array2){
+		array1.push.apply(array1,array2)
+		return array1
+	},
 	remove:function (array,func_or_obj) {
 		var index_ls=[]
 		if (typeof func_or_obj == 'function'){
@@ -237,8 +286,6 @@ ex={
 			  }
 			  document.getElementsByTagName('head')[0].appendChild(domScript);
 		}
-		
-		
 	},
 	load_css:function (src) {
 		var name = btoa(src)
@@ -248,6 +295,31 @@ ex={
 		window['__src_'+name]=true
 		$('head').append('<link rel="stylesheet" href="'+src+'" type="text/css" />')
 	},
+
+	append_str:function(){
+		function includeStyleElement(styles,styleId) {
+
+			if (document.getElementById(styleId)) {
+				return
+			}
+			var style = document.createElement(“style”);
+			style.id = styleId;
+//这里最好给ie设置下面的属性
+			/*if (isIE()) {
+			 style.type = “text/css”;
+			 style.media = “screen”
+			 }*/
+			(document.getElementsByTagName(“head”)[0] || document.body).appendChild(style);
+			if (style.styleSheet) { //for ie
+				style.styleSheet.cssText = styles;
+			} else {//for w3c
+				style.appendChild(document.createTextNode(styles));
+			}
+		}
+		var styles = “#div{background-color: #FF3300; color:#FFFFFF }”;
+		includeStyleElement(styles,”newstyle”);
+	},
+
 	is_fun:function (v) {
 		return typeof v === "function"
 	},
@@ -284,7 +356,38 @@ ex={
 	},
 	show_msg:function(msg){
 		alert(msg)
+	},
+	access : function(o, s) {
+		s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+		s = s.replace(/^\./, '');           // strip a leading dot
+		var a = s.split('.');
+		for (var i = 0, n = a.length; i < n; ++i) {
+			var k = a[i];
+			if (k in o) {
+				o = o[k];
+			} else {
+				return;
+			}
+		}
+		return o;
+	},
+	set:function(par,name,obj){
+		name = name.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+		name = name.replace(/^\./, '');           // strip a leading dot
+		var a = name.split('.');
+		var o=par
+		for (var i = 0; i < a.length-1; ++i) {
+			var k = a[i];
+			if (k in o) {
+				o = o[k];
+			} else {
+				return null;
+			}
+		}
+		o[a[a.length-1]]=obj
+		return o;
 	}
+
 
 
 }
@@ -371,4 +474,143 @@ String.prototype.format = function(args) {
         }
     }
     return result;
+}
+
+
+var Base64 = {
+// private property
+	_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+// public method for encoding
+	encode : function (input) {
+		var output = "";
+		var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+		var i = 0;
+
+		input = Base64._utf8_encode(input);
+
+		while (i < input.length) {
+
+			chr1 = input.charCodeAt(i++);
+			chr2 = input.charCodeAt(i++);
+			chr3 = input.charCodeAt(i++);
+
+			enc1 = chr1 >> 2;
+			enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+			enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+			enc4 = chr3 & 63;
+
+			if (isNaN(chr2)) {
+				enc3 = enc4 = 64;
+			} else if (isNaN(chr3)) {
+				enc4 = 64;
+			}
+
+			output = output +
+				Base64._keyStr.charAt(enc1) + Base64._keyStr.charAt(enc2) +
+				Base64._keyStr.charAt(enc3) + Base64._keyStr.charAt(enc4);
+
+		}
+
+		return output;
+	},
+
+// public method for decoding
+	decode : function (input) {
+		var output = "";
+		var chr1, chr2, chr3;
+		var enc1, enc2, enc3, enc4;
+		var i = 0;
+
+		input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+		while (i < input.length) {
+
+			enc1 = Base64._keyStr.indexOf(input.charAt(i++));
+			enc2 = Base64._keyStr.indexOf(input.charAt(i++));
+			enc3 = Base64._keyStr.indexOf(input.charAt(i++));
+			enc4 = Base64._keyStr.indexOf(input.charAt(i++));
+
+			chr1 = (enc1 << 2) | (enc2 >> 4);
+			chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+			chr3 = ((enc3 & 3) << 6) | enc4;
+
+			output = output + String.fromCharCode(chr1);
+
+			if (enc3 != 64) {
+				output = output + String.fromCharCode(chr2);
+			}
+			if (enc4 != 64) {
+				output = output + String.fromCharCode(chr3);
+			}
+
+		}
+
+		output = Base64._utf8_decode(output);
+
+		return output;
+
+	},
+
+// private method for UTF-8 encoding
+	_utf8_encode : function (string) {
+		string = string.replace(/\r\n/g,"\n");
+		var utftext = "";
+
+		for (var n = 0; n < string.length; n++) {
+
+			var c = string.charCodeAt(n);
+
+			if (c < 128) {
+				utftext += String.fromCharCode(c);
+			}
+			else if((c > 127) && (c < 2048)) {
+				utftext += String.fromCharCode((c >> 6) | 192);
+				utftext += String.fromCharCode((c & 63) | 128);
+			}
+			else {
+				utftext += String.fromCharCode((c >> 12) | 224);
+				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+				utftext += String.fromCharCode((c & 63) | 128);
+			}
+
+		}
+
+		return utftext;
+	},
+
+// private method for UTF-8 decoding
+	_utf8_decode : function (utftext) {
+		var string = "";
+		var i = 0;
+		var c = c1 = c2 = 0;
+
+		while ( i < utftext.length ) {
+
+			c = utftext.charCodeAt(i);
+
+			if (c < 128) {
+				string += String.fromCharCode(c);
+				i++;
+			}
+			else if((c > 191) && (c < 224)) {
+				c2 = utftext.charCodeAt(i+1);
+				string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+				i += 2;
+			}
+			else {
+				c2 = utftext.charCodeAt(i+1);
+				c3 = utftext.charCodeAt(i+2);
+				string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+				i += 3;
+			}
+
+		}
+		return string;
+	}
+}
+
+if(!window.atob){
+	window.atob=Base64.decode
+	window.btoa=Base64.encode
 }
