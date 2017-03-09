@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from __future__ import unicode_literals
 
 from django.db import models
@@ -11,10 +10,4 @@ class Page(models.Model):
     page_cls=models.CharField('page class',max_length=100,blank=True)
     text=models.TextField(verbose_name='content',blank=True)
     status=models.CharField('status',max_length=100,blank=True)
-=======
-from __future__ import unicode_literals
 
-from django.db import models
-
-# Create your models here.
->>>>>>> bed9c449cb869d6caf8eff06ea7143c7f1aab9af
