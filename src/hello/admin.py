@@ -3,7 +3,7 @@ from models import Page
 # Register your models here.
 from django.core.urlresolvers import reverse
 from helpers.director.model_admin.tabel import ModelTable,RowSearch,RowFilter,RowSort
-from helpers.director.model_admin.render import model_page_dc,model_dc,TablePage,render_dc,FormPage
+from helpers.director.model_admin.render import model_dc,TablePage,render_dc,FormPage,page_dc
 from helpers.director.model_admin.fields import ModelFields
 
 import pages
@@ -55,5 +55,5 @@ class PageFormPage(FormPage):
 
 
 model_dc[Page]={'fields':PageForm}
-model_page_dc['page']={'table':PageTablePage,'form':PageFormPage}
+#model_page_dc['page']={'table':PageTablePage,'form':PageFormPage}
 

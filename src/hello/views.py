@@ -17,15 +17,15 @@ import pages
 
 #@login_required
 def hello(request):
-    first_page=Page.objects.first()
-    if first_page:
-        if first_page.text:
-            dc={'ctx':first_page.text}
-            #ctx=json.loads(first_page.text)
-        else:
-            dc={}
-        template=pages.get_globe().get(first_page.page_cls).template
-        return render(request,template,context=dc)
+    #first_page=Page.objects.first()
+    #if first_page:
+        #if first_page.text:
+            #dc={'ctx':first_page.text}
+            ##ctx=json.loads(first_page.text)
+        #else:
+            #dc={}
+        #template=pages.get_globe().get(first_page.page_cls).template
+        #return render(request,template,context=dc)
     
     if request.method=='GET':
         #return HttpResponse('hello my world')

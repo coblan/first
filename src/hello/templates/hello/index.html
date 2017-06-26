@@ -1,12 +1,20 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="zh-CN" ng-app="share">
 
 	<head>
 		<meta charset='utf-8' />
-		<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
-		<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-		<link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<script type="text/javascript" src="//apps.bdimg.com/libs/vue/1.0.14/vue.js"></script>
+
+        <script src="{% static 'lib/jquery3.2.1.min.js' %}"></script>
+
+        <script src="{% static 'lib/vue2.3.2.js' %}"></script>
+        <script src="{% static 'lib/element_1.3.7_index.js' %}"></script>
+
+        <link rel="stylesheet" href="{% static 'lib/font-awesome4.7/font-awesome4.7.min.css' %}">
+        <link rel="stylesheet" href="{% static 'lib/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'lib/element_1.3.7_default_theme_index.css' %}">
+
+
 
 <style type="text/css" media="screen" id="test">
 	body{
@@ -65,32 +73,186 @@
 
 </style>
 
+        <script>
+            $(function(){
+                new Vue({
+                    el:'#there',
+                    data:{
+                        images:['https://static.oschina.net/uploads/space/2017/0624/154337_uchw_2903254.png',
+                        'http://image.uisdc.com/wp-content/uploads/2014/08/free-handpicked-ui-kits-1.jpg'],
+                        views:[{name:'main',label:'简介'},
+                            {name:'contact',label:'联系'}],
+                        crt_view:'main'
+                    }
+                })
+
+                $('.main').css('margin-top',$('.nav-bar').height())
+            })
+
+        </script>
+
 </head>
 <body>
-	<div id='head'>
-		<div class='title-bar'>
-			<div class='content'>
-				<a href="/blog/">博客</a>
-			</div>
-			<div class='user'>
-			  {% if user.username %}
-			  <span style='padding-right: 20px;'>Welcome {{user.username}}</span>
-			  <a href="/accounts/logout/">退出</a>
-			  {% else %}
-			  <a href="/accounts/login/">登陆</a>
-			  <a href="/accounts/regist/">注册</a>
-			  {% endif %}
-		  	</div>
-		</div>
-		<div class="content jumbotron">
-		  <h1>Enjoy Science & Technology</h1>
-			<div style='height:40px;'></div>
-		  <p>为了用户能够更好的享受互联网科技而努力!</p>
-		  <p>我会在这个网站陆续发布自己开发的一些应用。</p>
-		  <p>不过主人暂时没有空打理，现在只有share模块能够对外使用。</p>
-		</div>
-		
-	</div>
+
+
+<div id="there">
+    <div class="nav-bar">
+        <div class="lane">
+            <div :class=["nav-link",{"active":crt_view==view.name}] v-for="view in views" @click="crt_view=view.name">
+                <span v-text="view.label"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main" v-show="crt_view=='main'">
+        <el-carousel indicator-position="outside">
+            <el-carousel-item v-for="item in images" :key="item">
+                <div class="big-head">
+                    <img :src="item" alt=""/>
+                </div>
+
+            </el-carousel-item>
+        </el-carousel>
+    </div>
+
+
+</div>
+
+<style>
+    .nav-bar{
+        background-color: #121212;
+        color: white;
+        overflow: hidden;
+        text-align: center;
+        width: 100%;
+        position: fixed;
+        top:0;
+        left:0;
+        z-index: 1000;
+    }
+
+    .lane{
+        width: 1200px;
+        max-width: 100vw;
+        text-align: right;
+        margin: auto;
+    }
+    .nav-link{
+        display: inline-block;
+        font-size: 1.2em;
+        margin: 0.8em;
+        padding: 0.1em;
+        cursor: pointer;
+        color: #cccccc;
+    }
+    .nav-link.active{
+        border-bottom: 2px solid #3576c3;
+        color: #ffffff;
+    }
+</style>
+
+<style>
+    .big-head{
+        height: 100em;
+        text-align: center;
+    }
+    .el-carousel__container{
+        height: 400px;
+    }
+    .el-carousel__item {
+        color: #475669;
+        font-size: 18px;
+        opacity: 0.75;
+        line-height: 350px;
+        margin: 0;
+    }
+
+    .el-carousel__item:nth-child(2n) {
+        background-color: #99a9bf;
+    }
+
+    .el-carousel__item:nth-child(2n+1) {
+        background-color: #d3dce6;
+    }
+</style>
+
+<script>
+    var wx_url='{% static "image/wx01.jpg" %}'
+    var app_url='{% static "image/app01.jpg" %}'
+    var admin_url='{% static "image/admin01.jpg" %}'
+    var cloud_url='{% static "image/cloud01.jpg" %}'
+    $(function(){
+        new Vue({
+            el:'#service',
+            data:{
+                items:[{img:wx_url,desp:'微信服务号，企业号开发。帮助您快速构建系统入口。'},
+                    {img:app_url,desp:'基于H5的App，开发效率高，成本低。'},
+                    {img:admin_url,desp:'基于web的管理系统，适应互联网时代的需要，提升企业生产力。'},
+                    {img:cloud_url,desp:'基于Rest ful API的游戏App后台，以及其他类型应用后台。'}]
+            }
+        })
+    })
+</script>
+<div id="service">
+    <div class="lane">
+        <div style="text-align: center;">
+            <h3>我们的服务</h3>
+            <p>利用当前流行的互联网接入手段，为您的企业提供强劲的竞争力。</p>
+        </div>
+
+        <div class="service">
+            <div class="item" v-for="item in items">
+                <img :src="item.img" alt=""/>
+                <p v-text='item.desp'></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .service{
+        display: flex;
+        padding: 1em;
+    }
+    .service .item{
+        width: 20em;
+        border: 1px solid #f4eff5;
+        margin: 1em;
+    }
+    .service .item:hover{
+        background-color: #efefef;
+    }
+    .service .item p{
+        text-align: center;
+        padding: 1em;
+    }
+    .service .item img{
+        width: 100%;
+    }
+</style>
+
+<div id="tech">
+    <div class="lane">
+        <div style="text-align: center;">
+            <h3>我们的技术</h3>
+            <p>采用先进的技术，保证了灵活，快速的定制化开发。成本也更加低廉。</p>
+        </div>
+
+        <div class="service">
+            <div class="item" v-for="item in items">
+                <img :src="item.img" alt=""/>
+                <p v-text='item.desp'></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+
+</div>
 
 	<div>
 		<div id='content'>
