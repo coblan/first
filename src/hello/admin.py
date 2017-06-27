@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import Page
+from .models import Page,LeaveMsg
 # Register your models here.
 from django.core.urlresolvers import reverse
 from helpers.director.model_admin.tabel import ModelTable,RowSearch,RowFilter,RowSort
@@ -56,4 +56,15 @@ class PageFormPage(FormPage):
 
 model_dc[Page]={'fields':PageForm}
 #model_page_dc['page']={'table':PageTablePage,'form':PageFormPage}
+
+class LeaveMsgForm(ModelFields):
+    class Meta:
+        model=LeaveMsg
+        exclude=[]
+    
+    def save_form(self):
+        self.instance.save()
+        
+
+model_dc[LeaveMsg]={'fields':LeaveMsgForm}
 

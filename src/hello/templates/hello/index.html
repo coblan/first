@@ -1,5 +1,7 @@
-{% load static %}
 <!DOCTYPE html>
+{% load static %}
+{% load jsonify %}
+
 <html lang="zh-CN" ng-app="share">
 
 	<head>
@@ -13,6 +15,9 @@
         <link rel="stylesheet" href="{% static 'lib/font-awesome4.7/font-awesome4.7.min.css' %}">
         <link rel="stylesheet" href="{% static 'lib/bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'lib/element_1.3.7_default_theme_index.css' %}">
+
+        <script src='{% static "js/exfun.js" %}'></script>
+        <script src='{% static "js/fields.pack.js?t=20170611" %}'></script>
 
 
 
@@ -188,7 +193,7 @@
                 items:[{img:wx_url,desp:'微信服务号，企业号开发。帮助您快速构建系统入口。'},
                     {img:app_url,desp:'基于H5的App，开发效率高，成本低。'},
                     {img:admin_url,desp:'基于web的管理系统，适应互联网时代的需要，提升企业生产力。'},
-                    {img:cloud_url,desp:'基于Rest ful API的游戏App后台，以及其他类型应用后台。'}]
+                    {img:cloud_url,desp:'基于Restful API的各种应用后台，包括游戏App后台，管理系统后台等。'}]
             }
         })
     })
@@ -221,7 +226,12 @@
         margin: 1em;
     }
     .service .item:hover{
-        background-color: #efefef;
+        /*background-color: #efefef;*/
+        /*box-shadow: 10px 10px 5px #888888;*/
+
+        -webkit-box-shadow:1px 1px 3px #292929;
+        -moz-box-shadow:1px 1px 3px #292929;
+        box-shadow:1px 1px 3px #292929;
     }
     .service .item p{
         text-align: center;
@@ -232,11 +242,28 @@
     }
 </style>
 
+
+<script>
+    var vue_url='{% static "image/vue.jpg" %}'
+    var python_url='{% static "image/python.jpg" %}'
+    var django_url='{% static "image/django.jpg" %}'
+    $(function(){
+        new Vue({
+            el:'#tech',
+            data:{
+                items:[{img:vue_url,desp:'vuejs2.0的使用'},
+                    {img:python_url,desp:'python语言'},
+                    {img:django_url,desp:'django的使用'}]
+            }
+        })
+    })
+</script>
+
 <div id="tech">
     <div class="lane">
         <div style="text-align: center;">
             <h3>我们的技术</h3>
-            <p>采用先进的技术，保证了灵活，快速的定制化开发。成本也更加低廉。</p>
+            <p>采用先进的技术，保证质量的同时，极大的提升开发效率，降低开发成本。</p>
         </div>
 
         <div class="service">
@@ -251,67 +278,188 @@
 
 
 <div>
+<div class="lane">
+    <div style="text-align: center;">
+        <h3>关于我们</h3>
+        <p>我们是一群极有天分的软件精英，满怀激情的汇聚在一起，提供高标准的软件技术咨询服务。
+
+        </p>
+    </div>
 
 </div>
+</div>
 
-	<div>
-		<div id='content'>
-			<div class='item'>
-				<div class='item-name'>
-					<h1><a href="/share">share:</a></h1>
-				</div>
-				
-				<div class='item-content'>
-					<p>平常您用什么记录知识？</p>
-					<p>evernote？</p>
-					<p>没有代码功能，作为码农，感觉不够用。</p>
-					<p>咯，这里是一个记录工具，具备记录代码，数学公式等等能力，是我随时记录灵感和知识的好工具。</p>
-					<p>功能不多，但是你可以试试。登陆后可以使用。</p>
-					<p><b>演示账号：demo 密码: demo</b></p>
-				</div>
-			</div>
-			<hr>
-			<!--style='background-color: #F5F5F5;border: 1px solid #999;border-radius:5px;'-->
-			<div class='item' >
-				<div class='item-name'>
-					<h1><a href="/talk">talk:</a></h1>
-				</div>
-				
-				<div class='item-content'>
-					<p>简单至极的浏览器聊天，websocket练习时做的。我们公司不能上qq和微信，所以这个能和朋友免费聊天。为了方便，就不用登陆了。</p>
-				</div>
-			</div>
-			<hr>
-			<div class='item'>
-				<div class='item-name'>
-					<h3>pageBuilder<!--<a href="/share">share:</a>--></h3>
-				</div>
-				
-				<div class='item-content'>
-					<p>移动页面制作工具</p>
-					<p>working ... </p>
-				</div>
-			</div>
-			<hr>
-			<div class='item'>
-				<div class='item-name'>
-					<h3>workload<!--<a href="/share">share:</a>--></h3>
-				</div>
-				
-				<div class='item-content'>
-					<p>员工工作量评估系统</p>
-					<p>working ... </p>
-				</div>
-			</div>
-			
-		</div>
-	</div>
+<script>
+    var msg_heads={{ msg_heads | jsonify | default:'[]' }}
+    var msg_row={{ msg_row | jsonify | default:'[]' }}
+
+    ex.each(msg_heads,function(head){
+        if(head.name=='name'){
+            head.placeholder='您的称呼'
+        }else if(head.name=='contact'){
+            head.placeholder='您的联系方式'
+        }else if(head.name='text'){
+            head.placeholder='系统使用描述'
+        }
+    })
+
+    $(function(){
+        new Vue({
+            el:'#msg',
+            data:{
+                kw:{
+                    row:msg_row,
+                    heads:msg_heads,
+                    errors:{}
+                },
+            },
+            methods:{
+                submit:function(){
+                    var self=this
+                    var post_data=[{fun:'save_msg',row:this.kw.row}]
+                    show_upload()
+                    ex.post('/_ajax/hello',JSON.stringify(post_data),function(resp){
+                        hide_upload()
+                        if(resp.save_msg.errors){
+                            self.kw.errors=resp.save_msg.errors
+                        }else{
+                            self.kw.errors={}
+                            self.kw.row={}
+                            confirm('提交成功')
+                        }
+
+
+                    })
+                }
+            }
+        })
+    })
+</script>
+
+<div id="msg">
+    <div class="lane">
+        <div style="text-align: center;margin-top: 3em;">
+            <h3>您的需求</h3>
+            <p>请填写以下内容，虽然繁琐，但是这会大大提高我们的沟通效率。</p>
+        </div>
+        <div class="leave-msg">
+            <field v-for="head in kw.heads" :name="head.name" :kw="kw"></field>
+
+            <button @click="submit()">提交给我们</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .leave-msg{
+        max-width: 500px;
+        margin: auto;
+        margin-top: 1em;
+    }
+    .leave-msg label{
+        display: none;
+    }
+</style>
+
+<div class="foot">
+    <div class="content">
+        <h2>联系我们</h2>
+        <div class="panel">
+            <table>
+                <tr><td><i class="fa fa-weixin" aria-hidden="true"></i></td><td>bbb</td></tr>
+                <tr><td><i class="fa fa-qq" aria-hidden="true"></i></td><td>xxx</td></tr>
+                <tr><td><i class="fa fa-phone" aria-hidden="true"></i></td><td>1234345346</td></tr>
+                <tr><td><i class="fa fa-envelope" aria-hidden="true"></i></td><td>coblan@163.com</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .foot{
+        background-color: black;
+        height: 300px;
+        text-align: center;
+        margin-top: 3em;
+        color: white;
+    }
+    .foot .content{
+        padding-top: 1em;
+
+    }
+    .foot .panel{
+        display: inline-block;
+        background-color: rgba(255,255,255,0.2);
+        padding: 1em;
+        border-radius: 0.3em;
+        margin-top: 1em;
+        width: 20em;
+    }
+    .foot .content p{
+        text-align: left;
+    }
+    .foot td{
+        text-align: left;
+        padding-left: 1em;
+    }
+</style>
+
+
+
+	<!--<div>-->
+		<!--<div id='content'>-->
+			<!--<div class='item'>-->
+				<!--<div class='item-name'>-->
+					<!--<h1><a href="/share">share:</a></h1>-->
+				<!--</div>-->
+				<!-- -->
+				<!--<div class='item-content'>-->
+					<!--<p>平常您用什么记录知识？</p>-->
+					<!--<p>evernote？</p>-->
+					<!--<p>没有代码功能，作为码农，感觉不够用。</p>-->
+					<!--<p>咯，这里是一个记录工具，具备记录代码，数学公式等等能力，是我随时记录灵感和知识的好工具。</p>-->
+					<!--<p>功能不多，但是你可以试试。登陆后可以使用。</p>-->
+					<!--<p><b>演示账号：demo 密码: demo</b></p>-->
+				<!--</div>-->
+			<!--</div>-->
+			<!--<hr>-->
+			<!--&lt;!&ndash;style='background-color: #F5F5F5;border: 1px solid #999;border-radius:5px;'&ndash;&gt;-->
+			<!--<div class='item' >-->
+				<!--<div class='item-name'>-->
+					<!--<h1><a href="/talk">talk:</a></h1>-->
+				<!--</div>-->
+				<!-- -->
+				<!--<div class='item-content'>-->
+					<!--<p>简单至极的浏览器聊天，websocket练习时做的。我们公司不能上qq和微信，所以这个能和朋友免费聊天。为了方便，就不用登陆了。</p>-->
+				<!--</div>-->
+			<!--</div>-->
+			<!--<hr>-->
+			<!--<div class='item'>-->
+				<!--<div class='item-name'>-->
+					<!--<h3>pageBuilder&lt;!&ndash;<a href="/share">share:</a>&ndash;&gt;</h3>-->
+				<!--</div>-->
+				<!-- -->
+				<!--<div class='item-content'>-->
+					<!--<p>移动页面制作工具</p>-->
+					<!--<p>working ... </p>-->
+				<!--</div>-->
+			<!--</div>-->
+			<!--<hr>-->
+			<!--<div class='item'>-->
+				<!--<div class='item-name'>-->
+					<!--<h3>workload&lt;!&ndash;<a href="/share">share:</a>&ndash;&gt;</h3>-->
+				<!--</div>-->
+				<!-- -->
+				<!--<div class='item-content'>-->
+					<!--<p>员工工作量评估系统</p>-->
+					<!--<p>working ... </p>-->
+				<!--</div>-->
+			<!--</div>-->
+			<!-- -->
+		<!--</div>-->
+	<!--</div>-->
 	
 
-	
-	
-	
-	
 	
 </body>
 </html>

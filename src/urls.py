@@ -18,6 +18,7 @@ from django.contrib import admin
 from pagebuilder import views
 from hello import views as hello_view
 from helpers.director import urls as director_urls
+from helpers.director import views as director_views
 #import index
 
 urlpatterns = [
@@ -42,6 +43,9 @@ urlpatterns = [
     url(r'chat/',include('talk.urls')),
     
     url(r'^d/',include(director_urls)),
+    
+    url(r'^_ajax/(?P<app>\w+)?/?$',director_views.ajax_views,name='ajax_url'),
+    url(r'^_ajax/?$',director_views.ajax_views),     
 ]
 
 

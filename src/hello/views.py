@@ -13,6 +13,7 @@ import time
 
 from models import Page
 import pages
+from .admin import LeaveMsgForm
 
 
 #@login_required
@@ -28,8 +29,12 @@ def hello(request):
         #return render(request,template,context=dc)
     
     if request.method=='GET':
-        #return HttpResponse('hello my world')
-        return render(request,'hello/index.html',context={'hello':'fucking '})
+        hh=LeaveMsgForm(crt_user=request.user,nolimit=True)
+        ctx={
+            'msg_heads':hh.get_heads(),
+            'msg_row':hh.get_row(),
+        }
+        return render(request,'hello/index.html',context=ctx)
     else:
         
         return HttpResponse(json.dumps({'name':'dog'}),content_type='application/json')
@@ -40,7 +45,7 @@ def talk(request):
         
         return render(request,'hello/talk.html',context={'site_url':settings.SITE_URL,'id':int(time.time()*1000)})
     else:
-        return jsonpost(request, ajax.get_globe())
+        return jsonpost(request, ajax.get_global())
                 
         #return HttpResponse('ok')
 
@@ -110,4 +115,4 @@ def test_ajax_error(request):
 
 
 def hello_ajax(request):
-    return jsonpost(request, ajax.get_globe())
+    return jsonpost(request, ajax.get_global())

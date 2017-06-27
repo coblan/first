@@ -4,9 +4,12 @@ import json
 from ws4redis.publisher import RedisPublisher
 from ws4redis.redis_store import RedisMessage
 
+from helpers.director.db_tools import name_to_model
+from .admin import LeaveMsgForm
+from django.core.exceptions import ValidationError
 import pages
 
-def get_globe():
+def get_global():
     return globals()
 
 def publish_msg(msg):
@@ -29,4 +32,13 @@ def page_heads(cls_name):
         return page_obj.get_heads()
     else:
         raise UserWarning,'not matched page class : %s'%cls_name
+
+def save_msg(row):
+    form_obj = LeaveMsgForm(row,nolimit=True)
+    if form_obj.is_valid():
+        form_obj.save_form()
+        return {'status':'success'}
+    else:
+        return {'errors': dict(form_obj.errors) }
+        
 

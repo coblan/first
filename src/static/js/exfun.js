@@ -1,4 +1,8 @@
 
+function para_encode(para_str){
+	return encodeURI(para_str).replace('+','%2B')
+}
+
 ex={
 	parseSearch:function (queryString) {
 		var queryString = queryString || location.search
@@ -28,11 +32,11 @@ ex={
 			}
 		}
 		if(outstr.endsWith('&')){
-			return outstr.slice(0,-1)
+			return para_encode(outstr.slice(0,-1))
 		}else if(outstr==pre){
 			return ''
 		}else{
-			return outstr
+			return para_encode(outstr)
 		}
 	},
 	appendSearch:function(url,obj){
@@ -66,7 +70,7 @@ ex={
 				for (;i<len;i++) {
 					if (!seg[i]) { continue; }
 					s = seg[i].split('=');
-					ret[s[0]] = s[1];
+					ret[s[0]] = decodeURI(s[1]);
 				}
 				return ret;
 			})(),
@@ -96,10 +100,14 @@ ex={
             }
 		}else{
 			 for (var key in args) {
-                if(args[key]!=undefined){
-                    var reg = new RegExp("({" + key + "})", "g");
-                    result = result.replace(reg, args[key]);
-                }
+				 var value= args[key]
+				 if(value==undefined){
+					 value=''
+				 }
+
+				var reg = new RegExp("({" + key + "})", "g");
+				result = result.replace(reg, value);
+
 	         }
 		}
 	    return result;
@@ -173,7 +181,9 @@ ex={
 	},
 	each:function (array,func) {
 		for(var i=0;i<array.length;i++){
-			func(array[i])
+			rt = func(array[i])
+			if(rt=='break'){break;}
+			else if(rt=='continue'){continue;}
 		}
 	},
 	split:function (base_str,sep) {
@@ -202,12 +212,55 @@ ex={
 			return array.indexOf(obj)!=-1
 		}
 	},
-	filter:function (array,func) {
+	filter:function (array,func_or_obj) {
 		var out=[]
-		for(var x=0;x<array.length;x++){
-			if(func(array[x])){
-				out.push(array[x])
+		if(typeof func_or_obj == 'function'){
+			for(var x=0;x<array.length;x++){
+				if(func_or_obj(array[x])){
+					out.push(array[x])
+				}
 			}
+		}else{
+			var obj=func_or_obj
+			ex.each(array,function(doc){
+				var match=true
+				for(var key in obj){
+					if(doc[key]!=obj[key]){
+						match=false
+						break
+					}
+				}
+				if(match){
+					out.push(doc)
+				}
+			})
+
+		}
+		return out
+	},
+	exclude:function(array,func_or_obj){
+		var out=[]
+		if(typeof func_or_obj == 'function'){
+			for(var x=0;x<array.length;x++){
+				if(!func_or_obj(array[x])){
+					out.push(array[x])
+				}
+			}
+		}else{
+			var obj=func_or_obj
+			ex.each(array,function(doc){
+				var match=true
+				for(var key in obj){
+					if(doc[key]!=obj[key]){
+						match=false
+						break
+					}
+				}
+				if(!match){
+					out.push(doc)
+				}
+			})
+
 		}
 		return out
 	},
@@ -244,9 +297,6 @@ ex={
 				if(match){
 					index_ls.push(i)
 				}
-				//if(array[i]==obj){
-				//	index_ls.push(i)
-				//}
 			}
 		}
 		var rm_item=[]
@@ -256,6 +306,23 @@ ex={
 			rm_item= rm.concat(rm_item)
 		}
 		return rm_item
+	},
+	sort_by_names:function(array,name_list,keep){
+		var out_list=[]
+		ex.each(name_list,function(name){
+			var item = ex.findone(array,{name:name})
+			if (item){
+				out_list.push(item)
+			}
+		})
+		if(keep){
+			ex.each(array,function(item){
+				if(!ex.isin(item,out_list)){
+					out_list.push(item)
+				}
+			})
+		}
+		return out_list
 	},
 	load_js: function(src,success) {
 		success = success || function(){};
@@ -296,28 +363,56 @@ ex={
 		$('head').append('<link rel="stylesheet" href="'+src+'" type="text/css" />')
 	},
 
-	append_str:function(){
-		function includeStyleElement(styles,styleId) {
-
-			if (document.getElementById(styleId)) {
+	append_css:function(styles_str){
+	/*
+	* @styles_str : css string or <style>css string</style>
+	* */
+			window._appended_css=window._appended_css || []
+			if(ex.isin(styles_str,window._appended_css)){
 				return
+			}else{
+				window._appended_css.push(styles_str)
 			}
-			var style = document.createElement(“style”);
-			style.id = styleId;
-//这里最好给ie设置下面的属性
+			var mt = /<style.*>([\s\S]*)<\/style>/im.exec(styles_str)
+			if(mt){
+				styles_str=mt[1]
+			}
+			var style = document.createElement('style');
+
+			//这里最好给ie设置下面的属性
 			/*if (isIE()) {
 			 style.type = “text/css”;
 			 style.media = “screen”
 			 }*/
-			(document.getElementsByTagName(“head”)[0] || document.body).appendChild(style);
+			(document.getElementsByTagName('head')[0] || document.body).appendChild(style);
 			if (style.styleSheet) { //for ie
-				style.styleSheet.cssText = styles;
+				style.styleSheet.cssText = styles_str;
 			} else {//for w3c
-				style.appendChild(document.createTextNode(styles));
+				style.appendChild(document.createTextNode(styles_str));
 			}
-		}
-		var styles = “#div{background-color: #FF3300; color:#FFFFFF }”;
-		includeStyleElement(styles,”newstyle”);
+
+
+		//function includeStyleElement(styles,styleId) {
+        //
+		//	if (document.getElementById(styleId)) {
+		//		return
+		//	}
+		//	var style = document.createElement(“style”);
+		//	style.id = styleId;
+		//	//这里最好给ie设置下面的属性
+		//	/*if (isIE()) {
+		//	 style.type = “text/css”;
+		//	 style.media = “screen”
+		//	 }*/
+		//	(document.getElementsByTagName(“head”)[0] || document.body).appendChild(style);
+		//	if (style.styleSheet) { //for ie
+		//		style.styleSheet.cssText = styles;
+		//	} else {//for w3c
+		//		style.appendChild(document.createTextNode(styles));
+		//	}
+		//}
+		//var styles = “#div{background-color: #FF3300; color:#FFFFFF }”;
+		//includeStyleElement(styles,”newstyle”);
 	},
 
 	is_fun:function (v) {
@@ -386,8 +481,31 @@ ex={
 		}
 		o[a[a.length-1]]=obj
 		return o;
+	},
+	tr:function(str){
+		var gettext=window.gettext||function(x){return x}
+		return gettext(str)
+	},
+	trList:function(strlist){
+		// translate string list to a map object
+		var gettext=window.gettext||function(x){return x}
+		var map_obj={}
+		ex.each(strlist,function(key){
+			map_obj[key]=gettext(key)
+		})
+		return map_obj
+	},
+	unique: function(array){
+		var res = [];
+		var json = {};
+		for(var i = 0; i < array.length; i++){
+			if(!json[array[i]]){
+				res.push(array[i]);
+				json[array[i]] = 1;
+			}
+		}
+		return res;
 	}
-
 
 
 }
