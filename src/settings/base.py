@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ws4redis',
-    'authuser',
+    # 'authuser',
     'hello',
     'share',
     'blog',

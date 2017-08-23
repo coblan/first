@@ -20,10 +20,14 @@ from hello import views as hello_view
 from helpers.director import urls as director_urls
 from helpers.director import views as director_views
 #import index
+from helpers.director import login_url 
 
 urlpatterns = [
     
-    url(r'^accounts/',include('authuser.urls')),
+    # url(r'^accounts/',include('authuser.urls')),
+    
+    url(r'^accounts/',include(login_url)),
+    
     url(r'^admin/', include(admin.site.urls)),
     url(r'^share/',include('share.urls')),
     url(r'^blog/',include('blog.urls')),
